@@ -21,7 +21,8 @@ jobs:
 
       - name: 设置 pnpm
         uses: pnpm/action-setup@v4
-
+        with:
+          version: 10.5.2 # 指定 pnpm 版本，可以修改为最新的稳定版本
 
       - name: 设置 Node.js
         uses: actions/setup-node@v4
@@ -44,6 +45,5 @@ jobs:
       - name: 部署文档
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          # 部署文档
           branch: gh-pages
           folder: src/.vuepress/dist
