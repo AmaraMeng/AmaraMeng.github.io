@@ -4,6 +4,7 @@ layout: BlogHome
 icon: house
 title: Pythia’s Root
 heroImage: /logo.jpg
+bgImage: /bgpic.jpg
 heroText: Pythia’s Root
 heroFullScreen: true
 tagline: Snake my way to a content heart
