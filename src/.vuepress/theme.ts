@@ -3,6 +3,7 @@ import { hopeTheme } from "vuepress-theme-hope";
 import navbar from "./navbar.js";
 import sidebar from "./sidebar.js";
 
+
 export default hopeTheme({
   hostname: "https://mister-hope.github.io",
 
@@ -11,7 +12,7 @@ export default hopeTheme({
     url: "https://mister-hope.com",
   },
 
-  logo: "https://theme-hope-assets.vuejs.press/logo.svg",
+  logo: "/logo.jpg",
 
   repo: "vuepress-theme-hope/vuepress-theme-hope",
 
@@ -162,6 +163,16 @@ export default hopeTheme({
 
   // 在这里配置主题提供的插件
   plugins: {
+    search: {
+      maxSuggestions: 32,
+      hotKeys: [],
+      // 你的选项
+      locales: {
+        "/": {
+          placeholder: "搜索",
+        }
+      }
+    },
     blog: true,
 
     // 启用之前需安装 @waline/client

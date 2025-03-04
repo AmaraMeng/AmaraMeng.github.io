@@ -10,6 +10,9 @@ export default defineUserConfig({
   description: " Snake my way to a content heart",
 
   theme,
+  head: [
+    ['link', {rel: 'icon', href: '/logo.jpg'}]
+  ]
 
   // 和 PWA 一起启用
   // shouldPrefetch: false,
