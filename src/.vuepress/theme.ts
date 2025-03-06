@@ -30,44 +30,46 @@ export default hopeTheme({
 
   // 博客相关
   blog: {
-    description: "一个前端开发者",
+    name: "Ran",
+    avatar: "/logo.jpg",
+    description: "努力学习的小白",
     intro: "/intro.html",
     medias: {
       Baidu: "https://example.com",
       BiliBili: "https://example.com",
-      Bitbucket: "https://example.com",
-      Dingding: "https://example.com",
-      Discord: "https://example.com",
-      Dribbble: "https://example.com",
+      //Bitbucket: "https://example.com",
+      //Dingding: "https://example.com",
+      // Discord: "https://example.com",
+      // Dribbble: "https://example.com",
       Email: "mailto:info@example.com",
-      Evernote: "https://example.com",
+      // Evernote: "https://example.com",
       Facebook: "https://example.com",
-      Flipboard: "https://example.com",
-      Gitee: "https://example.com",
+      // Flipboard: "https://example.com",
+      // Gitee: "https://example.com",
       GitHub: "https://example.com",
       Gitlab: "https://example.com",
       Gmail: "mailto:info@example.com",
       Instagram: "https://example.com",
-      Lark: "https://example.com",
-      Lines: "https://example.com",
+      // Lark: "https://example.com",
+      // Lines: "https://example.com",
       Linkedin: "https://example.com",
-      Pinterest: "https://example.com",
-      Pocket: "https://example.com",
+      // Pinterest: "https://example.com",
+      // Pocket: "https://example.com",
       QQ: "https://example.com",
-      Qzone: "https://example.com",
-      Reddit: "https://example.com",
-      Rss: "https://example.com",
-      Steam: "https://example.com",
+      // Qzone: "https://example.com",
+      // Reddit: "https://example.com",
+      // Rss: "https://example.com",
+      // Steam: "https://example.com",
       Twitter: "https://example.com",
       Wechat: "https://example.com",
       Weibo: "https://example.com",
-      Whatsapp: "https://example.com",
+      // Whatsapp: "https://example.com",
       Youtube: "https://example.com",
       Zhihu: "https://example.com",
-      VuePressThemeHope: {
-        icon: "https://theme-hope-assets.vuejs.press/logo.svg",
-        link: "https://theme-hope.vuejs.press",
-      },
+      // VuePressThemeHope: {
+      //   icon: "https://theme-hope-assets.vuejs.press/logo.svg",
+      //   link: "https://theme-hope.vuejs.press",
+      // },
     },
   },
 
@@ -91,19 +93,31 @@ export default hopeTheme({
 
   // 此处开启了很多功能用于演示，你应仅保留用到的功能。
   markdown: {
-    align: true,
-    attrs: true,
-    codeTabs: true,
-    component: true,
-    demo: true,
     figure: true,
-    gfm: true,
     imgLazyload: true,
+    imgMark: true,
     imgSize: true,
-    include: true,
     mark: true,
-    plantuml: true,
+    codeTabs: true,
+    tabs: true,
+    math: true,
+    hint: true,
+    alert: true,
+    chartjs: false,
+    echarts: false,
+    mermaid: true,
+    vuePlayground: false,
+    sub: true,
     spoiler: true,
+    sup: true,
+    demo: true,
+    tasklist: true,
+    include: true,
+    attrs: false,
+    footnote: true,
+    align: true,
+    flowchart: false,
+    gfm: true,
     stylize: [
       {
         matcher: "Recommended",
@@ -117,52 +131,39 @@ export default hopeTheme({
         },
       },
     ],
-    sub: true,
-    sup: true,
-    tabs: true,
-    tasklist: true,
+    highlighter: {
+      type: "shiki",
+      collapsedLines: 15,
+      //   lineNumbers: 1,
+      notationDiff: true,
+      notationFocus: true,
+      highlightLines: true,
+      notationHighlight: true,
+      //   langs: ['sql', 'python', 'java', 'javascript', 'c', 'c#', 'c++', 'html', 'css',
+      //     'bash', 'rust', 'php', 'r', 'cmd', 'yaml', 'markdown', 'http', 'cmake', 'matlab',
+      //     'plsql', 'ini', "fortran-free-form", "fortran-fixed-form", 'go', 'vue', 'tex', 'text', 'csv', 'fish',
+      //     'makefile', 'typescript',
+      //   ],
+      // langAlias: {
+      //   ["fortran"]: "fortran-free-form",
+      // },
+      theme: "monokai",
+      // themes: {
+      //   light: "monokai",
+      //   dark: "one-dark-pro",
+      // },
+    },
     vPre: true,
-
-    // 取消注释它们如果你需要 TeX 支持
-    // math: {
-    //   // 启用前安装 katex
-    //   type: "katex",
-    //   // 或者安装 mathjax-full
-    //   type: "mathjax",
-    // },
-
-    // 如果你需要幻灯片，安装 @vuepress/plugin-revealjs 并取消下方注释
-    // revealjs: {
-    //   plugins: ["highlight", "math", "search", "notes", "zoom"],
-    // },
-
-    // 在启用之前安装 chart.js
-    // chartjs: true,
-
-    // insert component easily
-
-    // 在启用之前安装 echarts
-    // echarts: true,
-
-    // 在启用之前安装 flowchart.ts
-    // flowchart: true,
-
-    // 在启用之前安装 mermaid
-    // mermaid: true,
-
-    // playground: {
-    //   presets: ["ts", "vue"],
-    // },
-
-    // 在启用之前安装 @vue/repl
-    // vuePlayground: true,
-
-    // 在启用之前安装 sandpack-vue3
-    // sandpack: true,
   },
 
   // 在这里配置主题提供的插件
   plugins: {
+    icon: {
+      prefix: "iconfont icon-",
+      assets: [
+        "https://bornforthis.cn/icon/iconfont.css",
+      ],
+    },
     search: {
       maxSuggestions: 32,
       hotKeys: [],
@@ -180,10 +181,17 @@ export default hopeTheme({
     comment: {
       provider: "Waline",
       serverURL: "https://comments.pythiaroot.com/",
-      reaction: true,
-      comment: true,
-      pageview: true,
-      copyright: false,
+      reaction: [
+        'https://bornforthis.cn/Waline/tieba/tieba_agree.png',
+        'https://bornforthis.cn/Waline/tieba/tieba_sunglasses.png',
+        'https://bornforthis.cn/Waline/tieba/tieba_pick_nose.png',
+        'https://bornforthis.cn/Waline/tieba/tieba_awkward.png',
+        'https://bornforthis.cn/Waline/tieba/1f613.png',
+        'https://bornforthis.cn/Waline/tieba/1f60f.png',
+      ],
+      comment: true, // 评论数统计
+      pageview: true, // 浏览量统计
+      noCopyright: true,
       dark: "auto",
 
     },
@@ -192,65 +200,5 @@ export default hopeTheme({
       components: ["Badge", "VPCard"],
     },
 
-    icon: {
-      prefix: "fa6-solid:",
-    },
-
-    // 如果你需要 PWA。安装 @vuepress/plugin-pwa 并取消下方注释
-    // pwa: {
-    //   favicon: "/favicon.ico",
-    //   cacheHTML: true,
-    //   cacheImage: true,
-    //   appendBase: true,
-    //   apple: {
-    //     icon: "/assets/icon/apple-icon-152.png",
-    //     statusBarColor: "black",
-    //   },
-    //   msTile: {
-    //     image: "/assets/icon/ms-icon-144.png",
-    //     color: "#ffffff",
-    //   },
-    //   manifest: {
-    //     icons: [
-    //       {
-    //         src: "/assets/icon/chrome-mask-512.png",
-    //         sizes: "512x512",
-    //         purpose: "maskable",
-    //         type: "image/png",
-    //       },
-    //       {
-    //         src: "/assets/icon/chrome-mask-192.png",
-    //         sizes: "192x192",
-    //         purpose: "maskable",
-    //         type: "image/png",
-    //       },
-    //       {
-    //         src: "/assets/icon/chrome-512.png",
-    //         sizes: "512x512",
-    //         type: "image/png",
-    //       },
-    //       {
-    //         src: "/assets/icon/chrome-192.png",
-    //         sizes: "192x192",
-    //         type: "image/png",
-    //       },
-    //     ],
-    //     shortcuts: [
-    //       {
-    //         name: "Demo",
-    //         short_name: "Demo",
-    //         url: "/demo/",
-    //         icons: [
-    //           {
-    //             src: "/assets/icon/guide-maskable.png",
-    //             sizes: "192x192",
-    //             purpose: "maskable",
-    //             type: "image/png",
-    //           },
-    //         ],
-    //       },
-    //     ],
-    //   },
-    // },
   },
 });
