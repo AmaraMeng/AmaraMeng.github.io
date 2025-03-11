@@ -12,7 +12,7 @@ export default hopeTheme({
     url: "https://mister-hope.com",
   },
 
-  logo: "/logo.jpg",
+  logo: "/阿尔法 logo.jpg",     //修改的是网页左上角的标
 
   repo: "vuepress-theme-hope/vuepress-theme-hope",
 
@@ -30,8 +30,8 @@ export default hopeTheme({
 
   // 博客相关
   blog: {
-    name: "Ran",
-    avatar: "/logo.jpg",
+    name: "臭臭 & Luna & 阿尔法",
+    avatar: "/阿尔法 logo.jpg",    //右侧个人主页头像
     description: "努力学习的小白",
     intro: "/intro.html",
     medias: {
@@ -161,7 +161,8 @@ export default hopeTheme({
     icon: {
       prefix: "iconfont icon-",
       assets: [
-        "https://bornforthis.cn/icon/iconfont.css",
+        //"https://bornforthis.cn/icon/iconfont.css",
+        "//at.alicdn.com/t/c/font_4853525_e4k3iwioena.css"
       ],
     },
     search: {
