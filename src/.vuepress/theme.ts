@@ -162,7 +162,7 @@ export default hopeTheme({
       prefix: "iconfont icon-",
       assets: [
         //"https://bornforthis.cn/icon/iconfont.css",
-        "//at.alicdn.com/t/c/font_4853525_e4k3iwioena.css"
+        "//at.alicdn.com/t/c/font_4853525_7gjp7fom4fu.css"
       ],
     },
     search: {
