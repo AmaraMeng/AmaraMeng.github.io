@@ -165,3 +165,22 @@ $$
 可以通过在 `$ `之前使用`\`或在 `$` 字符后添加空格来完成转义
 
 加空格显示为：$a = 1$ 是一个 Tex 方程，而 前面加上`\` 则只是一串字符，即 \$a = 1$。
+
+### 7.2 行内语法
+
+::: md-demo
+
+Euler's identity $e^{i\pi}+1=0$ is a beautiful formula in $\mathbb{R}^2$.
+
+:::
+
+### 7.3 显示语法
+
+:::md-demo
+$$
+\frac{\partial^r}{\partial\omega^r}\left(\frac{y^{\omega}}{\omega}\right)
+=\left(\frac{y^{\omega}}{\omega}\right)\left\{(\log y)^r+\sum_{i=1}^r\frac{(-1)^i r\cdots(r-i+1)(\log y)^{r-i}}{\omega^i}\right\}
+$$
+
+
+:::
