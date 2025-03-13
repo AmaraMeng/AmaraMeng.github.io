@@ -1,12 +1,12 @@
 ---
-title: Python-Variable
+title: Typora编写语法
 date: 2025-03-11 15:38:39
 author: Ran
 isOriginal: true
 icon: boke
 sticky: false
 star: false
-article: false
+article: true
 timeline: true
 image: false
 navbar: true
@@ -115,6 +115,8 @@ public class HelloWorld {
 
 `[图片描述](图片链接地址)`
 
+图片直接复制即可，中括号 `[]`内修改图片描述即可。
+
 ![阿尔法](./variable.assets/image-20250311154721247.png)
 
 
@@ -136,8 +138,6 @@ public class HelloWorld {
     2. 你好钱
     3. 你好孙
 4. 李
-
-
 
 :::
 
