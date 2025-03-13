@@ -76,10 +76,14 @@ export default hopeTheme({
   // 加密配置
   encrypt: {
     config: {
-      "/demo/encrypt.html": {
-        hint: "Password: 1234",
+      // "/static-website-blog/": {
+      //   hint: "Password: count-4-numbers",
+      //   password: "1234",
+      // },
+      "/programming/python/variable.html": {
+        hint: "Password:count-4-numbers",
         password: "1234",
-      },
+      }
     },
   },
 

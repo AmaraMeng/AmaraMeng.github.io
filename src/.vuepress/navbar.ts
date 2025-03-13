@@ -17,7 +17,7 @@ export default navbar([
   icon: "biancheng-01", 
   children: [
     {text: "Static website building-blog", icon:"boke", link: "/static-website-blog/"},
-    {text: "Python", icon: "python", link: "#"},
+    {text: "Python", icon: "python", link: "/programming/python/"},
 
   ],
 

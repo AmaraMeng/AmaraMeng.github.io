@@ -117,11 +117,11 @@ public class HelloWorld {
 
 图片直接复制即可，中括号 `[]`内修改图片描述即可。
 
-![阿尔法](./variable.assets/image-20250311154721247.png)
+![阿尔法](./article-typora.assets/image-20250311154721247.png)
 
 
 
-![bgpic](./variable.assets/bgpic.jpg)
+![bgpic](./article-typora.assets/bgpic.jpg)
 
 :::
 
@@ -166,7 +166,7 @@ $$
 
 加空格显示为：$a = 1$ 是一个 Tex 方程，而 前面加上`\` 则只是一串字符，即 \$a = 1$。
 
-### 7.2 行内语法
+### 7.2 行内公式语法
 
 ::: md-demo
 
@@ -174,9 +174,9 @@ Euler's identity $e^{i\pi}+1=0$ is a beautiful formula in $\mathbb{R}^2$.
 
 :::
 
-### 7.3 显示语法
+### 7.3 公式块语法
 
-:::md-demo
+::: md-demo
 $$
 \frac{\partial^r}{\partial\omega^r}\left(\frac{y^{\omega}}{\omega}\right)
 =\left(\frac{y^{\omega}}{\omega}\right)\left\{(\log y)^r+\sum_{i=1}^r\frac{(-1)^i r\cdots(r-i+1)(\log y)^{r-i}}{\omega^i}\right\}
@@ -184,3 +184,223 @@ $$
 
 
 :::
+
+## 8. 任务列表
+
+::: md-demo
+
+- [x] 计划 A
+- [ ] 计划 B
+
+:::
+
+
+
+## 9. 选项卡
+
+:::: md-demo
+
+::: tabs
+
+@tab 教学栗子
+
+1234567890
+
+```python
+print ("1234567890")
+```
+
+
+
+![阿尔法](./article-typora.assets/阿尔法.jpg)
+
+
+
+
+
+
+
+@tab 实操
+
+0987654321
+
+
+
+@tab 作业
+
+自己做一遍
+
+:::
+
+::::
+
+
+
+## 10. 代码块分组
+
+:::: md-demo
+
+::: code-tabs
+
+@tab 代码1
+
+```python
+print ("1234567890")
+```
+
+@tab 代码2
+
+```python
+a, b, c = 1, 2, 3
+```
+
+@tab 代码3
+
+```python
+a = 1
+b = 2
+print(a + b)
+```
+
+
+
+:::
+
+::::
+
+
+
+## 11. 行内代码
+
+::: md-demo
+
+`pnpm install XXXX`
+
+:::
+
+
+
+## 12. 提示容器
+
+:::: md-demo
+
+
+
+::: important
+
+重要点。
+
+:::
+
+
+
+::: info 特殊信息！
+
+信息点。
+
+:::
+
+
+
+::: note
+
+注释点。
+
+:::
+
+
+
+::: tip
+
+小技巧。
+
+:::
+
+
+
+::: warning
+
+警告！
+
+::: 
+
+
+
+::: caution
+
+危险！
+
+:::
+
+
+
+::: details
+
+详情~
+
+:::
+
+::::
+
+
+
+## 13. 高亮
+
+::: md-demo
+
+你好，==William==.
+
+:::
+
+## 14. 加密显示
+
+::: md-demo
+
+你好，!!William!!
+
+:::
+
+## 15. 自定义对齐
+
+:::: md-demo
+
+::: left
+
+左对齐的内容
+
+:::
+
+
+
+::: center
+
+居中的内容
+
+:::
+
+
+
+::: right
+
+右对齐的内容
+
+:::
+
+
+
+::: justify
+
+两端对齐的内容
+
+:::
+
+
+
+::::
+
+
+
+## 16. 文章加密
+
+
+
