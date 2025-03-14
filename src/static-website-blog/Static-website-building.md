@@ -110,16 +110,13 @@ export default defineUserConfig({
 
 #### 2.2.2. logo 修改
 
-1. 把 logo 放入`网站路径/src/.vuepress/public/` 下。
+1. 把 logo 放入`网站路径/src/.vuepress/public/` 下。有几种方法可选：
+    1. 直接放到 `public` 文件夹中；
+    2. 也可以在 `public` 文件夹中新建文件夹做分类管理，方便后期增大体量进行维护。
 
-有几种方法可选：
+2. VScode 中修改 `README.md` 中的 `heroImage:` 。
 
-1. 直接放到 public 文件夹中
-2. 也可以在 public 文件夹中新建文件夹做分类管理，方便后期增大体量进行维护。
-
-1. VScode 中修改 网站路径 下的 `README.md` 中的 `heroImage:` 。
-
-格式：（一开始的斜杠代表 public 文件夹）/ 文件夹名称（若有）/ 图片名称 . 后缀。
+格式：（一开始的斜杠代表 `public` 文件夹）/ 文件夹名称（若有）/ 图片名称 . 后缀。
 
 ```bash
 heroImage: /logo.jpg
@@ -127,8 +124,8 @@ heroImage: /logo.jpg
 
 #### 2.2.3. 网站背景图片修改
 
-1. 将修改的图片放入到 public 文件夹中
-2. VScode 中 `README.md` 文件夹中修改，增加命令行（格式同头像上传，注意 / 前需要有空格）
+1. 将修改的图片放入到 public 文件夹中；
+2. VScode 中 `README.md` 文件夹中修改，增加命令行（格式同头像上传，注意 / 前需要有空格）。
 
 ```bash
 bgImage: /bgpic.jpg
@@ -136,13 +133,13 @@ bgImage: /bgpic.jpg
 
 #### 2.2.4. 增加网站搜索功能
 
-1. 安装 search 包 （Termius）。
+1. 安装 search 包 （Termius）；
 
 ```bash
 pnpm add -D @vuepress/plugin-search@next
 ```
 
-2. VScode 操作，theme.ts 中 plugins 下输入如下命令。
+2. VScode ，`theme.ts` 中 `plugins` 下输入如下命令；
 
 ```bash
 // 在这里配置主题提供的插件
@@ -159,7 +156,7 @@ pnpm add -D @vuepress/plugin-search@next
     },
 ```
 
-3. 重启本地开发。
+3. 重启本地开发；
 
 4. 其他补充：
 
@@ -170,24 +167,19 @@ pnpm remove @vuepress/plugin-slimsearch    #卸载 slimsearch 安装包
 
 #### 2.2.5. 增加网站评论功能
 
-1. 需要借助第三方软件，教程如下：
+1. 需要借助第三方 Waline，进行到 ”绑定域名“ 步骤，教程如下：
 
-https://waline.js.org/guide/get-started/
+    https://waline.js.org/guide/get-started/
 
-2. 本地修改
-
-3. 终端中，网站相应文件夹下打开 VScode
-
-1. `theme.ts`中找到 comment ，修改命令如下：
-
-注意：需要按照提示先安装 @waline/client ，终端相应文件夹中输入命令 `pnpm add -D @waline/client` 进行安装。
+2. 终端中，按照提示先安装 `@waline/client ` ，输入命令 `pnpm add -D @waline/client` 进行安装。
+3. 网站相应文件夹下打开 VScode，`theme.ts`中找到 `comment` ，修改命令如下：
 
 ```typescript
 // 启用之前需安装 @waline/client
 // 警告: 这是一个仅供演示的测试服务，在生产环境中请自行部署并使用自己的服务！
 comment: {      
   provider: "Waline",
-    serverURL: "https://comments.pythiaroot.com/",
+    serverURL: "https://comments.pythiaroot.com/",      //此处为按照教程得到的自己网站评论的域名
     reaction: [
     'https://bornforthis.cn/Waline/tieba/tieba_agree.png',
     'https://bornforthis.cn/Waline/tieba/tieba_sunglasses.png',
@@ -204,23 +196,24 @@ comment: {
     },
 ```
 
-1. 在 github 上发布。
+4. 在 github 上发布。
+5. 若需要访问评论功能后台，浏览器输入 `网站域名/ui`，本网站为  comments.pythiaroot.com/ui
 
 #### 2.2.6. 网站菜单栏修改
 
-1. 在阿里巴巴内建立自己的项目 或 参与其他项目。
-2. VScode 中 `theme.ts`文件中修改图标库链接，才能从阿里巴巴对应的图标库中调用。
+1. 选择自己菜单的小图标来源（此处使用阿里巴巴矢量图标库 https://www.iconfont.cn/  建立自己的项目 或 参与其他项目。）
+2. 打开 VScode ， `theme.ts`文件中修改图标库链接，才能从阿里巴巴对应的图标库中调用。
 
 ```typescript
 icon: {
   prefix: "iconfont icon-",
     assets: [
     //"https://bornforthis.cn/icon/iconfont.css", （别人共享的项目，此处注释掉）
-    "//at.alicdn.com/t/c/font_4853525_e4k3iwioena.css"
+    "//at.alicdn.com/t/c/font_4853525_e4k3iwioena.css"    //引号内为自己的图标库链接，图标库每次修改后，都需要更新链接，重新粘贴到此处。
   ],
 ```
 
-1. `navbar.ts`文件中设置菜单，多个子集用 `children`，icon 部分从阿里巴巴图标库中复制代码， link 暂时没有用 # 。
+3. `navbar.ts`文件中设置菜单，多个子集用 `children`，icon 部分从阿里巴巴图标库中复制代码， link 暂时没有用 # ，后续有文章时，放入 `src` 文件夹下，将 link 填入此处，注意若 link 到文件夹，则最后需要加 / ，如 `/demo/`。
 
 ```typescript
 import { navbar } from "vuepress-theme-hope";
