@@ -402,5 +402,26 @@ print(a + b)
 
 ## 16. 文章加密
 
+::: md-demo
 
+VScode 的 `theme.ts`文件中找到加密配置，代码如下：
 
+```python
+ // 加密配置
+  encrypt: {
+    config: {
+     
+        // "/static-website-blog/": {
+      //   hint: "Password: count-4-numbers",
+      //   password: "1234",               
+      // },
+                                                   //上文注释掉部分为文件夹下所有文章加密
+        "/programming/python/variable.html": {     //单个文章加密
+        hint: "Password:count-4-numbers",
+        password: "1234",
+      }
+    },
+  },
+```
+
+:::

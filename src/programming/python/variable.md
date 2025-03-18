@@ -1,6 +1,6 @@
 ---
 title: Variable
-date: 2025-03-13 15:38:39
+date: 2025-03-18 15:38:39
 author: Ran
 isOriginal: true
 icon: boke
