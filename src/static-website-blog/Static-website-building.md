@@ -243,7 +243,7 @@ export default navbar([
 1. 所有文章都在 `src`，目录下，建议文件名都为英文。
 2. 根据菜单建立 `programming/python` 文件夹，文件夹中文章内容后缀为 `.md`，在 Typora 中编辑，如下图所示：
 
-![img](./Static-website-building.assets/1741675459154-91e261fc-6d1e-4848-816c-d8ff355b9d2d.png)
+![Typora界面](./Static-website-building.assets/1741675459154-91e261fc-6d1e-4848-816c-d8ff355b9d2d.png)
 
 3. Typora 中编辑文章，开始均需要输入 `--- + 回车`，内容如下：
 
@@ -278,10 +278,6 @@ toc: true
 
 本地开发时，将网址 http://localhost:8080/static-website-blog/  修改为 http://localhost:8080/category/ 时，即可通过分类访问对应的文章。
 
-
-
-
-
 4. 文章放置位置
 
 VScode 中进入 `navbar.ts` 文件夹修改对应菜单下文章，如上述文章要放在菜单 `编程` 下的 `Python`中，则将 link 修改为：
@@ -292,28 +288,20 @@ VScode 中进入 `navbar.ts` 文件夹修改对应菜单下文章，如上述文
 
 注：python 后一定加上 `/ `才能显示如大纲一样的文章列表。
 
-![img](./Static-website-building.assets/1741676906102-73cbe41b-ad7b-4332-a8cc-866279993b29.png)
+![文章列表示意](./Static-website-building.assets/1741676906102-73cbe41b-ad7b-4332-a8cc-866279993b29.png)
 
-
-
-
-
-
-
-
-
-## 2.3. 修改网站配置未生效：
+### 2.3. 修改网站配置未生效：
 
 本身 vuepress 是支持热重载，意味着所作的任何修改，都会被自动刷新页面展示，不用手动关闭本地运行再重新启动。（不用重启）。如果修改后发现页面没有显示最新修改的效果，则需要如下操作：
 
 1. 手动关闭本地运行 `CTRL + C`
 2. 再次运行 `pnpm run docs : dev`
 3. 出现场景（经验）：
+    1. 修改侧边栏
+    2. 新建文章
+    3. 修改背景图片
+    4. 等。。。
 
-1. 修改侧边栏
-2. 新建文章
-3. 修改背景图片
-4. 等。。。
 
 原则：不需要记，只需要知道出问题，如何操作。
 
@@ -321,11 +309,11 @@ VScode 中进入 `navbar.ts` 文件夹修改对应菜单下文章，如上述文
 
 《羊皮卷》、《世界上最伟大的推销员》
 
-# 3. 网站部署
+## 3. 网站部署
 
 指开发完成的网站从本地环境发布到服务器，使其能够通过互联网访问。
 
-## 3.1. Github创建部署仓库
+### 3.1. Github创建部署仓库
 
 1. 创建 Github 特殊仓库，仓库命名格式 `AmaraMeng.github.io` 这样命名，Github 则会自动识别为部署静态网站的仓库。（类似实现了服务器功能）。
 2. 配置 SSH，实现电脑和 Github 账号无需账号密码连接，教程如下：[https://bornforthis.cn/blog/2024/7month/git-ssh.html#_2-%E5%BC%80%E5%A7%8B](https://bornforthis.cn/blog/2024/7month/git-ssh.html#_2-开始)
@@ -336,38 +324,28 @@ git add .   # 添加所有文件
 git commit -m  "初始化网站文件"   # 说明这一次做了什么修改
 ```
 
-## 3.2. 解析域名
+### 3.2. 解析域名
 
 将自己购买的域名和 github 的域名联系起来，在 github 上更新后自动发布到网站上，可以从其他渠道输入购买的域名即可访问网站。
 
 1. github 中进入网站特殊仓库，`AmaraMeng.github.io` settings 选项中选中 pages ，Custom domain 中输入购买的域名并保存。
 
-![img](./Static-website-building.assets/1741070172011-88efac02-ab5b-48db-a5f5-049c1f626b38.png)
+![Pages-Custom domain](./Static-website-building.assets/1741070172011-88efac02-ab5b-48db-a5f5-049c1f626b38.png)
 
-1. 登录阿里云，在 域名列表 中选择需要的域名，点击右侧 解析。添加记录，输入所需信息：
+2. 登录阿里云，在 域名列表 中选择需要的域名，点击右侧 解析。添加记录，输入所需信息：
+    1. 记录类型：CNAME；
+    2. 主机记录：输入@ 或者 www（注释：www表示域名 www.pythiaroot.com；@表示主域名 pythiaroot.com）；
+    3. 记录值：填写 github 域名，即`AmaraMeng.github.io` ，共需添加两条记录，分别为www.pythiaroot.com 和 pythiaroot.com。
+3. 用VScode 在网站文件夹的 public 中新建 CNAME 文件，该文件中保存的是购买的域名 `pythiaroot.com`，便于下次 gitbub 部署时还需要重复解析域名这一步骤。
 
-1. 记录类型：CNAME
-2. 主机记录：输入@ 或者 www（注释：www表示域名 www.pythiaroot.com；@表示主域名 pythiaroot.com）
-3. 记录值：填写 github 域名，即`AmaraMeng.github.io`
+### 3.3. 将本地修改上传到 github 上并发布
 
-共需添加两条记录，分别为www.pythiaroot.com 和 pythiaroot.com。
+1. VScode 点击左侧侧边栏第三项 Source Control ，输入修改内容并提交。
 
-1. 用VScode 在网站文件夹的 public 中新建 CNAME 文件，该文件中保存的是购买的域名 `pythiaroot.com`，便于下次 gitbub 部署时还需要重复解析域名这一步骤。
+![VScode界面](./Static-website-building.assets/1741071597144-2756573b-806e-4299-80ed-ca405af38141.png)
 
-## 3.3. 将本地修改上传到 github 上并发布
+2. 在 github 对应的库里的 actions 中即可看到修改和发布情况。
 
-VScode 点击左侧侧边栏第三项 Source Control ，输入修改内容并提交。
-
-![img](./Static-website-building.assets/1741071597144-2756573b-806e-4299-80ed-ca405af38141.png)
-
-在 github 对应的库里的 actions 中即可看到修改和发布情况。
-
-![img](./Static-website-building.assets/1741071668878-fcc4be7d-e255-4444-8743-9b8cda42206e.png)
+![Github界面](./Static-website-building.assets/1741071668878-fcc4be7d-e255-4444-8743-9b8cda42206e.png)
 
 
-
-
-
-## 
-
-##
