@@ -332,8 +332,6 @@ step 2：将`Jaden_cup`取到的值，和 `Austin_cup`取到的值再分别赋�
     1 2 3
     ```
 
-    
-
 - Python 中的变量名区分大小写（示例见上文）；
 
 - 变量名不能包含 空格 ，但是可以使用下划线来分隔其中的单词；
@@ -355,23 +353,7 @@ step 2：将`Jaden_cup`取到的值，和 `Austin_cup`取到的值再分别赋�
     TypeError: 'str' object is not callable
     ```
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 5. tips
+## 6. tips
 
 选中代码，`crtl + /` 注释掉选中的代码
 
