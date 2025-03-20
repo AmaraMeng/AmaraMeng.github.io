@@ -1,5 +1,4 @@
 ---
-
 title: Variable
 date: 2025-03-18 15:38:39
 author: Ran
@@ -19,6 +18,8 @@ editLink: false
 backToTop: true
 toc: true
 ---
+
+
 
 ## 1. 理解变量——生活中的例子
 
@@ -256,6 +257,117 @@ step 1：先给 `Jaden_cup` 和 `Austin_cup`分别赋值 `juice` 和`Coke`;
 step 2：将`Jaden_cup`取到的值，和 `Austin_cup`取到的值再分别赋给 `Austin_cup`和`Jaden_cup`
 
 因此可以通过这种方式实现。
+
+
+
+## 5. 变量命名的规则
+
+- 大小写英文、数字和_的结合，且不能用数字开头；
+
+    ::: code-tabs
+
+    @tab 区分大小写
+
+    ```Python
+    n = "A"
+    N = "a"
+    print(n)
+    
+    #————output————
+    A                    #输出A证明区分大小写，若不区分大小写，则应该输出a
+    ```
+
+    @tab 开头不能用数字
+
+    ```Python
+    1name = "meng"        #此处要加引号
+    print(1name)
+    
+    #————output————
+     File "D:\Coder\test 1\test 1.1.py", line 1
+        1name = meng
+        ^
+    SyntaxError: invalid decimal literal           #变量不能以数字开头
+    ```
+
+    @tab 数字可以出现在变量名中
+
+    ```Python
+    n1a1m1e1 = "meng"   #此处要加引号
+    print(n1a1m1e1)
+    
+    #————output————
+    meng                                           #但是数字可以出现在后面的任何地方
+    ```
+
+    :::
+
+- 系统关键词不能做变量名；
+
+    ​	获取关键词列表： `help('keywords')`
+
+    ```Python
+    Here is a list of the Python keywords.  Enter any keyword to get more help.
+    
+    False               class               from                or
+    None                continue            global              pass
+    True                def                 if                  raise
+    and                 del                 import              return
+    as                  elif                in                  try
+    assert              else                is                  while
+    async               except              lambda              with
+    await               finally             nonlocal            yield
+    break               for                 not                 
+    ```
+
+    若一定要用关键词做变量名，可以更改大小写，因为 Python 区分大小写。
+
+    ```Python
+    As = 1
+    sA = 2
+    AS = 3
+    print(As, sA, AS)
+    
+    #————output————
+    1 2 3
+    ```
+
+    
+
+- Python 中的变量名区分大小写（示例见上文）；
+
+- 变量名不能包含 空格 ，但是可以使用下划线来分隔其中的单词；
+
+    ```Python
+    user_name = "meng"
+    ```
+
+- 不要使用 Python 的内置函数名称做变量名。
+
+    ```Python
+    print = "12345"
+    print(print)
+    
+    #————output————
+    Traceback (most recent call last):
+      File "D:\Coder\test 1\test 1.1.py", line 2, in <module>
+        print(print)
+    TypeError: 'str' object is not callable
+    ```
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
