@@ -1,5 +1,4 @@
 ---
-​---
 title: 初识数据类型
 icon: blog
 date: 2025-03-20 14:46:33
@@ -18,6 +17,4 @@ lastUpdated: true
 editLink: false
 backToTop: true
 toc: true
-​---
 ---
-
