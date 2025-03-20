@@ -80,10 +80,10 @@ export default hopeTheme({
       //   hint: "Password: count-4-numbers",
       //   password: "1234",
       // },
-      "/programming/python/variable.html": {
-        hint: "Password:count-4-numbers",
-        password: "1234",
-      }
+      // "/programming/python/variable.html": {
+      //   hint: "Password:count-4-numbers",
+      //   password: "1234",
+      // }
     },
   },
 
