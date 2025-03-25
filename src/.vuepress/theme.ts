@@ -5,16 +5,16 @@ import sidebar from "./sidebar.js";
 
 
 export default hopeTheme({
-  hostname: "https://mister-hope.github.io",
+  hostname: "https://pythiaroot.com",   //放的自己网站的地址
 
   author: {
-    name: "Mr.Hope",
-    url: "https://mister-hope.com",
+    name: "Ran",
+    url: "https://pythiaroot.com",      //放的自己网站的地址
   },
 
   logo: "/阿尔法 logo.jpg",     //修改的是网页左上角的标
 
-  repo: "vuepress-theme-hope/vuepress-theme-hope",
+  repo: "AmaraMeng/AmaraMeng.github.io",    //放的 github 的仓库
 
   docsDir: "src",
 
@@ -187,12 +187,12 @@ export default hopeTheme({
       provider: "Waline",
       serverURL: "https://comments.pythiaroot.com/",
       reaction: [
-        'https://bornforthis.cn/Waline/tieba/tieba_agree.png',
-        'https://bornforthis.cn/Waline/tieba/tieba_sunglasses.png',
-        'https://bornforthis.cn/Waline/tieba/tieba_pick_nose.png',
-        'https://bornforthis.cn/Waline/tieba/tieba_awkward.png',
-        'https://bornforthis.cn/Waline/tieba/1f613.png',
-        'https://bornforthis.cn/Waline/tieba/1f60f.png',
+        'https://pythiaroot.com/Waline/tieba/tieba_agree.png',
+        'https://pythiaroot.com/Waline/tieba/tieba_sunglasses.png',
+        'https://pythiaroot.com/Waline/tieba/tieba_pick_nose.png',
+        'https://pythiaroot.com/Waline/tieba/tieba_awkward.png',
+        'https://pythiaroot.com/Waline/tieba/1f613.png',
+        'https://pythiaroot.com/Waline/tieba/1f60f.png',
       ],
       comment: true, // 评论数统计
       pageview: true, // 浏览量统计
