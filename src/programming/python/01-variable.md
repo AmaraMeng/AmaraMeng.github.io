@@ -1,5 +1,5 @@
 ---
-title: Variable
+title: 1. 变量
 date: 2025-03-18 15:38:39
 author: Ran
 isOriginal: true
@@ -30,7 +30,7 @@ toc: true
 
 ### 1.2 举个例子
 
-![变量例子](./variable.assets/image-20250318141107358.png)
+![变量例子](./01-variable.assets/image-20250318141107358.png)
 
 ——所以，**变量不就是在计算机的内存中开辟空间，来储存数据**。 （`ctrl + B` 加粗）
 

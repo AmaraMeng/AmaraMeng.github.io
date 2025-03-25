@@ -1,5 +1,5 @@
 ---
-title: 初识数据类型
+title: 2. 初识数据类型
 icon: boke
 date: 2025-03-20 14:46:33
 author: Ran
@@ -19,7 +19,7 @@ backToTop: true
 toc: true
 ---
 
-![数据类型](./data-type.assets/image-20250320145839024.png)
+![数据类型](./02-data-type.assets/image-20250320145839024.png)
 
 ## 1.  数字型 [int, float]
 
@@ -192,7 +192,7 @@ tup type is: >>> <class 'tuple'>
 
 ## 6. 练习
 
-![](./data-type.assets/image-20250325101431960.png)
+![](./02-data-type.assets/image-20250325101431960.png)
 
 1. 输出内容，字符，变量均可
 
@@ -252,21 +252,21 @@ tup type is: >>> <class 'tuple'>
 
 14. 变量名清楚，省去查找和再理解。
 
-![](./data-type.assets/image-20250325130809631.png)
+![](./02-data-type.assets/image-20250325130809631.png)
 
 
 
 **1c  2b 3b**
 
-![](./data-type.assets/image-20250325130953461.png)
+![](./02-data-type.assets/image-20250325130953461.png)
 
 **4a 5a 6c 7c**
 
-![](./data-type.assets/image-20250325131853998.png)
+![](./02-data-type.assets/image-20250325131853998.png)
 
 **8c 9a 10b**
 
-![](./data-type.assets/image-20250325131818819.png)
+![](./02-data-type.assets/image-20250325131818819.png)
 
 1. `print`
 2. 字符串
@@ -279,7 +279,7 @@ tup type is: >>> <class 'tuple'>
 9. `“hello, Python!”`
 10. `str(my_float) `
 
-![](./data-type.assets/image-20250325132822007.png)
+![](./02-data-type.assets/image-20250325132822007.png)
 
 
 
@@ -315,7 +315,7 @@ print(food)
 banana            #变量内容可以覆盖
 ```
 
-![](./data-type.assets/image-20250325133329938.png)
+![](./02-data-type.assets/image-20250325133329938.png)
 
 4.4
 
