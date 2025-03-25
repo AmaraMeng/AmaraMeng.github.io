@@ -268,8 +268,8 @@ tup type is: >>> <class 'tuple'>
 
 ![](./data-type.assets/image-20250325131818819.png)
 
-1. `print()`
-2. 字符串变量
+1. `print`
+2. 字符串
 3. `print` 
 4. 10
 5. b
@@ -277,7 +277,7 @@ tup type is: >>> <class 'tuple'>
 7. `“The calue of my integer is", my_int`
 8. `=` 赋予
 9. `“hello, Python!”`
-10. `my_float, `
+10. `str(my_float) `
 
 ![](./data-type.assets/image-20250325132822007.png)
 
@@ -342,16 +342,12 @@ ran, 29, student, jazz
 
 ```python
 x = y = z = 10
-x = input("请输入20：")
-y = input("请输入30：")
+x = 20
+y = 30
 print("x =", x, "\n","y =", y, "\n", "z =", z)
 
 #-------output-------
-请输入20：20
-请输入30：30
-x = 20 
- y = 30 
- z = 10
+x = 20, y = 30, z = 10
 
 # 问题问题
 ```
@@ -386,15 +382,67 @@ x = 20
 
     :::
 
-    
+2. 输出格式问题
 
-    
+    - `print` 输出换行缩进问题
 
+        :::code-tabs
 
+        @tab 输出换行缩进问题
 
+        ```python
+        x, y, z = 1, 2, 3
+        print("x=", x, "\n", "y=", y, "\n", "z=", z)
+        
+        #-------output-------
+        x= 1 
+         y= 2 
+         z= 3
+        ```
 
+        @tab 解决方法
 
+        ```python
+        x, y, z = 1, 2, 3
+        print("x=", x, "\n", "y=", y, "\n", "z=", z，sep = "")
+        
+        #-------output-------   出现缩进的原因在于 print 输出多个变量，间隔默认空格，那么用 sep 将空格去掉即可解决
+        x=1
+        y=2
+        z=3
+        ```
 
+        :::
+
+    - `print` 输出达到 “x=1, y=2, z=3” 效果
+
+        :::code-tabs
+
+        @tab 问题
+
+        ```python
+        x, y, z = 1, 2, 3
+        print("x=", x, "y=", y, "z=", z, sep = ",")
+        
+        #-------output-------
+        x=,1,y=,2,z=,3
+        ```
+
+        @tab 解决方法
+
+        ```python
+        x, y, z = 1, 2, 3
+        print("x=" + str(x), "y=" + str(y), "z=" + str(z), sep = ",")
+        
+        #-------output-------   原因在于
+        
+        ```
+
+        
+
+        :::
+
+        
 
 
 
