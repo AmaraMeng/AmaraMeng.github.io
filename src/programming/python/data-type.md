@@ -434,8 +434,9 @@ x = 20, y = 30, z = 10
         x, y, z = 1, 2, 3
         print("x=" + str(x), "y=" + str(y), "z=" + str(z), sep = ",")
         
-        #-------output-------   原因在于
-        
+        #-------output-------   
+        #原因在于不同变量间都有间隔，则将 x=1 变成一个类型的变量作为一个整体，用 + 拼接，加号左右变量类型要一致
+        x=1,y=2,z=3
         ```
 
         
@@ -443,6 +444,146 @@ x = 20, y = 30, z = 10
         :::
 
         
+
+## 8. 字典
+
+```python
+d = {"name": "ran", "age": 29, 1: "int", 1.1: 1, "tup": (1, 2, 3)}
+t = type(d)
+print(d)
+print("d type is: >>>", t)
+print("直接检测数据类型，并输出：>>>", type(d))
+
+#-------output-------  
+{'name': 'ran', 'age': 29, 1: 'int', 1.1: 1, 'tup': (1, 2, 3)}
+d type is: >>> <class 'dict'>
+直接检测数据类型，并输出：>>> <class 'dict'>
+```
+
+**字典的性质**
+
+1. 无序性 [python 3.6+ 之后有序]
+
+    - 先以无序理解即可；
+
+    - 字典的有序，并不是上面（字符串、列表、元组……）的那种常规有序；
+
+    - 字典的有序是指：字典中的键值对是有序的，有序前期基本用不到；
+
+        ```python
+        d = {"name": "ran", "age": 29, 1: "int", 1.1: 1, "tup": (1, 2, 3), "name": 10000}
+        print(d)
+        
+        #-------output-------
+        {'name': 10000, 'age': 29, 1: 'int', 1.1: 1, 'tup': (1, 2, 3)}
+        # name 出现在第一个位置，哪怕后面再出现同样的 key 组成的键值对 "name": 10000，也不会改变 name 的位置，只会进行值的覆盖。
+        ```
+
+        
+
+2. 字典的组成：
+
+    是由一系列的 key 和 value 组成；
+
+    `d = {"key1": "value1", "key2": "value2", ......}`
+
+3.  key
+
+    不可变的数据类型才可以当做字典 key；
+
+    如：字符串、数字、布尔、元组；
+
+4. value：
+
+    任意数据类型，python 拥有的数据类型；
+
+5. 可变性：可以添加、修改、删除键值对。
+
+    
+
+## 9. 集合
+
+```python
+set1 = {1, 2, "ran", 1.1, "book", (1, 2, 3), False}
+t = type(set1)
+print(set1)
+print("set1 type is: >>>", t)
+print("直接检测数据类型， 并输出：>>>", type(set1))
+
+#-------output-------
+{False, 1, 2, 1.1, 'ran', (1, 2, 3), 'book'}
+set1 type is: >>> <class 'set'>
+直接检测数据类型， 并输出：>>> <class 'set'>
+```
+
+**集合的性质**
+
+1. 无序性
+
+    指的是集合没有下标，每次重新运行后，集合内的元素顺序都会发生改变，但会出现多次运行后集合内元素顺序不再改变，此时依旧是无序的（e.g. 骰子连续扔出 6 次 6 点）；
+
+2. 确定性
+
+    集合内的元素不能变动，因此集合内**可以出现元组**，但无**法出现列表**，原因在于列表具有**可变性**，列表内部的元素可以增删变动。
+
+    :::code-tabs
+
+    @tab 出现列表
+
+    ```python
+    set1 = {1, 2, "ran", 1.1, "book", (1, 2, 3), False, [11, 2, 3]}
+    print(set1)
+    
+    #-------output-------
+    Traceback (most recent call last):
+      File "D:\Coder\test 1\test 1.1.py", line 1, in <module>
+        set1 = {1, 2, "ran", 1.1, "book", (1, 2, 3), False, [11, 2, 3]}
+    TypeError: unhashable type: 'list'
+    ```
+
+    @tab 出现元组
+
+    ```python
+    set1 = {1, 2, "ran", 1.1, "book", (1, 2, 3), False, (11, 2, 3)}
+    print(set1)
+    
+    #-------output-------
+    {False, 1, 2, 1.1, 'book', (1, 2, 3), 'ran', (11, 2, 3)}
+    ```
+
+    :::
+
+3. 互异性
+
+    指的是出现重复的元素会删除。
+
+## 10. 布尔型
+
+```python
+condition = True       #False
+print(condition)
+print(type(condition))
+
+#-------output-------
+True
+<class 'bool'>
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
