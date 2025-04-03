@@ -515,7 +515,502 @@ print(find_string)
 
 :::
 
+### 4.9 index()
 
+寻找目标字符或单词在特定字符串中，第一次出现的下标。如果是查找单词，那么 `index()` 返回目标单词的第一个字符下标。
+
+如果查询的字符或单词不存在，则报错。
+
+::: info index()  vs.  find()
+
+`index()` 在找不到指定字符/字符串时会报错，提供文件信息和位置，便于定位被搜索的字符串的位置，那么在文件或代码较多的情况下，使用 `index()` 可以帮助精准定位。但报错会引发程序运行停止，若不希望程序中止，则需要确保检索的字符/字符串一定存在于被检索的字符串中。
+
+
+
+`find()` 的可控性更强，搜索不到时，会返回值 `-1` ，但是程序不会停止，在发布或面向用户场景下更为合适。
+
+:::
+
+
+
+::: code-tabs
+
+@tab 1. 查找字符 o 第一次出现的位置
+
+```python
+string = "bornforthis"
+index_result = string.index("o")
+print(index_result)
+
+#-------output-------
+1
+```
+
+@tab 2. 查找字符 a 第一次出现的位置
+
+```python
+string = "bornforthis"
+index_result = string.index("a")
+print(index_result)
+
+#-------output-------
+Traceback (most recent call last):
+  File "D:\Coder\test 1\test 1.1.py", line 2, in <module>
+    index_result = string.index("a")
+ValueError: substring not found
+```
+
+@tab 3. 子字符串 for 第一次出现的位置
+
+```python
+string = "bornforthis"
+index_result = string.index("for")
+print(index_result)
+
+#-------output-------
+4
+```
+
+@tab  4. 子字符串 aivc 第一次出现的位置
+
+```python
+string = "bornforthis"
+index_result = string.index("aivc")
+print(index_result)
+
+#-------output-------
+Traceback (most recent call last):
+  File "D:\Coder\test 1\test 1.1.py", line 2, in <module>
+    index_result = string.index("aivc")
+ValueError: substring not found
+```
+
+
+
+:::
+
+
+
+:::  note 使用场景
+
+```python
+string = "Experiment-record.xlsx"
+index_result = string.index('.')
+filename = string[:index_result]
+suffix = string[index_result+1:]
+print(filename)
+print(suffix)
+
+#-------output-------
+Experiment-record
+xlsx
+```
+
+:::
+
+::: note 使用场景练习
+
+```python
+line = "ID=1234;NAME=Tom;AGE=25"
+name_start = line.index('NAME=')
+name_end = line.index(';AGE')
+name = line[name_start+5:name_end]
+
+print(name_start)
+print(name_end)
+print(name)
+
+#-------output-------
+8
+16
+Tom
+```
+
+
+
+:::
+
+### 4.10 isdigit()
+
+判断字符串是不是纯数字字符串，字符串中但凡有个字符是非数字，则返回 False 。
+
+::: code-tabs
+
+@tab 判断是否纯数字
+
+```python
+string = "12345678"
+isdigit_result = string.isdigit()
+print(isdigit_result)
+
+#-------output-------
+True
+```
+
+@tab 若数字中出现空格
+
+```python
+string = "1234 5678"
+isdigit_result = string.isdigit()
+print(isdigit_result)
+
+#-------output-------
+False
+```
+
+
+
+:::
+
+
+
+### 4.11 isalpha()
+
+判断字符串是不是纯字母字符串，字符串中但凡有一个非字母的，则返回 False 。
+
+::: code-tabs
+
+@tab 判断是否全为字母
+
+```python
+string = "Impeppapig"
+isalpha_result = string.isalpha()
+print(isalpha_result)
+
+#-------output-------
+True
+```
+
+@tab 出现空格
+
+```python
+string = "Im peppa pig"
+isalpha_result = string.isalpha()
+print(isalpha_result)
+
+#-------output-------
+False
+```
+
+
+
+:::
+
+
+
+### 4.12 isalnum()
+
+判断字符串是否纯数字、纯字母、纯数字字母字符串，字符串中如果包含任何非数字或字母字符，则返回 False 。
+
+::: code-tabs
+
+@tab 判断是否全为数字字母
+
+```python
+code = "peppapig1"
+valid_code = code.isalnum()
+print(valid_code)
+
+#-------output-------
+True
+```
+
+@tab 出现空格
+
+```python
+code = "peppa pig1"
+valid_code = code.isalnum()
+print(valid_code)
+
+#-------output-------
+False
+```
+
+
+
+:::
+
+### 4.13 isupper()
+
+判断字符串是否全大写字母组成。
+
+::: code-tabs
+
+@tab 1. 判断是否全大写字母
+
+```python
+name = "PEPPERPIG"
+isupper_name = name.isupper()
+print(isupper_name)
+
+#-------output-------
+True
+```
+
+@tab 2. 出现空格、其他符号
+
+```python
+name = "PEPPER PIG1-"
+isupper_name = name.isupper()
+print(isupper_name)
+
+#-------output-------
+True
+```
+
+@tab 3. 混合大小写
+
+```python
+name = "PEPPERpig"
+isupper_name = name.isupper()
+print(isupper_name)
+
+#-------output-------
+False
+```
+
+@tab 4. 全小写字母
+
+```python
+name = "pepperpig"
+isupper_name = name.isupper()
+print(isupper_name)
+
+#-------output-------
+False
+```
+
+
+
+:::
+
+### 4.14 islower()
+
+判断字符串是否全小写字母组成。
+
+::: code-tabs
+
+@tab 1. 是否全小写
+
+```python
+name = "pepper pig1-=、"
+islower_name = name.islower()
+print(islower_name)
+
+#-------output-------
+True
+```
+
+@tab 2. 大小写混合
+
+```python
+name = "PEPPERpig"
+islower_name = name.islower()
+print(islower_name)
+
+#-------output-------
+False
+```
+
+@tab 3. 全部大写
+
+```python
+name = "PEPPERPIG"
+islower_name = name.islower()
+print(islower_name)
+
+#-------output-------
+False
+```
+
+
+
+:::
+
+### 4.15 isspace()
+
+判断字符串是否全部由空格组成。
+
+::: code-tabs
+
+@tab **空格**字符串
+
+```python
+input1 = "   "
+isspace_input1 = input1.isspace()
+print(isspace_input1)
+
+#-------output-------
+True
+```
+
+@tab **空**字符串
+
+```python
+input1 = ""
+isspace_input1 = input1.isspace()
+print(isspace_input1)
+
+#-------output-------
+False
+```
+
+@tab 非空格字符串
+
+```python
+input1 = "123asd-=["
+isspace_input1 = input1.isspace()
+print(isspace_input1)
+
+#-------output-------
+False
+```
+
+
+
+:::
+
+### 4.16 strip()
+
+
+
+::: code-tabs
+
+@tab 1. 清除字符串前后（两侧）空格
+
+```python
+string = "     I'm pepper pig.     "
+strip_string = string.strip()
+print("Original string:", string)
+print("String after stripping:", strip_string)
+
+#-------output-------
+Original string:      I'm pepper pig.     
+String after stripping: I'm pepper pig.
+```
+
+@tab 2. 指定两侧需要清除的字符串（需连续）
+
+```python
+string = "----I'm pepper pig.----"
+strip_string = string.strip("-")
+print("Original string:", string)
+print("String after stripping:", strip_string)
+
+#-------output-------
+Original string: ----I'm pepper pig.----
+String after stripping: I'm pepper pig.
+```
+
+
+
+:::
+
+::: code-tabs
+
+@tabs 1. 清除两侧指定字符串，且指定的字符串中间间隔其他字符
+
+```python
+string = "---  -I'm pepper pig.--  ?--"
+strip_string = string.strip("-")
+print("Original string:", string)
+print("String after stripping:", strip_string)
+
+#-------output-------
+Original string: ---  -I'm pepper pig.--  ?--
+String after stripping:   -I'm pepper pig.--  ?
+```
+
+@tab 2. 解决方案
+
+```python
+string = "---  -I'm pepper pig.--  ?--"
+strip_string = string.strip(" -?")      #把要去掉的都扔在里面，不分先后顺序
+print("Original string:", string)
+print("String after stripping:", strip_string)
+
+#-------output-------
+Original string: ---  -I'm pepper pig.--  ?--
+String after stripping: I'm pepper pig.
+```
+
+
+
+:::
+
+
+
+### 4.17 lstrip()
+
+去掉左侧，()内包含的所有字符的连续字符串。
+
+::: code-tabs
+
+@tab 1. 去掉左侧空格
+
+```python
+string = "    I'm pepper pig.    "
+lstrip_string = string.lstrip()
+print("Original string:", string)
+print("String after stripping:", lstrip_string)
+
+#-------output-------
+Original string:     I'm pepper pig.    
+String after stripping: I'm pepper pig.    
+```
+
+@tab 2. 去掉左侧字符
+
+```python
+string = "-----I'm pepper pig.-----"
+lstrip_string = string.lstrip("-")
+print("Original string:", string)
+print("String after stripping:", lstrip_string)
+
+#-------output-------
+Original string: -----I'm pepper pig.-----
+String after stripping: I'm pepper pig.-----
+```
+
+@tab 去掉左侧多种字符
+
+```python
+string = "--!--?-I'm pepper pig.-!---?-"
+lstrip_string = string.lstrip("?-!")
+print("Original string:", string)
+print("String after stripping:", lstrip_string)
+
+#-------output-------
+Original string: --!--?-I'm pepper pig.-!---?-
+String after stripping: I'm pepper pig.-!---?-
+```
+
+
+
+:::
+
+### 4.18 rstrip()
+
+去掉右侧，()内包含的所有字符的连续字符串。
+
+使用方法同 `lstrip()`
+
+
+
+### 4.19 replace()
+
+`.replace(old, newm count)` 括号内第一个位置传入需要替换的 ”旧字符“ ，第二个位置传入要替换的 ”新字符“ ，默认替换全部，count 控制替换次数。
+
+```python
+string = "I'm pepper pig."
+replace_result = string.replace(" ", "!")
+print("原本的字符串:", string)
+print("替换后的字符串:", replace_result)
+
+#-------output-------
+原本的字符串: I'm pepper pig.
+替换后的字符串: I'm!pepper!pig.
+```
 
 
 
