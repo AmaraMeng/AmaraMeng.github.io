@@ -406,7 +406,7 @@ print(a + b)
 
 VScode 的 `theme.ts`文件中找到加密配置，代码如下：
 
-```python
+```python {1,10-12}
  // 加密配置
   encrypt: {
     config: {
@@ -425,3 +425,15 @@ VScode 的 `theme.ts`文件中找到加密配置，代码如下：
 ```
 
 :::
+
+
+
+## 17. 代码块内部渲染
+
+1. 代码内高亮、隐藏等，参见链接 https://shiki.tmrs.site/packages/transformers#transformernotationfocus
+
+2. Typora 的代码块直接着重显示某几行代码：蓝色方框内，python 后花括号 {} 内输入代码行。
+
+    ![示例](./article-typora.assets/image-20250408152526108.png)
+
+    

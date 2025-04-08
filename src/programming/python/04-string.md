@@ -999,7 +999,11 @@ String after stripping: I'm pepper pig.-!---?-
 
 ### 4.19 replace()
 
-`.replace(old, newm count)` 括号内第一个位置传入需要替换的 ”旧字符“ ，第二个位置传入要替换的 ”新字符“ ，默认替换全部，count 控制替换次数。
+`.replace(old, new count)` 括号内第一个位置传入需要替换的 ”旧字符“ ，第二个位置传入要替换的 ”新字符“ ，默认替换全部，count 控制替换次数。
+
+::: code-tabs
+
+@tab 全部替换
 
 ```python
 string = "I'm pepper pig."
@@ -1012,11 +1016,291 @@ print("替换后的字符串:", replace_result)
 替换后的字符串: I'm!pepper!pig.
 ```
 
+@tab count 控制替换次数
+
+```python
+string ="ai-peppapig-ai"
+replace_result = string.replace ("ai", "love", 1)
+print("原本的字符串:", string)
+print("替换后的字符串:", replace_result)
+
+#-------output-------
+原本的字符串: ai-peppapig-ai
+替换后的字符串: love-peppapig-ai
+```
 
 
 
+:::
 
 
+
+### 4.20 split()
+
+`.split(sep, maxsplit)` 以特定字符进行分割，默认空格分割。
+
+若传入参数 `sep` ，则以参数进行分割。
+
+返回的为分割后的列表。
+
+`maxsplit` 用于控制分割次数。
+
+::: code-tabs
+
+@tab 1. 默认空格分割
+
+```python
+string ="I'm peppa pig."
+split_result = string.split()
+print("原本的字符串:", string)
+print("替换后的字符串:", split_result)
+
+#-------output-------
+原本的字符串: I'm peppa pig.
+替换后的字符串: ["I'm", 'peppa', 'pig.']
+```
+
+@tab 2. 指定字符分割
+
+```python
+string ="I'm-peppa-pig."
+split_result = string.split('-')
+print("原本的字符串:", string)
+print("替换后的字符串:", split_result)
+
+#-------output-------
+原本的字符串: I'm-peppa-pig.
+替换后的字符串: ["I'm", 'peppa', 'pig.']
+```
+
+@tab 3. 控制次数分割
+
+```python
+string ="I'm-peppa-pig."
+split_result = string.split( "-", 1)
+print("原本的字符串:", string)
+print("替换后的字符串:", split_result)
+
+#-------output-------
+原本的字符串: I'm-peppa-pig.
+替换后的字符串: ["I'm", 'peppa-pig.']
+```
+
+@tab 4. 返回空字符串
+
+```python
+string ="I'm--------peppa--------pig."
+split_result = string.split("-")
+print("原本的字符串:", string)
+print("替换后的字符串:", split_result)
+
+#-------output-------
+原本的字符串: I'm--------peppa--------pig.
+替换后的字符串: ["I'm", '', '', '', '', '', '', '', 'peppa', '', '', '', '', '', '', '', 'pig.']
+```
+
+
+
+:::
+
+
+
+### 4.21 rsplit()
+
+`.rsplit(sep, maxsplit)` 从字符串右边开始分割。
+
+可以传入参数 `sep` 来指定分隔符。
+
+返回为分割后的列表。
+
+`maxsplit` 用于控制分割次数，默认值为 -1，表示不限制分割次数。
+
+```python
+string ="I'm-peppa-pig."
+rsplit_result = string.rsplit("-",1)
+print("原本的字符串:", string)
+print("替换后的字符串:", rsplit_result)
+
+#-------output-------
+原本的字符串: I'm-peppa-pig.
+替换后的字符串: ["I'm-peppa", 'pig.']
+```
+
+
+
+### 4.22 join()
+
+`.join(iterable)` 将可迭代（指可以继续拆分）对象（如列表、元组等）中的字符串元素连接成一个新的字符串，可以指定连接符。
+
+::: code-tabs
+
+@tab 拼接字符串
+
+```python
+string ="peppapig"
+join_result = '-'.join(string)      #注意语法与前文不同，join括号里是字符串变量，前面为连接符
+print("原本的字符串:", string)
+print("替换后的字符串:", join_result)
+
+#-------output-------
+原本的字符串: peppapig
+拼接后的字符串: p-e-p-p-a-p-i-g
+```
+
+@tab 列表中元素拼接
+
+```python
+string_list = ["I", "am", "peppa", "pig"]
+join_result = "-".join(string_list)
+print("原本的列表:", string_list)
+print("拼接后的列表:", join_result)
+
+#-------output-------
+原本的列表: ['I', 'am', 'peppa', 'pig']
+拼接后的列表: I-am-peppa-pig
+```
+
+
+
+:::
+
+### 4.23 Quiz 1
+
+统计下面字符串中的字数，不包含标点符号、空格、换行，字符串内容如下：
+
+亲爱的黄艳医生：
+
+新年好！时光飞逝，婉棠已经满满长大，我们永远感激您在龙年时给予我们的那份守护和祝福。是您的细心和专业，让我们的家庭迎来了最珍贵的礼物。
+
+蛇年的钟声已敲响，愿新年的每一天都像您的微笑一样温暖，每个夜晚都如您的双手一样安心。感谢您让我们的家充满了欢笑与爱。祝您和家人龙腾虎跃、岁岁平安、幸福安康！
+
+此致
+敬祝新春快乐
+婉棠一家敬上
+
+
+
+答案：
+
+```python
+#[!code focus:13]
+#[!code word:黄艳医生]
+para = """
+亲爱的黄艳医生：
+
+新年好！时光飞逝，婉棠已经满满长大，我们永远感激您在龙年时给予我们的那份守护和祝福。是您的细心和专业，让我们的家庭迎来了最珍贵的礼物。
+
+蛇年的钟声已敲响，愿新年的每一天都像您的微笑一样温暖，每个夜晚都如您的双手一样安心。感谢您让我们的家充满了欢笑与爱。祝您和家人龙腾虎跃、岁岁平安、幸福安康！
+
+此致
+敬祝新春快乐
+婉棠一家敬上
+
+"""
+replace_para1 = para.replace("：", "")
+replace_para2 = replace_para1.replace("！", "")
+replace_para3 = replace_para2.replace("，", "")
+replace_para4 = replace_para3.replace("。", "")
+replace_para5 = replace_para4.replace("、", "")
+replace_para6 = replace_para5.replace("\n", "")
+print(len(replace_para6))
+
+#-------output-------
+153
+```
+
+
+
+## 4.24 字符串格式化
+
+1. 解决重复创建问题
+
+```python
+string = "Hello, peppa pig, I come from China."
+print(string)
+
+string1 = "Hello, "
+name = "peppa pig"
+string2 = ", I come from "
+region = "China"
+string3 = "."
+welcome_sentence = string1 + name + string2 + region + string3
+print(welcome_sentence)
+
+#-------output-------
+Hello, peppa pig, I come from China.
+Hello, peppa pig, I come from China.
+```
+
+但采用上述方法存在”不同数据类型无法相加“的问题，会报错。
+
+::: code-tabs
+
+@tab 不同数据类型无法相加
+
+```python
+string1 = "Hello, "
+name = "peppa pig"
+string2 = ", I come from "
+region = "China"
+string3 = "."
+age = 18
+welcome_sentence = string1 + name + string2 + region + string3 + age
+print(welcome_sentence)
+```
+
+@tab 数据类型转换解决
+
+```python
+string1 = "Hello, "
+name = "peppa pig"
+string2 = ", I come from "
+region = "China"
+string3 = "."
+age = 18
+welcome_sentence = string1 + name + string2 + region + string3 + str(age)
+print(welcome_sentence)
+
+#-------output-------
+Hello, peppa pig, I come from China.18
+```
+
+
+
+:::
+
+2. 更好的解决办法：字符串格式化
+
+    语法：`string = "Hi {}， Welcome to China.".format("peppa pig")` 
+
+    ```python
+    #直接使用
+    string = "Hi {}， Welcome to China.".format("peppa pig")
+    print(string)
+    
+    
+    #借助变量，定好模板
+    template_string = "Hi {}， Welcome to China."
+    formatted_string = template_string.format("peppa pig")
+    print(formatted_string)
+    
+    #-------output-------
+    Hi peppa pig， Welcome to China.
+    Hi peppa pig， Welcome to China.
+    ```
+
+    ```python
+    #填两个值，多个值类似
+    
+    string = "Hi {}， Welcome to {}.".format("peppa pig", "China")
+    print(string)
+    
+    template_string = "Hi {}， Welcome to {}."
+    formatted_string = template_string.format("peppa pig", "China")
+    print(formatted_string)
+    ```
+
+    
 
 
 

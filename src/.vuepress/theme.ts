@@ -143,6 +143,8 @@ export default hopeTheme({
       notationFocus: true,
       highlightLines: true,
       notationHighlight: true,
+      notationErrorLevel: true,
+      notationWordHighlight: true,
       //   langs: ['sql', 'python', 'java', 'javascript', 'c', 'c#', 'c++', 'html', 'css',
       //     'bash', 'rust', 'php', 'r', 'cmd', 'yaml', 'markdown', 'http', 'cmake', 'matlab',
       //     'plsql', 'ini', "fortran-free-form", "fortran-fixed-form", 'go', 'vue', 'tex', 'text', 'csv', 'fish',
