@@ -1213,6 +1213,8 @@ print(len(replace_para6))
 
 ## 4.24 字符串格式化
 
+格式化：按照一定的格式输出。
+
 1. 解决重复创建问题
 
 ```python
@@ -1232,7 +1234,7 @@ Hello, peppa pig, I come from China.
 Hello, peppa pig, I come from China.
 ```
 
-但采用上述方法存在”不同数据类型无法相加“的问题，会报错。
+但采用上述方法存在**”不同数据类型无法相加“**的问题，会报错。
 
 ::: code-tabs
 
@@ -1269,38 +1271,383 @@ Hello, peppa pig, I come from China.18
 
 :::
 
-2. 更好的解决办法：字符串格式化
-
-    语法：`string = "Hi {}， Welcome to China.".format("peppa pig")` 
-
-    ```python
-    #直接使用
-    string = "Hi {}， Welcome to China.".format("peppa pig")
-    print(string)
-    
-    
-    #借助变量，定好模板
-    template_string = "Hi {}， Welcome to China."
-    formatted_string = template_string.format("peppa pig")
-    print(formatted_string)
-    
-    #-------output-------
-    Hi peppa pig， Welcome to China.
-    Hi peppa pig， Welcome to China.
-    ```
-
-    ```python
-    #填两个值，多个值类似
-    
-    string = "Hi {}， Welcome to {}.".format("peppa pig", "China")
-    print(string)
-    
-    template_string = "Hi {}， Welcome to {}."
-    formatted_string = template_string.format("peppa pig", "China")
-    print(formatted_string)
-    ```
+2. 更好的解决办法：字符串格式化，有三种方法，如下。
 
     
+
+### 4.24.1 .format()
+
+**方法一：**语法：`string = "Hi {}， Welcome to China.".format("peppa pig")` 
+
+::: code-tabs
+
+@tab 1. 直接使用
+
+```python
+#直接使用
+string = "Hi {}， Welcome to China.".format("peppa pig")
+print(string)
+
+
+#借助变量，定好模板
+template_string = "Hi {}， Welcome to China."
+formatted_string = template_string.format("peppa pig")
+print(formatted_string)
+
+#-------output-------
+Hi peppa pig， Welcome to China.
+Hi peppa pig， Welcome to China.
+```
+
+@tab 2. 填两个值，多个值类似
+
+```python
+string = "Hi {}， Welcome to {}.".format("peppa pig", "China")
+print(string)
+
+template_string = "Hi {}， Welcome to {}."
+formatted_string = template_string.format("peppa pig", "China")
+print(formatted_string)
+```
+
+@tab 3.  填多个值容易混淆，花括号内写上输入的下标
+
+```python
+string = "Hi {1}， Welcome to {0}.".format("China", "peppa pig")   # 花括号里为输入的下标
+print(string)
+
+template_string = "Hi {1}， Welcome to {0}."
+formatted_string = template_string.format("China", "peppa pig")
+print(formatted_string)
+
+#-------output-------
+Hi peppa pig， Welcome to China.
+Hi peppa pig， Welcome to China.
+```
+
+@tab 4. 花括号内填入变量名更直观
+
+```python
+string = "Hi {name}， Welcome to {region}.".format(region = "China", name = "peppa pig")   # 花括号里为输入的下标
+print(string)
+
+template_string = "Hi {name}， Welcome to {region}."
+formatted_string = template_string.format(region = "China", name = "peppa pig")
+print(formatted_string)
+
+#-------output-------
+Hi peppa pig， Welcome to China.
+Hi peppa pig， Welcome to China.
+```
+
+@tab 4. 不同类型的数据不会报错
+
+```python
+string = "Money is {}.".format(300)   #可以输入多种数据类型，如列表、元组、字典等。
+# string = "This is {}. Money is {}.".format("apple", 300)
+# string = "This is {}. Money is {}.".format("apple", [1, 2, 3])
+# string = "This is {}. Money is {}.".format("apple", (1, 2, 3))
+# string = "This is {}. Money is {}.".format("apple", {"name": "ran", "age": 29, 1: "int"})
+# string = "This is {}. Money is {}.".format("apple", True)
+print(string)
+
+#-------output-------
+Money is 300.
+# This is apple. Money is 300.
+# This is apple. Money is [1, 2, 3].
+# This is apple. Money is (1, 2, 3).
+# This is apple. Money is {"name": "ran", "age": 29, 1: "int"}.
+# This is apple. Money is True.
+```
+
+@tab 5. 输入数字型保留几位小数
+
+```python
+string = "This is {}. Money is {number:.3f}.".format("apple", number = 300)   # :.3f 表示保留3位小数
+print(string)
+
+#-------output-------
+This is apple. Money is 300.000.
+```
+
+
+
+:::
+
+
+
+### 4.24.2 f-string
+
+Python 3.6+ 及以上版本引入了 `f-string` ，可以直接将变量嵌入到字符串中，更加简洁。
+
+通过直接在字符串中嵌入变量来生成格式化字符串。
+
+::: code-tabs
+
+@tab 动态插入变量
+
+```python
+name = "peppapig"
+region = "China"
+string = f"Hi {name}, welcome to {region}!"
+print(string)
+
+#-------output-------
+Hi peppapig, welcome to China!
+```
+
+@tab格式化数值并保留指定小数位
+
+```python
+money = 300
+string = f"Money is {money:.3f}"      #保留3位小数
+print(string)
+
+#-------output-------
+Money is 300.000
+```
+
+
+
+:::
+
+
+
+
+
+### 4.24.3 % 格式化
+
+**方法三：**
+
+在 Python 中，`%` 字符串格式化是一种较老的字符串格式化方式，它虽然已经被更强大和灵活的 `.format()` 方法和 `f-string` 所取代，但在某些场景中仍然会被使用。特别是在一些特殊代码指令中使用的较为频繁，并且处理模板语言、日志格式、旧代码时，`%` 仍然是一个有效选择。
+
+![](./04-string.assets/image-20250411144257303.png)
+
+::: code-tabs
+
+@tab 1. 输入单个数据
+
+```python
+string = "Money is %d."
+new_string = string % 13     # 格式化填写后赋值给变量 new_string
+print(new_string)
+
+
+print(string % 19)           # 直接格式化后输出
+
+
+string = "Money is %d." %300
+print(string)
+
+#-------output-------
+Money is 13.
+Money is 19.
+Money is 300.
+```
+
+@tab 2. 输入多个数据
+
+```python
+string = "Money is %d %s."     #两个百分号中间不需要空格也是可以的，如："Money is %d%s."
+new_string = string % (13, "发大财")
+print(new_string)
+
+
+print(string % (168, "一直发"))        
+
+
+string = "Money is %d%s." % (888, "暴富")
+print(string)
+
+string = "Money is %d %s." % (888, "暴富")
+print(string)
+
+#-------output-------
+Money is 13 发大财.
+Money is 168 一直发.
+Money is 888暴富.
+Money is 888 暴富.
+```
+
+@tab 3. 保留小数位
+
+```python
+string = "Money is %.3f."     #两个百分号中间不需要空格也是可以的，如："Money is %d%s."
+new_string = string % 168
+print(new_string)
+
+print(string % 999)
+
+
+string = "Money is %.3f." % (888)
+print(string)
+
+#-------output-------
+Money is 168.000.
+Money is 999.000.
+Money is 888.000.
+```
+
+
+
+:::
+
+
+
+### 4.24.4 .format() vs. %格式化
+
+::: code-tabs
+
+@tab 问题：语法要求保留{}，.format 做不到
+
+```python
+template = "SELECT * FROM table WHERE column = {}"
+formatted = template.format("value")    # 因为 format 语法中含有{}，因此会被解析，结果中不显示{}
+print(formatted)
+
+#-------output-------
+SELECT * FROM table WHERE column = value    #结果 value 没有{}
+```
+
+@tab 解决：用 %
+
+```python
+template = "SELECT * FROM table WHERE column = {%s}" % "value"
+print(template)
+
+#-------output-------
+SELECT * FROM table WHERE column = {value}
+```
+
+
+
+:::
+
+
+
+### 4.24.5 .format()、%、f-string 优缺点
+
+`.format()` 需要先建立模板，先写好整个句子，将需要填的内容留空，如：`"Hi {}， Welcome to China."`
+
+% 与 `.format()` 类似，也都需要先建立模板。
+
+`f-string` 则不同，需要先给出内容，如：`money = 200`, 然后再建立整个句子 `string = f"Money is {money:.3f}" ` 。
+
+
+
+## 4.25 字符串的不可变性
+
+在不用 `replace` 的情况下，如何修改字符串：
+
+```python
+s = "Hello peppa pig!"
+s[0] = "a"       #由于字符串不可修改，这么写代码会报错
+
+#解决方法：拼接
+s = "Hello peppa pig!"
+new_s = "a" + s[1:]
+print(new_s)
+
+#-------output-------
+aello peppa pig!
+```
+
+## 4.26 转义字符
+
+![](./04-string.assets/image-20250411153545686.png)
+
+::: code-tabs
+
+@tab 
+
+```python
+s = "born\nforthis"
+print(s)
+
+#-------output-------
+born
+forthis
+```
+
+@tab
+
+```python
+s = "born\\nforthis"
+print(s)
+
+#-------output-------
+born\nforthis
+```
+
+@tab
+
+```python
+s = "born!!!\b\b\bforthis"
+print(s)
+
+#-------output-------
+bornforthis
+```
+
+@tab
+
+```python
+s = "born\tfor\tthis"
+print(s)
+
+#-------output-------
+born	for	this
+```
+
+@tab
+
+```python
+print('It\'s a beautiful day!')
+
+#-------output-------
+It's a beautiful day!
+```
+
+@tab
+
+```python
+s = r'born\nfor\tthis'
+print(s)
+
+#-------output-------
+born\nfor\tthis
+```
+
+
+
+:::
+
+## 4.27 字符串的拼接
+
+```python
+s1 = 'peppa'
+s2 = 'pig'
+print(s1 + s2)
+print(s1, s2)
+
+#-------output-------
+peppapig
+peppa pig
+```
+
+
+
+## 4.28 字符串的乘法
+
+```python
+s = '*-love'
+print(s * 10)
+
+#-------output-------
+*-love*-love*-love*-love*-love*-love*-love*-love*-love*-love
+```
+
+
 
 
 
