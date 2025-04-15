@@ -1647,6 +1647,287 @@ print(s * 10)
 *-love*-love*-love*-love*-love*-love*-love*-love*-love*-love
 ```
 
+quiz 1
+
+```python
+输出*-love*-love*-love*-love*-love*-love*-love*-love*-love*-love*
+
+#三种方法
+
+s = '*-love'
+print(s * 10 + '*')
+
+print(s * 10 + s[0])
+
+print(s * 10, end = "*")
+
+```
+
+
+
+## 4.29 input 的使用
+
+1.  input 的使用
+
+::: code-tabs
+
+@tab 基础用法
+
+```python
+user_input = input()
+print(user_input)
+
+#-------output-------
+1234      #此处为输入的内容
+1234
+```
+
+@tab 增加输入提示
+
+```python
+user_input = input("Enter your name: ")
+print(user_input)
+
+#-------output-------
+Enter your name: Ran
+Ran
+```
+
+
+
+:::
+
+2. input 性质：使用``input()` 得到的返回值的类型始终是字符串，无论输入是什么数据类型，以下用 ipython 展示。
+
+```python
+In [1]: type(input(':>>>'))
+:>>>1234
+Out[1]: str
+
+In [2]: type(input(':>>>'))      #使用 type 检测 input 获取用户输入之后的数据类型
+:>>>peppapig
+Out[2]: str
+
+In [3]:  type(input(':>>>'))
+:>>>(1, 2, 3, 4)
+Out[3]: str
+
+In [4]:  type(input(':>>>'))
+:>>>[q, w, e, r]
+Out[4]: str
+
+In [5]:  type(input(':>>>'))
+:>>>True
+Out[7]: str
+
+```
+
+解决方法：
+
+- 方法一：强制转换
+
+经过下方测试发现，强制转换时，只会将输入的全部内容按照字符串处理，分解成单独的字符，按照需要转换的格式输出。若输入是带有格式的，如列表、元组、包含符号等，也会全部按照元素输出。因此，能直接转换的只有数字型、布尔型。但是布尔型成功的原因在于：有输入就会输出 `True` ，没有输入就会显示 `False` 。
+
+（清空前面的输入：Windows：`cls`  ）
+
+```python
+In [2]: n = int(input('>>>:'))
+>>>:123
+
+In [3]: type(input(':>>>'))
+:>>>123
+Out[3]: str
+
+In [4]: type(n)                        #整型
+Out[4]: int
+
+In [5]: n = float(input('>>>:'))
+>>>:1.2
+
+In [6]: type(n)                         #浮点型
+Out[6]: float
+
+In [7]: n = list(input('>>>:'))
+>>>:[1, 2, 'hello world']
+
+In [8]: type(n)
+Out[8]: list
+
+In [9]: print(n)                        #列表
+['[', '1', ',', ' ', '2', ',', ' ', "'", 'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', "'", ']']
+
+In [10]:  n = list(input('>>>:'))
+>>>:123helloworld   
+
+In [11]: print(n)
+['1', '2', '3', 'h', 'e', 'l', 'l', 'o', 'w', 'o', 'r', 'l', 'd']
+
+In [12]: n = tuple(input('>>>:'))
+>>>:(1, 2, 3, 4, "aivc", 1.1, [1, 2, 3, 4])
+
+In [13]: type(n)
+Out[13]: tuple
+
+In [14]: print(n)                       #元组
+('(', '1', ',', ' ', '2', ',', ' ', '3', ',', ' ', '4', ',', ' ', '"', 'a', 'i', 'v', 'c', '"', ',', ' ', '1', '.', '1', ',', ' ', '[', '1', ',', ' ', '2', ',', ' ', '3', ',', ' ', '4', ']', ')')
+
+In [16]:  n = bool(input('>>>:'))
+>>>:True
+
+In [17]: type(n)
+Out[17]: bool
+
+In [18]: print(n)                       #布尔型
+True
+
+In [19]: n = bool(input('>>>:'))        #布尔型输入为空，输出为 False
+>>>:
+
+In [20]: print(n)
+False
+```
+
+
+
+- 方法二：使用 `eval()` 
+
+ `eval()` 可以判断输入的数据类型，但是需要用户输入时带响应的格式，如字符串需要用引号括起来，列表需要方括号 `[]` 等，但交互/发布时，若用户不懂编程语言，则无法输入。
+
+```python
+In [22]: s = eval(input('>>>:'))
+>>>:123
+
+In [23]: type(s), s
+Out[23]: (int, 123)
+
+In [24]: s = eval(input('>>>:'))
+>>>:[1,2,3,4]
+
+In [25]: type(s), s
+Out[25]: (list, [1, 2, 3, 4])
+
+In [26]: s = eval(input('>>>:'))
+>>>:(1, 2, 3, 4, "aivc", 1.1, [1, 2, 3, 4])
+
+In [27]: type(s), s
+Out[27]: (tuple, (1, 2, 3, 4, 'aivc', 1.1, [1, 2, 3, 4]))
+
+In [28]: s = eval(input('>>>:'))
+>>>:{"name": "ran", "age": 29, 1: "int", 1.1: 1, "tup": (1, 2, 3)}
+
+In [29]: type(s), s
+Out[29]: (dict, {'name': 'ran', 'age': 29, 1: 'int', 1.1: 1, 'tup': (1, 2, 3)})
+
+In [30]: s = eval(input('>>>:'))
+>>>:{1, 2, "ran", 1.1, "book", (1, 2, 3), False}
+
+In [31]: type(s), s
+Out[31]: (set, {(1, 2, 3), 1, 1.1, 2, False, 'book', 'ran'})
+
+In [32]: s = eval(input('>>>:'))
+>>>:True
+
+In [33]: type(s), s
+Out[33]: (bool, True)
+
+In [34]: s = eval(input('>>>:'))
+>>>:peppapig
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[34], line 1
+----> 1 s = eval(input('>>>:'))
+
+File <string>:1
+
+NameError: name 'peppapig' is not defined
+
+In [35]: s = eval(input('>>>:'))
+>>>:'peppapig'
+
+In [36]: type(s), s
+Out[36]: (str, 'peppapig')
+```
+
+::: important 探究
+
+为何用 `eval()` 转换数据类型时，输入字符串时需要加引号？
+
+:::
+
+```python
+In [38]: s = input(">>>:")
+>>>:peppapig                      #输入不带引号的字符串，并赋给变量 s
+
+In [39]: s
+Out[39]: 'peppapig'               # s 输出
+
+In [40]: eval(s)                  #假设 eval 能转换的原因在于去掉 'peppapig' 的引号，那么去掉后的 s 是 peppapig 
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[40], line 1
+----> 1 eval(s)
+
+File <string>:1
+
+NameError: name 'peppapig' is not defined           # peppapig 是变量，因此用 eval 转换时，此处报错
+
+In [41]:  s = input(">>>:")              #输入带引号的字符串，并赋给变量 s
+>>>:"peppapig"
+
+In [42]: s
+Out[42]: '"peppapig"'                    # s 输出
+
+In [43]: eval(s)
+Out[43]: 'peppapig'                      # 用 eval 转换时去掉了引号
+
+In [44]: type(s), s
+Out[44]: (str, '"peppapig"')              # 虽然进行了转换，但还未赋值给 s ，因此输出的还是原本的 s 
+
+In [45]: type(eval(s)), eval(s)
+Out[45]: (str, 'peppapig')                #转换后的
+
+In [46]: peppapig = "我是粉色吹风机"         # 若不加引号，peppapig 则是一个变量，先给它赋值
+
+In [47]:  s = input(">>>:")
+>>>:peppapig                               # 输入变量 peppapig
+
+In [48]: s
+Out[48]: 'peppapig'                        # s 只输出 peppapig，并不会输出变量值"我是粉色吹风机"，因为没有转换时 
+                                           # peppapig 只是个字符串，而不是变量名
+
+In [49]: eval(s)                      
+Out[49]: '我是粉色吹风机'                     # 用 eval 进行转换后才会输出变量值
+
+```
+
+`eval()` 小技巧：
+
+获取用户输入，实现两位数加减乘除。
+
+```python
+In [65]: eval(input('>>>:'))
+>>>:1+1
+Out[65]: 2
+
+In [66]: eval(input('>>>:'))
+>>>:1*2
+Out[66]: 2
+
+In [67]: eval(input('>>>:'))
+>>>:3-2
+Out[67]: 1
+
+In [68]: eval(input('>>>:'))
+>>>:9/3
+Out[68]: 3.0
+```
+
+![](./04-string.assets/image-20250415154642973.png)
+
+小试牛刀
+
+![](./04-string.assets/image-20250415154821845.png)
+
 
 
 
