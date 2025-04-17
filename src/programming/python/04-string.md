@@ -1928,6 +1928,54 @@ Out[68]: 3.0
 
 ![](./04-string.assets/image-20250415154821845.png)
 
+**Answer:**
+
+::: code-tabs
+
+@tab split 解决
+
+```python
+num = input()
+num_split = num.split()          #这一步将操作代码命名为一个变量，方便后续重复调用
+num1, num2 = int(num_split[0]), int(num_split[1])
+print(num1 + num2)
+
+#-------output-------
+7 8
+15
+```
+
+@tab eval() 解决
+
+```python
+num = input()
+num_replace = num.replace(' ', "+")
+print(eval(num_replace))
+
+#-------output-------
+7 8
+15
+```
+
+@ split + eval 解决
+
+```python
+string = input()
+num1, num2 = string.split()                 # split 的返回值是列表，可以直接赋值多个变量，但注意此时仍是字符串数据
+print(eval('int(num1) + int(num2)'))        # eval 的特性是去掉引号进行还原，若不强制改变数据类型，则 + 起到的是拼接
+                                            # 作用，因此需要先强制转换，但其实eval()此处可以去掉
+
+#-------output-------
+7 8
+15
+```
+
+
+
+:::
+
+
+
 
 
 

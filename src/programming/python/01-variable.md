@@ -1,5 +1,5 @@
 ---
-title: 1. 变量
+title: 1. 变量和 input
 date: 2025-03-18 15:38:39
 author: Ran
 isOriginal: true
