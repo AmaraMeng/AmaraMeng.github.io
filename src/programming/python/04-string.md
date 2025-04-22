@@ -1,5 +1,5 @@
 ---
-title: 4. 字符串
+title: 4. 字符串和 input
 icon: boke
 date: 2025-03-27 20:02:55
 author: Ran
@@ -1973,6 +1973,104 @@ print(eval('int(num1) + int(num2)'))        # eval 的特性是去掉引号进�
 
 
 :::
+
+
+
+## 4.30 Assignment
+
+![](./04-string.assets/image-20250421205032824.png)
+
+**Answer 01:**
+
+```python
+name = input('Please enter your name: ')
+age = input('Please enter your age: ')
+print(name, 'is a', age+'-year-old Siamese cat.')
+
+#-------output-------
+Please enter your name: Luna
+Please enter your age: 2
+Luna is a 2-year-old Siamese cat.
+```
+
+
+
+![](./04-string.assets/image-20250421211301596.png)
+
+**Answer 02:**
+
+```python
+year = input('Please enter a year you want to estimate (>=2023): ')
+secs = (int(year)-2023)*365*24*60*60
+birth = secs/7
+death = secs/15
+immigrant = secs/42
+emigrant = secs/(1.25*60)
+estimated_population = int(330109174+birth-death+immigrant-emigrant)
+print('The population in the year', year, 'will be', estimated_population)
+
+#-------output-------
+Please enter a year you want to estimate (>=2023): 2042
+The population in the year 2042 will be 382038454
+```
+
+
+
+![](./04-string.assets/image-20250422131431414.png)
+
+
+
+**Answer 03:**
+
+```python
+print('Please enter the number of the coins:')
+num_quarters = int(input('quarters:'))
+num_dimes = int(input('dimes:'))
+num_nickels = int(input('nickels:'))
+num_pennies = int(input('pennies:'))
+total_c = 25*num_quarters + 10*num_dimes + 5*num_nickels + num_pennies
+print('The total is', total_c//100, 'dollar(s)', 'and', total_c%100, 'cent(s).')
+
+#-------output-------
+Please enter the number of the coins:
+quarters:13
+dimes:4
+nickels:11
+pennies:17
+The total is 4 dollar(s) and 37 cent(s).
+```
+
+
+
+![](./04-string.assets/image-20250422133734787.png)
+
+**Answer 04:**
+
+```python
+print('Please enter your amount of dollars and cents, in two separate lines.')
+dollars = int(input())
+cents = int(input())
+total_c = 100*dollars + cents
+num_quarters = total_c// 25
+num_dimes = (total_c % 25) // 10
+num_nickels = ((total_c % 25) % 10) // 5
+num_pennies = total_c - (25*num_quarters + 10*num_dimes + 5*num_nickels)
+print(dollars, 'dollars and', cents, 'cents are:', num_quarters, 'quarters,', num_dimes, 'dimes,', num_nickels, 'nickels, and', num_pennies, 'pennies.')
+
+#-------output-------
+Please enter your amount of dollars and cents, in two separate lines.
+4
+37
+4 dollars and 37 cents are: 17 quarters, 1 dimes, 0 nickels, and 2 pennies.
+```
+
+
+
+
+
+
+
+
 
 
 
