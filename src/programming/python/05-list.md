@@ -630,12 +630,16 @@ print(numbers)
 
 - 字母的排序
 
+默认：大写字母在前，按照字母表顺序排序。
+
 ```python
+letter = ['m', 'e', 'n', 'g', 'p', 'e', 'p', 'p', 'a', 'P', 'I', 'G']
+letter.sort()
+print(letter)
+
+#-------output-------
+['G', 'I', 'P', 'a', 'e', 'e', 'g', 'm', 'n', 'p', 'p', 'p']
 ```
-
-
-
-
 
 
 
