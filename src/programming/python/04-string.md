@@ -2066,17 +2066,87 @@ Please enter your amount of dollars and cents, in two separate lines.
 
 
 
+![](./04-string.assets/image-20250423195427256.png)
+
+**Answer 05 PART A:**
+
+```python
+weight = float(input('Please enter weight in kilograms:'))
+height = float(input('Please enter height in meters:'))
+BMI = weight / (height * height)
+print('BMI is:', round(BMI, 7))
+
+#-------output-------
+Please enter weight in kilograms:50
+Please enter height in meters:1.58
+BMI is: 20.0288415
+```
+
+![](./04-string.assets/image-20250423200819081.png)
+
+**Answer 05 PART B:**
+
+```python
+weight_pounds = float(input('Please enter weight in pounds:'))
+height_inches = float(input('Please enter height in inches:'))
+weight_kg = weight_pounds * 0.453592
+height_m = height_inches * 0.0254
+BMI = weight_kg / (height_m * height_m)
+print('BMI is:', round(BMI, 8))
+
+#-------output-------
+Please enter weight in pounds:135
+Please enter height in inches:71
+BMI is: 18.82846971    #?
+```
+
+![](./04-string.assets/image-20250423205756982.png)
 
 
 
+**Answer 06:**
+
+```python
+import random
+
+level = int(input('What is your level?\n'))
+chance_max = 100-20*(level-1)
+random_num = random.randint(0,100)
+print('Your loot box contains a rare item:', random_num<=chance_max)
+
+#-------output-------
+What is your level?
+5
+Your loot box contains a rare item: True
+```
 
 
 
+![](./04-string.assets/image-20250423212237352.png)
 
+```python
+Semi_days = int(input('Please enter the number of days Semi has worked:'))
+Semi_hours = int(input('Please enter the number of hours Semi has worked:'))
+Semi_mins = int(input('Please enter the number of minutes Semi has worked:'))
+Ollie_days = int(input('Please enter the number of days Ollie has worked:'))
+Ollie_hours = int(input('Please enter the number of hours Ollie has worked:'))
+Ollie_mins = int(input('Please enter the number of minutes Ollie has worked:'))
+Semi_total_mins = Semi_days*24*60 + Semi_hours*60 + Semi_mins
+Ollie_total_mins = Ollie_days*24*60 +Ollie_hours*60 + Ollie_mins
+total_days = (Semi_total_mins + Ollie_total_mins)//(24*60)
+total_hours = ((Semi_total_mins + Ollie_total_mins)%(24*60))//60
+total_mins = (Semi_total_mins + Ollie_total_mins)-total_days*24*60-total_hours*60
+print('The total time both of them worked together is:', total_days, 'days', total_hours, 'hours and', total_mins, 'minutes.')
 
-
-
-
+#-------output-------
+Please enter the number of days Semi has worked:2
+Please enter the number of hours Semi has worked:12
+Please enter the number of minutes Semi has worked:15
+Please enter the number of days Ollie has worked:3
+Please enter the number of hours Ollie has worked:15
+Please enter the number of minutes Ollie has worked:20
+The total time both of them worked together is: 6 days 3 hours and 35 minutes.
+```
 
 
 
