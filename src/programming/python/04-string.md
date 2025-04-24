@@ -1277,7 +1277,7 @@ Hello, peppa pig, I come from China.18
 
 ### 4.24.1 .format()
 
-**方法一：**语法：`string = "Hi {}， Welcome to China.".format("peppa pig")` 
+**方法一：** 语法：`string = "Hi {}， Welcome to China.".format("peppa pig")` 
 
 ::: code-tabs
 
@@ -1983,6 +1983,7 @@ print(eval('int(num1) + int(num2)'))        # eval 的特性是去掉引号进�
 **Answer 01:**
 
 ```python
+#拼接方法
 name = input('Please enter your name: ')
 age = input('Please enter your age: ')
 print(name, 'is a', age+'-year-old Siamese cat.')
@@ -1992,6 +1993,42 @@ Please enter your name: Luna
 Please enter your age: 2
 Luna is a 2-year-old Siamese cat.
 ```
+
+
+
+```python
+# f 方法
+name = input('Please enter your name: ')
+age = input('Please enter your age: ')
+sentence = f'{name} is a {age}-year-old Siamese cat.'
+print(sentence)
+
+#-------output-------
+Please enter your name: Luna
+Please enter your age: 2
+Luna is a 2-year-old Siamese cat.
+```
+
+
+
+```python
+# 。format() 方法
+template_s = "{name} is a {age}-year-old cat."
+formatted_s = template_s.format(name = input('Please enter your name:'), age = input('Please enter your age:'))
+print(formatted_s)
+
+#优化
+name = input('Please enter your name: ')
+age = input('Please enter your age: ')
+print("{} is a {}-year-old cat.".format(name, age))   #此处应该填入变量，不能加引号，加引号是字符串，无法引用input的内容
+
+#-------output-------
+Please enter your name: Luna
+Please enter your age: 2
+Luna is a 2-year-old Siamese cat.
+```
+
+
 
 
 
@@ -2011,7 +2048,33 @@ print('The population in the year', year, 'will be', estimated_population)
 
 #-------output-------
 Please enter a year you want to estimate (>=2023): 2042
-The population in the year 2042 will be 382038454
+The population in the year 2042 will be 382038454       #出现误差
+```
+
+纠正优化：
+
+```python
+# 获取用户输入的年份
+year = int(input('Please enter a year greater than 2023:\n'))
+
+#常量定义，便于之后对当前年份和人口数进行修改
+current_year = 2023
+current_population = 330109174
+seconds_in_year = 365 * 24 * 60 * 60
+
+#变化率
+secs = (year-2023)*365*24*60*60
+birth = secs//7                      #人口是整数，因此此处最好取整
+death = -secs//15
+immigrant = secs//42
+emigrant = -secs//(1.25*60)
+estimated_population = int(current_population+birth+death+immigrant+emigrant)
+print(f'The population in the year {year} is {estimated_population}.')
+
+#-------output-------
+Please enter a year greater than 2023:
+2042
+The population in the year 2042 is 382038453.
 ```
 
 
@@ -2040,6 +2103,49 @@ pennies:17
 The total is 4 dollar(s) and 37 cent(s).
 ```
 
+注意：代码逻辑清晰
+
+修改优化：
+
+```python
+#用户输入提示语
+print('Please enter the number of the coins:')
+
+#获得用户输入，并将其转化为整数
+num_quarters = int(input('quarters:'))
+num_dimes = int(input('dimes:'))
+num_nickels = int(input('nickels:'))
+num_pennies = int(input('pennies:'))
+
+#定义每种硬币的价值（单位：美分）
+value_quarters = 25        #价值25美分
+value_dimes = 10
+value_nickels = 5
+value_pennies = 1
+
+#根据每种硬币的数量和价值计算总价值（单位：美分）
+total_c = value_quarters*num_quarters + value_dimes*num_dimes + \
+          value_nickels*num_nickels + value_pennies*num_pennies
+
+#计算总美元数和美分数
+dollars = total_c//100
+cents = total_c%100
+
+#输出总金额
+print(f'The total is {dollars} dollar(s) and {cents} cent(s).')
+
+
+#-------output-------
+Please enter the number of the coins:
+quarters:13
+dimes:4
+nickels:11
+pennies:17
+The total is 4 dollar(s) and 37 cent(s).
+```
+
+
+
 
 
 ![](./04-string.assets/image-20250422133734787.png)
@@ -2066,6 +2172,43 @@ Please enter your amount of dollars and cents, in two separate lines.
 
 
 
+修改优化：
+
+```python
+#用户输入提示语
+print('Please enter your amount of dollars and cents, in two separate lines.')
+
+#获取用户输入，并转换为整数
+dollars = int(input())
+cents = int(input())
+
+#计算输入总价值 （单位：美分）
+total_c = 100*dollars + cents
+
+
+#计算四种硬币总和最少数量
+num_quarters = total_c// 25
+remaining = total_c % 25
+
+num_dimes = remaining // 10
+remaining = remaining % 10
+
+num_nickels = remaining // 5
+num_pennies = remaining % 5
+
+#输出结果
+print(f'{dollars} dollars and {cents} cents are: {num_quarters} quarters, {num_dimes} dimes, {num_nickels} nickels and {num_pennies} pennies.')
+
+
+#-------output-------
+Please enter your amount of dollars and cents, in two separate lines.
+4
+37
+4 dollars and 37 cents are: 17 quarters, 1 dimes, 0 nickels, and 2 pennies.
+```
+
+
+
 ![](./04-string.assets/image-20250423195427256.png)
 
 **Answer 05 PART A:**
@@ -2082,6 +2225,36 @@ Please enter height in meters:1.58
 BMI is: 20.0288415
 ```
 
+其他保留小数点的方法：
+
+```python
+#保留几位小数可以多种方法
+
+print('BMI is: %.7f' % BMI)
+print(f'BMI is: {BMI:.7f}')
+```
+
+修改优化：
+
+```python
+#请求用户输入体重 （千克）
+weight_kg = float(input('Please enter weight in kilograms:'))
+#请求用户输入身高 （米）
+height_m= float(input('Please enter height in meters:'))
+#调用函数计算BMI
+BMI = weight_kg / (height_m ** 2)
+print(f'BMI is: {BMI}')
+
+#-------output-------
+Please enter weight in kilograms:50
+Please enter height in meters:1.58
+BMI is: 20.028841531805796
+```
+
+
+
+
+
 ![](./04-string.assets/image-20250423200819081.png)
 
 **Answer 05 PART B:**
@@ -2097,8 +2270,34 @@ print('BMI is:', round(BMI, 8))
 #-------output-------
 Please enter weight in pounds:135
 Please enter height in inches:71
-BMI is: 18.82846971    #?
+BMI is: 18.82846971  
 ```
+
+修改优化：
+
+```python
+#请求用户输入体重
+weight_pounds = float(input('Please enter weight in pounds:'))
+#请求用户输入身高
+height_inches = float(input('Please enter height in inches:'))
+
+#将磅转换为千克
+weight_kg = weight_pounds * 0.453592
+#将英寸转换成米
+height_m = height_inches * 0.0254
+
+BMI = weight_kg / (height_m ** 2)
+print(f'BMI is:{BMI}')
+
+#-------output-------
+Please enter weight in pounds:135
+Please enter height in inches:71
+BMI is: 18.828469714070952 
+```
+
+
+
+
 
 ![](./04-string.assets/image-20250423205756982.png)
 
@@ -2119,6 +2318,31 @@ What is your level?
 5
 Your loot box contains a rare item: True
 ```
+
+
+
+其他参考：
+
+```python
+方法一：
+import random
+level = int(input("What is your current level? >>> "))
+# 1 - 100% (5/5), 2 - 80% (4/5), 3 - 60% (3/5), 4 - 40% (2/5), 5 -20% (1/5)
+target = random.randint(1, 6)
+result = target % 5 > (level - 1)
+print(f"Your hoot box contains a rare item: {result}")
+
+
+方法二：
+import random
+random_num = random.randint(1, 100)
+user_message =int(input("What is your level? "))
+possibility = (5 - user_message + 1) * 20
+camparison = random_num <= possibility
+print(f"Your loot box contains a rare item: {camparison}")
+```
+
+
 
 
 
@@ -2146,6 +2370,48 @@ Please enter the number of days Ollie has worked:3
 Please enter the number of hours Ollie has worked:15
 Please enter the number of minutes Ollie has worked:20
 The total time both of them worked together is: 6 days 3 hours and 35 minutes.
+```
+
+
+
+修改优化：
+
+```python
+#获取Semi输入，并转化为整数
+Semi_days = int(input('Please enter the number of days Semi has worked:'))
+Semi_hours = int(input('Please enter the number of hours Semi has worked:'))
+Semi_mins = int(input('Please enter the number of minutes Semi has worked:'))
+
+#获取Ollie输入，并转化为整数
+Ollie_days = int(input('Please enter the number of days Ollie has worked:'))
+Ollie_hours = int(input('Please enter the number of hours Ollie has worked:'))
+Ollie_mins = int(input('Please enter the number of minutes Ollie has worked:'))
+
+#将Semi的工作时间转换成分钟
+Semi_total_mins = Semi_days*24*60 + Semi_hours*60 + Semi_mins
+#将Ollie的工作时间转换成分钟
+Ollie_total_mins = Ollie_days*24*60 +Ollie_hours*60 + Ollie_mins
+
+#计算Semi和Ollie的工作总时间（单位：分钟）
+total_minutes = Ollie_total_mins + Semi_total_mins
+
+
+total_days = total_minutes // (24*60)
+total_hours = total_minutes % (24*60) // 60
+total_mins = total_minutes % (24*60) % 60
+
+
+print(f'The total time both of them worked together is:{total_days} days, {total_hours} hours and {total_mins} minutes.')
+
+
+#-------output-------
+Please enter the number of days Semi has worked:2
+Please enter the number of hours Semi has worked:12
+Please enter the number of minutes Semi has worked:15
+Please enter the number of days Ollie has worked:3
+Please enter the number of hours Ollie has worked:15
+Please enter the number of minutes Ollie has worked:20
+The total time both of them worked together is:6 days, 3 hours and 35 minutes.
 ```
 
 
