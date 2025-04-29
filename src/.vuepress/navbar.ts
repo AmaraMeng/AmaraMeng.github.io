@@ -16,7 +16,7 @@ export default navbar([
   text: "编程", 
   icon: "biancheng-01", 
   children: [
-    {text: "Static website building-blog", icon:"boke", link: "/static-website-blog/"},
+    {text: "Static website building-blog", icon:"boke", link: "/programming/static-website-blog/"},
     {text: "Python", icon: "python", link: "/programming/python/"},
 
   ],
@@ -26,6 +26,6 @@ export default navbar([
 {text: "人工耳蜗", icon: "rengongerwoshenqing", link: "#"},
 {text: "语音学", icon: "shengboyuyinxiaoxi", link: "#"},
 {text: "翻译", icon: "fanyi", link: "#"},
-{text: "运动", icon:"jianshenfang", link: "#"},
+{text: "运动", icon:"jianshenfang", link: "/sports/"},
   
 ]);

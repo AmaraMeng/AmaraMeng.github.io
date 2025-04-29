@@ -290,6 +290,53 @@ VScode 中进入 `navbar.ts` 文件夹修改对应菜单下文章，如上述文
 
 ![文章列表示意](./Static-website-building.assets/1741676906102-73cbe41b-ad7b-4332-a8cc-866279993b29.png)
 
+#### 2.2.8 网页菜单栏—侧边栏对应设置
+
+自动生成侧边栏，侧边栏文章顺序默认按照数字升序排序。
+
+1. 打开 VScode，在 `sidebar.ts` 文件内修改
+
+```python
+import { sidebar } from "vuepress-theme-hope";
+
+export default sidebar({
+    "/": "structure",                  //这是默认 src 文件夹下所有文件夹自动排序
+    "/programming/": "structure",      //编程主菜单栏下自动排序
+    "/sports/": "structure",           //运动主菜单栏下自动排序
+    
+}); 
+```
+
+2. 若需要菜单栏和文件夹/文件夹内的文章对应，则需要手动进行如下操作，优点是网站的侧边栏和文件夹对应，逻辑通畅。
+
+```python
+import { sidebar } from "vuepress-theme-hope";
+
+export default sidebar({
+
+  "/": [                                      // 在 src 文件夹下
+     {
+       text: "Python编程",                     // 名称为“Python编程”
+       icon: "biancheng-01",                  // 图标
+       prefix: "/programming/python",         // 对应的文件夹
+       children: [
+         "01-variable",                       // 第一篇文章
+       ]
+     },
+     {
+       text: "Web",                           
+       icon: "site",
+       prefix: "/static-website-blog/",
+       children: [
+         "article-typora",
+       ]
+     }
+   ]
+});
+```
+
+
+
 ### 2.3. 修改网站配置未生效：
 
 本身 vuepress 是支持热重载，意味着所作的任何修改，都会被自动刷新页面展示，不用手动关闭本地运行再重新启动。（不用重启）。如果修改后发现页面没有显示最新修改的效果，则需要如下操作：
@@ -348,4 +395,19 @@ git commit -m  "初始化网站文件"   # 说明这一次做了什么修改
 
 ![Github界面](./Static-website-building.assets/1741071668878-fcc4be7d-e255-4444-8743-9b8cda42206e.png)
 
+
+
+## 4. 更新网站版本
+
+1. 打开 VScode，找到 `package.json` 文件，找到第11行命令
+
+```python
+"docs:update-package": "pnpm dlx vp-update"
+```
+
+2. 打开终端 termius，在网站文件夹内，输入命令
+
+```python
+D:\Static-Site-Build\pythiaroot.com>pnpm dlx vp-update
+```
 
