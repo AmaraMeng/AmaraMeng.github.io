@@ -21,6 +21,8 @@ export default hopeTheme({
   repo: "AmaraMeng/AmaraMeng.github.io",    //放的 github 的仓库
 
   docsDir: "src",
+  changelog: true,
+  lastUpdated: true,
 
   // 导航栏
   navbar,
