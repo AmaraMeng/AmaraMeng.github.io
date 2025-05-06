@@ -5,6 +5,10 @@ import sidebar from "./sidebar.js";
 
 
 export default hopeTheme({
+  toc: {
+    levels: [1, 6]
+  },
+
   hostname: "https://pythiaroot.com",   //放的自己网站的地址
 
   author: {
