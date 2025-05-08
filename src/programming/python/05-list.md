@@ -1026,6 +1026,146 @@ After 2:
 
 ![](./05-list.assets/image-20250506160023243.png)
 
+## 16. 列表的常用内置函数
+
+![](./05-list.assets/image-20250508140546923.png)
+
+
+
+### 16.1 `map()` 的使用
+
+
+
+```python
+lst = ['1', '2', '3', '4', '5']
+
+# 将 lst 中字符串元素都改成整数型，需要一个个修改
+# lst[0] = int (lst[0])
+# lst[1] = int (lst[1])
+# lst[2] = int (lst[2])
+# lst[3] = int (lst[3])
+# lst[4] = int (lst[4])
+
+#使用 map()
+int_lst = list(map(int, lst))           # map(施加的函数，列表），施加的函数可以是各种数据类型，也可以是自定义的函数
+                                        # map 的输出是  <map object at 0x000001F2F8D843A0>，因此需要转换成列                                           表才能看到其中元素
+print(int_lst)
+
+#-------output-------
+[1, 2, 3, 4, 5]
+```
+
+
+
+## 17. Quiz
+
+**Quiz 1:**
+
+![](./05-list.assets/image-20250508142805385.png)
+
+方法一：
+
+```python
+prices = [100, 180, 260, 310, 40, 695, 535]
+
+# 找出最大值和最小值
+max_price = max(prices)
+min_price = min(prices)
+
+# 找出最大值和最小值的位置
+loc_max_price = prices.index(max_price)
+loc_min_price = prices.index(min_price)
+
+# 输出最大值和位置，输出最小值和位置
+print(f'The max price is {max_price}, and its location is {loc_max_price}. The min price is {min_price}, and its location is {loc_min_price}.')
+
+#-------output-------
+The max price is 695, and its location is 5. The min price is 40, and its location is 4.
+```
+
+方法二：（利用排序完成）
+
+```python
+prices = [100, 180, 260, 310, 40, 695, 535]
+
+sorted_prices = sorted(prices)
+min_price = sorted_prices[0]
+max_price = sorted_prices[-1]           # 从右往左下标不必考虑多少个元素
+
+max_index = prices.index(max_price)
+min_index = prices.index(min_price)
+
+# 输出最大值和位置，输出最小值和位置
+print(f'The max price is {max_price}, and its location is {max_index}. The min price is {min_price}, and its location is {min_index}.')
+
+#-------output-------
+The max price is 695, and its location is 5. The min price is 40, and its location is 4.
+```
+
+
+
+**Quiz 2:** 
+
+![](./05-list.assets/image-20250508144022162.png)
+
+```python
+numbers = [1, 2, 2, 3, 4, 4, 5]
+new_numbers = list(set(numbers))                 #用到了集合的互异性，指的是出现重复的元素会删除
+print(new_numbers)
+
+#-------output-------
+[1, 2, 3, 4, 5]
+```
+
+
+
+**Quiz 3:** 
+
+![](./05-list.assets/image-20250508145654247.png)
+
+假定列表
+
+list1 = [1, 10, 4, 2]
+list2 = [8, 3, 7, 5]
+
+```python
+list1 = [1, 10, 4, 2]
+list2 = [8, 3, 7, 5]
+
+#方法一：拼接
+# list3 = list1 + list2
+# sorted_list3 = sorted(list3)
+
+#方法二
+list1.extend(list2)           # 这一步直接将 list2 插入到 list1 中，直接改变 list1，不需要赋值
+
+sorted_list = sorted(list1)
+print(sorted_list)
+
+#-------output-------
+[1, 2, 3, 4, 5, 7, 8, 10]
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

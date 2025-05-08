@@ -1,6 +1,6 @@
 ---
 home: true
-layout: BlogHome
+layout: Blog
 icon: house
 title: Pythia’s Root
 heroImage: /logo.jpg
