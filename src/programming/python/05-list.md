@@ -42,7 +42,7 @@ student2 = ['Peppa', 'class2', 8, 20250418]
 
 ## 3. 字符串强制转换成列表
 
-当字符串被强制转换成列表时，每个字符都会被拆分成单独的元素，示例如下：
+当字符串被强制转换成列表时，每个字符都会被拆分成单独的元素，也包括 **空格** ，示例如下：
 
 ```python
 user_input = input('>>>:')
@@ -1145,6 +1145,171 @@ print(sorted_list)
 #-------output-------
 [1, 2, 3, 4, 5, 7, 8, 10]
 ```
+
+
+
+
+
+## 18. Assignment
+
+![](./05-list.assets/image-20250513120037494.png)
+
+
+
+A1:
+
+```python
+# 获得用户输入的一串数字，并赋值
+user_input = input('Please enter the list of numbers: ')
+
+# 去除字符串中的逗号和空格
+user_input_replace1 = user_input.replace(',', '')
+user_input_replace2 = user_input_replace1.replace(' ', '')
+
+# 将用户输入的字符串强制转换为列表
+list_input = list(user_input_replace2)
+
+# 将列表中的元素转换为整型
+list_int = list(map(int, list_input))
+
+# 计算输入的列表所有元素的总和
+list_int_sum = sum(list_int)
+
+# 找出输入的列表最大值和最小值，计算无缺失情况下，应该的总和
+sum_standard = (min(list_int)+max(list_int)) * (len(list_int)+1) * 0.5
+
+# 缺失的数字
+missing_number = int(sum_standard - list_int_sum)
+
+# 输出结果
+print(f'The missing number is {missing_number}.')
+
+
+#-------output-------
+Please enter the list of numbers: 1, 2, 3, 4, 6, 7,8
+The missing number is 5.
+```
+
+
+
+![](./05-list.assets/image-20250513130143910.png)
+
+
+
+A2:
+
+```python
+# 获得用户输入
+user_input = input('Please enter a series of numbers separated by commas: ')    #1, 2, 3, 4, 5, 2
+
+# 去除字符串中的逗号和空格
+user_input_replace1 = user_input.replace(',', '')
+user_input_replace2 = user_input_replace1.replace(' ', '')
+
+# 将用户输入的字符串强制转换为列表
+list_input = list(user_input_replace2)
+
+# 将列表中的元素转换为整型
+list_int = list(map(int, list_input))
+
+# 需要旋转的原始列表
+list_original = list_int[:len(list_int)-1]
+
+# 根据最后一个元素获得的旋转位置的下标
+position = list_original.index(list_int[-1])
+
+
+# 将原列表按照位置拆开
+list1 = list_original[:position+1]
+list2 = list_original[position+1:]
+
+# 旋转
+print(f'List {list_original} after left-hand rotation {list2+list1}')
+
+#-------output-------
+Please enter a series of numbers separated by commas: 1, 2, 3, 4, 5, 2
+List [1, 2, 3, 4, 5] after left-hand rotation [3, 4, 5, 1, 2]
+```
+
+
+
+![](./05-list.assets/image-20250513132733361.png)
+
+A3:
+
+```python
+# 浅拷贝
+a = ['我', '是', '小猪佩奇', ['daddy', 'mummy', 'Gorge']]
+b = a.copy()
+
+# 对 b 中的元素进行修改
+b[3][0] = '爸爸猪'
+
+# 输出结果看原始数据 a 是否变化
+print('浅拷贝')
+print(f'edited: {b}')
+print(f'original: {a}')
+
+#-------output-------
+浅拷贝
+edited: ['我', '是', '小猪佩奇', ['爸爸猪', 'mummy', 'Gorge']]
+original: ['我', '是', '小猪佩奇', ['爸爸猪', 'mummy', 'Gorge']]
+```
+
+
+
+```python
+# 深拷贝
+from copy import deepcopy
+
+a = ['我', '是', '小猪佩奇', ['daddy', 'mummy', 'Gorge']]
+c = deepcopy(a)
+
+# 对 c 中的元素进行修改
+c[3][0] = '爸爸猪'
+
+# 输出结果看原始数据 a 是否变化
+print('深拷贝')
+print(f'edited: {c}')
+print(f'original: {a}')
+
+#-------output-------
+深拷贝
+edited: ['我', '是', '小猪佩奇', ['爸爸猪', 'mummy', 'Gorge']]
+original: ['我', '是', '小猪佩奇', ['daddy', 'mummy', 'Gorge']]
+```
+
+
+
+![](./05-list.assets/image-20250513134541923.png)
+
+
+
+A4:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
