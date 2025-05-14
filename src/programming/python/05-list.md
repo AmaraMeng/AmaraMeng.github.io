@@ -1287,15 +1287,94 @@ original: ['我', '是', '小猪佩奇', ['daddy', 'mummy', 'Gorge']]
 
 A4:
 
+```python
+list_input = input('Please enter a list of elements, separated by commas: ') 
+delimiter = input('Please enter the delimiter you wish to use: ')
+replace_list = list_input.replace(',',delimiter)
+print(replace_list)
+
+#-------output-------
+Please enter a list of elements, separated by commas: apple, banana, orange
+Please enter the delimiter you wish to use: ;
+apple; banana; orange
+```
+
+
+
+![](./05-list.assets/image-20250514160742373.png)
+
+
+
+A5:
+
+```python
+# 获得输入
+list_input = input('Enter a list of items separated by commas: ')
+
+# 去掉输入中的空格和逗号
+list_replace1 = list_input.replace(' ', '')
+list_replace2 = list_replace1.replace(',', '')
+
+# 将输入强制转化为列表，并进行浅拷贝
+lst = list(list_replace2)
+lst2 = lst.copy()
+
+# 将拷贝来的列表反转 （因为反转这个函数是直接作用于原列表的）
+lst2.reverse()
+
+# 输出
+print(f'Is the entered list symmetric: {lst == lst2 }.')
+
+#-------output-------
+Enter a list of items separated by commas: 1, 2, 3, 4, 5
+Is the entered list symmetric: False.
+
+Enter a list of items separated by commas: 1, 2, 3, 2, 1
+Is the entered list symmetric: True.
+```
 
 
 
 
 
+![](./05-list.assets/image-20250514163229896.png)
 
 
 
+```python
+# 获得输入
+input_original = input('Enter list elements followed by two positions to swap, all separated by comma: ') # 1, 2, 3, 4, 5, 1, 3
 
+# 利用 .split() 转换成列表；并将元素转换成整型，从而去除空格 （发现问题：只能数字，不能字符）
+# input_split = input_original.split(',')
+# input_int = list(map(int, input_split))
+
+# 去除逗号和空格
+input_replace1 = input_original.replace(',','')
+input_replace2 = input_replace1.replace(' ','')
+
+# 转换成列表
+lst_original = list(input_replace2)
+
+# 获取需要处理的列表和需要交换的元素坐标
+lst = lst_original[:-2]
+index1 = int(lst_original[-2])
+index2 = int(lst_original[-1])
+
+# 需要交换的元素
+change1 = lst[index1]
+change2 = lst[index2]
+
+# 交换
+lst[index1] = change2
+lst[index2] = change1
+
+print(f'List after swapping elements: {lst}.')
+
+#-------output-------
+Enter list elements followed by two positions to swap, all separated by comma: a, b, c, d, e, 0, 3
+List after swapping elements: ['d', 'b', 'c', 'a', 'e'].
+```
 
 
 
