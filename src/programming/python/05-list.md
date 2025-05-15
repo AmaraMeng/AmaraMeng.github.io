@@ -1192,6 +1192,59 @@ The missing number is 5.
 
 
 
+**问题：** 用 `.replace()` 去掉空格以后，数字全部连接在一起，若遇到两位数则会错误，错误示例如下：
+
+```python
+Please enter the list of numbers: 10, 11, 12, 14, 15
+The missing number is 10.             # 结果错误
+```
+
+
+
+ **`.replace()` 用法技巧** （可以连着用）：
+
+```python
+user_input_replace = user_input.replace(',', '').replace(' ', '')
+```
+
+ 
+
+修改：
+
+```python {4-8}
+# 获得用户输入的一串数字，并赋值
+user_input = input('Please enter the list of numbers: ')
+
+# 去除字符串中的空格
+user_input_replace = user_input.replace(' ', '')
+
+# 利用 .split 将字符串切分，同时转化成列表
+list_input = user_input_replace.split(',')
+
+# 将列表中的元素转换为整型
+list_int = list(map(int, list_input))
+
+# 计算输入的列表所有元素的总和
+list_int_sum = sum(list_int)
+
+# 找出输入的列表最大值和最小值，计算无缺失情况下，应该的总和
+sum_standard = (min(list_int)+max(list_int)) * (len(list_int)+1) * 0.5
+
+# 缺失的数字
+missing_number = int(sum_standard - list_int_sum)
+
+# 输出结果
+print(f'The missing number is {missing_number}.')
+
+#-------output-------
+Please enter the list of numbers: 10, 11, 12, 14, 15
+The missing number is 13.
+```
+
+
+
+
+
 ![](./05-list.assets/image-20250513130143910.png)
 
 
@@ -1230,6 +1283,71 @@ print(f'List {list_original} after left-hand rotation {list2+list1}')
 Please enter a series of numbers separated by commas: 1, 2, 3, 4, 5, 2
 List [1, 2, 3, 4, 5] after left-hand rotation [3, 4, 5, 1, 2]
 ```
+
+
+
+修改1：
+
+```python
+# 获得用户输入
+user_input = input('Please enter a series of numbers separated by commas: ')
+
+# 去除字符串中的空格
+user_input_replace = user_input.replace(' ', '')
+
+# .split 按照逗号分割成列表
+list_input = user_input_replace.split(',')
+
+# 将列表中的元素转换为整型
+list_int = list(map(int, list_input))
+
+# 需要旋转的原始列表
+list_original = list_int[:len(list_int)-1]
+
+# 根据最后一个元素获得的旋转的次数（从列表前选几个数后移）
+position = list_int[-1]
+
+
+# 将原列表按照位置拆开
+list1 = list_original[:position+1]
+list2 = list_original[position+1:]
+
+# 旋转
+print(f'List {list_original} after left-hand rotation {list2+list1}')
+
+```
+
+
+
+修改2：
+
+```python
+# 获得用户输入，去除字符串中的空格，.split 按照逗号分割成列表
+user_input = input('Please enter a series of numbers separated by commas: ').replace(' ', '').split(',')
+
+# 将列表中的元素转换为整型
+list_int = list(map(int, user_input))
+
+# 需要旋转的原始列表
+list_original = list_int[:len(list_int)-1]
+
+# 根据最后一个元素获得的旋转的次数（从列表前选几个数后移）
+position = list_int[-1]
+
+# 将原列表按照位置拆开
+list1 = list_original[:position+1]
+list2 = list_original[position+1:]
+
+# 旋转
+print(f'List {list_original} after left-hand rotation {list2+list1}')
+
+```
+
+
+
+遗留问题：无法实现超过下标数的旋转，看能否解决。
+
+
 
 
 
@@ -1301,6 +1419,25 @@ apple; banana; orange
 
 
 
+方法二：
+
+```python
+list_input = input('Please enter a list of elements, separated by commas: ') 
+delimiter = input('Please enter the delimiter you wish to use: ')
+
+# 按照逗号进行分割
+list_split = list_input.split(',')
+
+# 使用 join 再把列表中的元素连接起来
+custom_string = delimiter.join(list_split)
+
+print(custom_string)
+```
+
+
+
+
+
 ![](./05-list.assets/image-20250514160742373.png)
 
 
@@ -1335,9 +1472,24 @@ Is the entered list symmetric: True.
 
 
 
+更优方法：
+
+```python
+# 获得输入
+list_input = input('Enter a list of items separated by commas: ').replace(' ', '').split(',')
+
+is_symmetric = list_input == list_input[::-1]
+
+print(f'Is the entered list symmetric: {is_symmetric}.')
+```
 
 
-![](./05-list.assets/image-20250514163229896.png)
+
+
+
+
+
+![](./05-list.assets/image-20250515145145159.png)
 
 
 
@@ -1377,6 +1529,26 @@ List after swapping elements: ['d', 'b', 'c', 'a', 'e'].
 ```
 
 
+
+优化修改：
+
+```python
+# 获得输入，并去除空格
+input_original = input('Enter list elements followed by two positions to swap, all separated by comma: ') .replace(' ','')
+
+# 转换成列表
+lst_original = input_original.split(',')
+
+# 获取需要处理的列表和需要交换的元素坐标
+lst = lst_original[:-2]
+index1 = int(lst_original[-2])
+index2 = int(lst_original[-1])
+
+# 执行交换
+lst[index1], lst[index2] = lst[index2], lst[index1]
+
+print(f'List after swapping elements: {lst}.')
+```
 
 
 
