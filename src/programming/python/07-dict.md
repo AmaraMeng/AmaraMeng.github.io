@@ -173,17 +173,456 @@ print(d)
 
 
 
+4. 用 `zip()` 函数创建（注意：超出长度会被截断）
+
+```python
+list1 = [1, 2, 3]
+list2 = ['a', 'b', 'c']
+zipped = zip(list1, list2)
+print(dict(zipped))
+
+#-------output-------
+{1: 'a', 2: 'b', 3: 'c'}
+```
 
 
 
+## 5. 访问字典的数据
+
+### 5.1通过 `key` 访问数据
+
+通过 `key` 访问数据，不存在的会报错。
+
+```python
+grade = {'李雷': '98', '韩梅梅': '99'}
+print(grade['李雷'])
+
+#-------output-------
+98
+```
+
+报错举例：
+
+```python
+grade = {'李雷': '98', '韩梅梅': '99'}
+print(grade['马冬梅'])
+
+#-------output-------
+Traceback (most recent call last):
+  File "D:\Coder\test 1\test 1.1.py", line 2, in <module>
+    print(grade['马冬梅'])
+KeyError: '马冬梅'
+```
+
+### 5.2 使用 `.get()` 避免错误
+
+当使用 `.get()` 方法时，需要提供一个键（key），方法会返回与该键关联的值。如果该键在字典中不存在，  `.get()` 方法将返回 `None` ，或者可以自行指定一个默认值，如果键不存在，则返回这个默认值。
+
+基本语法： `value = dictionary.get(key, default_value)`  
+
+其中：
+
+- `key` 是想要检索的键；
+- `default_value`  是键不存在时返回的值（可选）。如果未提供该参数，默认值为 `None` 。
+
+```python
+# 创建字典
+grade = {'李雷': '98', '韩梅梅': '99'}
+
+# 使用 get 访问一个存在的键
+print(grade.get('李雷'))
+
+# 使用 get 访问不存在的键，返回默认值 None
+print(grade.get('马冬梅'))
+
+# 使用 get 访问不存在的键，指定返回值
+print(grade.get('马冬梅', '无结果'))
+
+#-------output-------
+98
+None
+无结果
+```
 
 
 
+## 6. 更新字典的数据
+
+```python
+grade = {'李雷': '98', '韩梅梅': '99'}
+grade['李雷'] = 'aaaaa'
+print(grade)
+
+#-------output-------
+{'李雷': 'aaaaa', '韩梅梅': '99'}
+```
 
 
 
+## 7. 字典元素的添加
+
+同更新字典数据的语法相同，存在的键为修改，不存在的键为添加。
+
+```python
+grade = {'李雷': '98', '韩梅梅': '99'}
+grade['name'] = 'aaaaa'
+print(grade)
+
+#-------output-------
+{'李雷': '98', '韩梅梅': '99', 'name': 'aaaaa'}
+```
 
 
+
+## 8. 字典元素的删除
+
+1. 字典元素删除
+
+```python
+grade = {'李雷': '98', '韩梅梅': '99'}
+grade['name'] = 'aaaaa'
+del grade['李雷']
+print(grade)
+
+#-------output-------
+{'韩梅梅': '99', 'name': 'aaaaa'}
+```
+
+2. 删除整个字典
+
+```python
+grade = {'李雷': '98', '韩梅梅': '99'}
+del grade
+print(grade)
+
+#-------output-------
+Traceback (most recent call last):
+  File "D:\Coder\test 1\test 1.1.py", line 3, in <module>
+    print(grade)
+NameError: name 'grade' is not defined
+```
+
+3. 清空字典
+
+```python
+grade = {'李雷': '98', '韩梅梅': '99'}
+grade.clear()
+print(grade)
+
+#-------output-------
+{}
+```
+
+​	清空字典的场景：
+
+```python
+shopping_cart = {'banana': 2, 'apple': 1, 'orange': 3}
+
+print(f'购物车里有： {shopping_cart}')
+
+shopping_cart.clear()    # 清空购物车
+
+print(f'结账后购物车变成： {shopping_cart}')
+
+#-------output-------
+购物车里有： {'banana': 2, 'apple': 1, 'orange': 3}
+结账后购物车变成： {}
+```
+
+
+
+## 9. 字典结构嵌套字典
+
+在字典当中，我们不仅可以将单一的键值对储存在字典中，还可以将更复杂的数据结构放入字典，比如列表、另一个字典，甚至是字典的列表。这种结构被称为“嵌套”。
+
+Python 中的嵌套结构主要包括：
+
+- 字典列表：将多个字典放在一个列表中。
+- 字典中存储列表：字典的某个键对应的值是一个列表。
+- 字典中存储字典：字典中某个键对应的值是另一个字典。
+
+1. 字典列表
+
+```python
+# 字典列表
+student1 = {'name': '李雷', 'age': 18, 'grade': 98}
+student2 = {'name': '韩梅梅', 'age': 19, 'grade': 99}
+student3 = {'name': '马冬梅', 'age': 18, 'grade': 95}
+students = [student1, student2, student3]
+print(students)
+
+# 提取马冬梅的 grade
+print(students[2].get('grade'))
+
+#-------output-------
+[{'name': '李雷', 'age': 18, 'grade': 98}, {'name': '韩梅梅', 'age': 19, 'grade': 99}, {'name': '马冬梅', 'age': 18, 'grade': 95}]
+95
+```
+
+
+
+2. 字典中存储列表
+
+```python
+favorite_class = {
+    '李雷': ['数学', '英语'],
+    'hanmeimei': ['语文'],
+    'madongmei': ['计算机', '物理', '数学']
+}
+
+# 得到 madongmei 的数学
+print(favorite_class.get('madongmei')[2])
+
+#-------output-------
+数学
+```
+
+
+
+3. 字典中存储字典
+
+```python
+# 用一个字典表示一个学生信息
+student1 = {'name': 'lilei', 'grade': '98', "实验班": True}
+
+# 用一个字典表示全班学生信息
+class1 = {
+    '李雷': {'grade': '98', '实验班': True},
+    '韩梅梅': {'grade': '95', '实验班': False},
+}
+# 提取韩梅梅实验班信息
+print(class1.get('韩梅梅').get('实验班'))
+
+#-------output-------
+False
+```
+
+
+
+## 10. `.pop(key)` 删除指定键值对
+
+`.pop(key)` 方法用于从字典中删除指定的键，并**返回该键对应的值**。
+
+- 如果指定的键存在，它会将该键值对从字典中移除，并返回该键对应的值；
+- 如果指定的键不存在，会抛出 `KeyError` 异常（除非提供默认值）。
+
+键存在：
+
+```python
+class1 = {
+    '李雷': {'grade': '98', '实验班': True},
+    '韩梅梅': {'grade': '95', '实验班': False},
+}
+
+r = class1.pop('李雷')
+print(r)
+print(class1)
+
+#-------output-------
+{'grade': '98', '实验班': True}
+{'韩梅梅': {'grade': '95', '实验班': False}}
+```
+
+键不存在
+
+```python
+class1 = {
+    '李雷': {'grade': '98', '实验班': True},
+    '韩梅梅': {'grade': '95', '实验班': False},
+}
+
+r = class1.pop('马冬梅', '无结果')
+print(r)
+print(class1)
+
+#-------output-------
+无结果
+{'李雷': {'grade': '98', '实验班': True}, '韩梅梅': {'grade': '95', '实验班': False}}
+```
+
+
+
+## 11. `.popitem()`
+
+`popitem()` 用于移除并返回字典中的最后一个键值对。该方法会修改原字典，且删除的是最后插入的键值对。
+
+**关键点： **
+
+- 删除最后一项： `popitem` 从字典中移除并返回最后插入的键值对；
+- 返回值：返回一个包含键和值的元组 `(key, value)` ；
+- 修改原字典：使用 `popitem`  会修改原字典；
+- 空字典报错：如果字典为空，调用 `popitem`  会引发 `KeyError` 异常。
+
+
+
+```python
+student = {'name': 'lilei', 'grade': '98', "实验班": True}
+
+# 使用 popitem 移除并返回最后一个键值对
+del_value = student.popitem()
+print(f'删除的键值对是： {del_value}')
+print(f'删除后的字典是： {student}')
+
+# 在进行删除，原列表也会变化
+del_value = student.popitem()
+print(f'再删除后的字典是： {student}')
+
+#-------output-------
+删除的键值对是： ('实验班', True)
+删除后的字典是： {'name': 'lilei', 'grade': '98'}
+再删除后的字典是： {'name': 'lilei'}
+```
+
+
+
+## 12. `.keys()`
+
+`.keys()` 用来获取字典中全部的键。
+
+```python
+student = {'name': 'lilei', 'grade': '98', "实验班": True}
+
+keys = student.keys()
+print(keys)
+print(list(keys))
+
+#-------output-------
+dict_keys(['name', 'grade', '实验班'])
+['name', 'grade', '实验班']
+```
+
+
+
+## 13. `.values()`
+
+ `.values()`  用来获取字典中全部的值。
+
+```python
+student = {'name': 'lilei', 'grade': '98', "实验班": True}
+
+values = student.values()
+print(values)
+print(list(values))
+
+#-------output-------
+dict_values(['lilei', '98', True])
+['lilei', '98', True]
+```
+
+
+
+## 14. `XX in dictionary` 判断键是否在字典内
+
+```python
+student = {'name': 'lilei', 'grade': '98', "实验班": True}
+print('name' in student)
+print('lilei' in student)
+
+#-------output-------
+True
+False
+```
+
+因此 `value in dictionary`  判断的是**键** 是否在字典内。
+
+？如何判断值是否在字典内？
+
+```python
+student = {'name': 'lilei', 'grade': '98', "实验班": True}
+print('lilei' in student.values())
+
+#-------output-------
+True
+```
+
+
+
+## 15. `.update()` 批量更新
+
+- 用法一
+
+```python
+student = {'name': 'lilei', 'age': 19}
+
+# 单个添加
+student['gender'] = 'male'
+student['class'] = 'class 1'
+print(student)
+
+# 批量添加
+dict1 = {'name': 'lilei', 'age': 19}
+dict2 = {'age': 20, 'gender': 'male', 'class': '1班'}
+dict1.update(dict2)
+print(dict1)
+
+#-------output-------
+{'name': 'lilei', 'age': 19, 'gender': 'male', 'class': 'class 1'}
+{'name': 'lilei', 'age': 20, 'gender': 'male', 'class': '1班'}
+```
+
+- 用法二
+
+```python
+dict1 = {'name': 'lilei', 'age': 19}
+dict1.update(name = 'aiyuechuang', age = 20)
+print(dict1)
+
+#-------output-------
+{'name': 'aiyuechuang', 'age': 20}
+```
+
+- 用法三
+
+```python
+student = {'name': 'lilei', 'age': 19}
+data_lst = [('age', 20), ('class', '1班'), ('gender', 'male')]   # 也可以用元组嵌套或zip
+student.update(data_lst)
+print(student)
+
+#-------output-------
+{'name': 'lilei', 'age': 20, 'class': '1班', 'gender': 'male'}
+```
+
+用 zip 的示例：
+
+```python
+student = {'name': 'lilei', 'age': 19}
+pairs = zip(['name', 'age'], ['李雷', 20])
+student.update(pairs)
+print(student)
+
+#-------output-------
+{'name': '李雷', 'age': 20}
+```
+
+注意：值相同会覆盖。
+
+使用场景：
+
+```python
+# 默认配置
+default_config = {
+    'theme': 'light',
+    'front_size': 12,
+    'language': 'zh-cn',
+    'auto_save': True
+}
+
+
+# 用户配置
+user_config = {
+    'theme': 'dark',
+    'front_size': 14
+}
+
+# 合并配置：用户配置覆盖默认配置
+default_config.update(user_config)
+
+print(default_config)
+
+#-------output-------
+{'theme': 'dark', 'front_size': 14, 'language': 'zh-cn', 'auto_save': True}
+```
 
 
 
