@@ -626,6 +626,272 @@ print(default_config)
 
 
 
+## 16. Quiz:
+
+![](./07-dict.assets/image-20250522140519981.png)
+
+Answer:
+
+```python
+# 获取用户输入
+lst_input = input('Please enter your list: ')
+value_input = input('Please enter your value: ')
+
+# 将 lst 和 value 转化成列表和元组
+lst = lst_input.split('/')
+value_mid = tuple(value_input.split('-'))
+value = tuple(map(int, value_mid))
+
+
+# 用 zip 将两组数据合并成一个字典
+dict_new = dict(zip(lst, value))
+
+# 创建原字典
+dict_original = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}
+
+# 更新原字典
+dict_original.update(dict_new)
+
+# 输出更新过的原字典
+print(f'updated dictionary: {dict_original}')
+
+#-------output-------
+Please enter your list: a/b/c
+Please enter your value: 13-14-19
+updated dictionary: {'a': 13, 'b': 14, 'c': 19, 'd': 4, 'e': 5, 'f': 6}
+```
+
+
+
+优化：
+
+```python
+# 上方代码 line 7-8 可合并
+value = tuple(map(int，value_input.split('-'))
+```
+
+
+
+## 17. 字典的排序
+
+1. 用 `sorted`  默认排序
+
+```python
+dict1 = {'a': 1, 'b': 2, 'c': 3}
+sorted_dict = sorted(dict1.items())      # 默认升序排序（以 key 排序）
+print(sorted_dict)
+
+#-------output-------
+[('a', 1), ('b', 2), ('c', 3)]
+```
+
+用 控制变量法 验证按照 key 并非 value 排序，即修改 value 使其无序。
+
+2. 指定按照 `key` 排序
+
+```python
+# 指定以 key 排序
+dict1 = {'a': 1, 'd': 4, 'b': 2, 'c': 3}
+sorted_dict = sorted(dict1.items(), key=lambda x: x[0])
+print(sorted_dict)
+
+to_dict = dict(sorted_dict)
+print(to_dict)
+
+#-------output-------
+[('a', 1), ('b', 2), ('c', 3), ('d', 4)]
+{'a': 1, 'b': 2, 'c': 3, 'd': 4}
+```
+
+`key=lambda x: x[0]` 的结构讲解：
+
+`x` 表示 `sorted()` 之后得到的嵌套列表中的每个元组，也可以用其他符号表示；因此 `x[0]` 指的是元组的 0 号位，即 `key` 。（需要注意，代码中的  `key`  指的不是字典里的  `key`  。
+
+3. 指定按照 `value` 排序
+
+```python
+# 指定以 key 排序
+dict1 = {'a': 1, 'd': 4, 'b': 2, 'c': 3}
+sorted_dict = sorted(dict1.items(), key=lambda x: x[1])
+print(sorted_dict)
+
+to_dict = dict(sorted_dict)
+print(to_dict)
+
+#-------output-------
+[('a', 1), ('b', 2), ('c', 3), ('d', 4)]
+{'a': 1, 'b': 2, 'c': 3, 'd': 4}
+```
+
+4. 字典的降序排列
+
+将上述代码中的 line 3 修改如下：
+
+```python
+sorted_dict = sorted(dict1.items(), key=lambda x: x[1], reverse=True)
+```
+
+或者增加代码，用来倒序取列表，如下：
+
+```python
+sorted_dict = sorted(dict1.items(), key=lambda x: x[1])
+reversed_sorted_dict = sorted_dict[::-1]
+```
+
+
+
+Quiz:
+
+![](./07-dict.assets/image-20250522144935171.png)
+
+```python
+lst = [('a', 'dog'), ('c', 'blue'), ('b', 'cat'), ('e', 'eye'), ('d', 'apple')]
+sorted_lst = sorted(lst, key=lambda x: x[1])
+print(sorted_lst)
+
+#-------output-------
+[('d', 'apple'), ('c', 'blue'), ('b', 'cat'), ('a', 'dog'), ('e', 'eye')]
+```
+
+若列表嵌套的元组有三个元素 `lst = [('a', 5, 'Apple'), ('c', 3, 'Cat'), ('b', 4, 'Blue'), ('e', 1, 'Eye'), ('d', 2, 'Dog')]` ，需要按照元组中的第三项排序，则将上述代码中 line 2 的 `x[1]` 修改为 `x[2]` ，即按照几号位排序，就将方括号内的数字改为几号位。修改后的代码如下：
+
+```python
+sorted_lst = sorted(lst, key=lambda x: x[2])
+```
+
+## 18. 字典的深浅拷贝
+
+### 18.1 浅拷贝
+
+```python
+original = {'a': 1, 'b': [2,3]}
+after = original
+
+original_id = id(original)
+after_id = id(after)
+
+after['a'] = 19
+print(f'original = {original}')
+print(f'after = {after}')
+print(f'original_id: {original_id}, after_id: {after_id}')
+print(f'original == after: {original == after}')
+
+#-------output-------
+original = {'a': 19, 'b': [2, 3]}
+after = {'a': 19, 'b': [2, 3]}
+original_id: 2847364977472, after_id: 2847364977472
+original == after: True
+```
+
+
+
+![](./07-dict.assets/image-20250522150656178.png)
+
+
+
+`.copy()` 的浅拷贝
+
+```python
+original = {'a': 1, 'b': [2,3]}
+after = original.copy()
+after['a'] = 19
+print(f'original = {original}')
+print(f'after = {after}')
+
+#-------output-------
+original = {'a': 1, 'b': [2, 3]}
+after = {'a': 19, 'b': [2, 3]}
+```
+
+上述代码看似修改 after 没有影响 original ，但是其中的列表部分依旧是浅拷贝。
+
+修改前如下：
+
+![](./07-dict.assets/image-20250522151116670.png)
+
+
+
+修改后如下：
+
+![](./07-dict.assets/image-20250522151204682.png)
+
+修改列表中的元素时就会出现问题：
+
+```python
+original = {'a': 1, 'b': [2,3]}
+shallow_copy= original.copy()
+shallow_copy['b'].append(4)
+print(f'original: {original}')
+print(f'shallow copy: {shallow_copy}')
+
+#-------output-------
+original: {'a': 1, 'b': [2, 3, 4]}
+shallow copy: {'a': 1, 'b': [2, 3, 4]}
+```
+
+
+
+### 18.2 深拷贝
+
+```python
+import copy
+
+original = {'a': 1, 'b': [2,3]}
+deep_copy= copy.deepcopy(original)
+deep_copy['b'].append(4)
+print(f'original: {original}')
+print(f'deep copy: {deep_copy}')
+
+#-------output-------
+original: {'a': 1, 'b': [2, 3]}
+deep copy: {'a': 1, 'b': [2, 3, 4]}
+```
+
+![](./07-dict.assets/image-20250522151929541.png)
+
+
+
+Quiz:
+
+![](./07-dict.assets/image-20250522152041139.png)
+
+
+
+```python
+students = {
+    'Alice': (20, 85),       # 'name': (age, grade)
+    'Bob': (22, 90),
+    'Charlie': (21, 88),
+}
+sorted_students = dict(sorted(students.items(), key=lambda x: x[1][1]))
+sorted_names = sorted_students.keys()
+print(list(sorted_names))
+
+#-------output-------
+['Alice', 'Charlie', 'Bob']
+```
+
+
+
+![](./07-dict.assets/image-20250522152857184.png)
+
+```python
+scores = {
+    'Alice': 78,
+    'Bob': 85,
+    'Charlie': 92,
+    'Dennis': 88,
+}
+sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+print(sorted_scores[0][0])
+
+#-------output-------
+Charlie
+```
+
+课后作业：
+
+![](./07-dict.assets/image-20250522153426339.png)
 
 
 
@@ -633,8 +899,5 @@ print(default_config)
 
 
 
-
-
-
-
+![](./07-dict.assets/image-20250522153443458.png)
 
