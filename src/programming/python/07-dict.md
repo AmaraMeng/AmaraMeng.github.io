@@ -895,9 +895,41 @@ Charlie
 
 
 
+Answer：
+
+```python
+population = {
+    'cityA': 15000,
+    'cityB': 30000,
+    'cityC': 12000
+}
+sorted_population = sorted(population.items(), key=lambda x: x[1])
+print(sorted_population[0])
+
+#-------output-------
+('cityC', 12000)
+```
+
 
 
 
 
 ![](./07-dict.assets/image-20250522153443458.png)
+
+Answer:
+
+```python
+prices = {
+    'apple': 10,
+    'banana': 8,
+    'cherry': 12,
+    'date': 6
+}
+sorted_prices = sorted(prices.items(), key=lambda x: x[1])
+del prices[sorted_prices[-1][0]]
+print(prices)
+
+#-------output-------
+{'apple': 10, 'banana': 8, 'date': 6}
+```
 
