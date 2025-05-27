@@ -1104,6 +1104,8 @@ print("替换后的字符串:", split_result)
 
 注意：第4种情况，遇到连续的分割字符时，若指定分割字符，则会返回空字符串，因此需要注意，因为默认是空格分割，因此不需要空字符串时直接默认即可。
 
+具体使用中遇到的情况参见： https://pythiaroot.com/programming/python/08-set.html#_16-%E5%B0%8F%E8%AF%95%E7%89%9B%E5%88%80
+
 ### 4.21 rsplit()
 
 `.rsplit(sep, maxsplit)` 从字符串右边开始分割。

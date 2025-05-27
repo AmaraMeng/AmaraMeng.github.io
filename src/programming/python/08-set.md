@@ -406,7 +406,7 @@ print(tasks)
 set()
 ```
 
-
+也可以参考前文创建一个空的集合：[创建空集](#_7-如何创建空集)
 
 ## 14. 关系判断
 
@@ -535,6 +535,63 @@ print(len(s_set))
 {'over', 'brown', 'fox', 'the', 'dog', 'quick', 'jumps', 'lazy'}
 8
 ```
+
+
+
+
+
+课后作业：
+
+![](./08-set.assets/image-20250527161040501.png)
+
+
+
+Answer:
+
+```python
+# 获取输入
+set1_input = input('Enter set 1: ')
+set2_input = input('Enter set 2: ')
+
+# 序列有数字/字符串/其他情况，需要考虑用户是否按照 1, 2, 3 这种格式输入，而不会出现 1,2, 3，因此第一步直接去掉空格
+set1 = set(set1_input.replace(' ', '').split(','))
+set2 = set(set2_input.replace(' ', '').split(','))
+
+# 只存在于set1，不存在于 set2，用差集
+unique_to_set1 = set1.difference(set2)
+
+print(unique_to_set1)
+
+#-------output-------
+Enter set 1: 1, 2, 3,4, 5
+Enter set 2: 4, 5, 6, 7
+{'1', '3', '2'}
+```
+
+
+
+![](./08-set.assets/image-20250527162848633.png)
+
+
+
+```python
+numbers = {2, 5, 9, 1, 7}
+sorted_numbers = sorted(numbers)     # 这一步返回的是列表
+num_max= sorted_numbers[-1]
+num_min= sorted_numbers[0]
+print((num_min, num_max))
+
+#-------output-------
+(1, 9)
+```
+
+
+
+
+
+
+
+
 
 
 
