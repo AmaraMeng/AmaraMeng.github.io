@@ -1,5 +1,5 @@
 ---
-title: 4. 字符串和 input
+title: 04. 字符串和 input
 icon: boke
 date: 2025-03-27 20:02:55
 author: Ran

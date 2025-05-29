@@ -1,5 +1,5 @@
 ---
-title: 8. 集合
+title: 08. 集合
 icon: boke
 date: 2025-05-22 15:35:36
 author: Ran
@@ -570,6 +570,17 @@ Enter set 2: 4, 5, 6, 7
 
 
 
+优化：
+
+增加一步代码，将字符串类型修改为整型。
+
+```python
+set1 = set(map(int, set1))
+set2 = set(map(int, set2))
+```
+
+
+
 ![](./08-set.assets/image-20250527162848633.png)
 
 
@@ -586,6 +597,19 @@ print((num_min, num_max))
 ```
 
 
+
+其他方法：
+
+```python
+numbers = {2, 5, 9, 1, 7}
+
+# 使用内置的 min 和 max 函数找到集合中的最大值和最小值
+result_tup = (min(numbers), max(numbers))
+print(result_tup)
+
+#-------output-------
+(1, 9)
+```
 
 
 

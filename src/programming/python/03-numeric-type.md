@@ -1,5 +1,5 @@
 ---
-title: 3. 数字型
+title: 03. 数字型
 icon: boke
 date: 2025-03-25 15:51:56
 author: Ran

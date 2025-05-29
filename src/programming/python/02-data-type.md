@@ -1,5 +1,5 @@
 ---
-title: 2. 初识数据类型
+title: 02. 初识数据类型
 icon: boke
 date: 2025-03-20 14:46:33
 author: Ran
