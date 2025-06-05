@@ -215,7 +215,47 @@ print(f"从{min_num}到{max_num}的和是{total}")
 
 
 
+### 5.1 尝试解决过程出现的错误
+
+**错误1：** 
+
+以下为尝试阶段的代码，出现不停循环的问题：
+
+```python
+num_input = input("请输入数字：")
+
+is_digit = False
+
+while not is_digit:
+    if num_input.isdigit():
+        print("输入不合法，请重新输入数字或退出程序")
+    elif num_input.find(".") == -1:
+        num_input = int(num_input)
+        print(f"该数字是整数: {num_input}, 类型为{type(num_input)}")
+        is_digit = True
+    elif num_input.find(".") != -1:
+        num_input = float(num_input)
+        print(f"该数字是浮点数：{num_input}，类型为 {type(num_input)}")
+        is_digit = True
+```
+
+原因在于，获取用户输入写在最开始，若输入的不是数字，则会执行 `print("输入不合法，请重新输入数字或退出程序")` ，因为 `while` 循环中不包括重新输入 `input` 这条命令，`num_input.isdigit()` 的状态不变，`is_digit` 的状态也不变，就会一直循环下去。
+
+修改如下：
+
+```python
+is_digit = False
+
+while not is_digit:
+    num_input = input("请输入数字：")
+    if not num_input.isdigit():
+        print("输入不合法，请重新输入数字或退出程序")
+    else:
+        print("是数字")
+        is_digit = True
+```
 
 
 
+**错误2：** 
 
