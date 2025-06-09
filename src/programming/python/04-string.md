@@ -88,7 +88,7 @@ print(string)
     凡是你不能清晰写下来的东西，都是你还没有真正理解的东西
     ```
 
-## 2. 字符串的长度
+## 2. 字符串的长度 `len()`
 
 ```python
 paragraph = "Hello, Ran!"
@@ -212,7 +212,7 @@ print(len(paragraph))
 
 ## 4. 字符串的内置方法
 
-### 4.1 upper()
+### 4.1 .upper()
 
 将字符串内容全部变为大写。
 
@@ -225,7 +225,7 @@ print(upper_string)
 BORNFORTHIS
 ```
 
-### 4.2 lower()
+### 4.2 .lower()
 
 将字符串内容全部变为小写。
 
@@ -238,7 +238,7 @@ print(lower_string)
 bornforthis
 ```
 
-### 4.3 capitalize()
+### 4.3 .capitalize()
 
 将字符串首字母大写。（只对第一个字母大写，其他后面的字母变为小写）
 
@@ -251,9 +251,9 @@ print(capitalize_string)
 Bornforthis to aivc
 ```
 
-### 4.4 title()
+### 4.4 .title()
 
-将字符串中每个单词的首字母大写，其余字符都转换成小写。
+将字符串中每个单词的==首字母大写==，其余字符都转换成小写。
 
 ::: code-tabs
 
@@ -294,9 +294,9 @@ Bornforthis To Aivc
 
 :::
 
-### 4.5 startswith()
+### 4.5 .startswith()
 
-检测字符串是否以特定字符或单词开头，返回布尔值。
+检测字符串是否以特定字符或单词开头，返回布尔值（若是该字符开头，则返回 True ，若不是则返回 False 。
 
 ::: code-tabs
 
@@ -348,7 +348,7 @@ False
 
 :::
 
-### 4.6 endswith()
+### 4.6 .endswith()
 
 检测字符串是否以特定的字符或单词结尾，返回布尔值。
 
@@ -362,7 +362,7 @@ endswith_string= string.endswith("s")
 print(endswith_string)
 
 #-------output-------
-Ture
+True
 ```
 
 @tab 2. 是否 is 结尾
@@ -373,7 +373,7 @@ endswith_string= string.endswith("is")
 print(endswith_string)
 
 #-------output-------
-Ture
+True
 ```
 
 @tab 3. 是否 i 结尾
@@ -402,9 +402,9 @@ False
 
 :::
 
-### 4.7 count()
+### 4.7 .count()
 
-统计特定字符或单词在目标字符串中存在的次数。
+统计特定字符或单词在目标字符串中存在的次数，若在目标字符串中不存在，则输出 0。
 
 ::: code-tabs
 
@@ -456,13 +456,13 @@ print(count_string)
 
 :::
 
-### 4.8 find()
+### 4.8 .find()
 
-寻找目标字符或单词在特定字符串中，第一次出现的下标。也就是说，有重复，也之返回第一次出现的下标；
+寻找目标字符或单词在特定字符串中，第一次出现的下标。也就是说，有重复，也之返回==第一次出现==的下标；
 
-若查找单词，则返回目标单词第一个字符的下标；
+若查找单词，则返回==目标单词第一个字符==的下标；
 
-若查询的内容不存在，则返回 `-1`。
+若查询的内容不存在，则返回 `-1`  。
 
 ::: code-tabs
 
@@ -514,11 +514,11 @@ print(find_string)
 
 :::
 
-### 4.9 index()
+### 4.9 .index()
 
-寻找目标字符或单词在特定字符串中，第一次出现的下标。如果是查找单词，那么 `index()` 返回目标单词的第一个字符下标。
+寻找目标字符或单词在特定字符串中，第一次出现的下标。如果是查找单词，那么 `index()` 返回==目标单词的第一个字符==下标。
 
-如果查询的字符或单词不存在，则报错。
+如果查询的字符或单词==不存在==，则==报错==。
 
 ::: info index()  vs.  find()
 
@@ -559,6 +559,12 @@ Traceback (most recent call last):
 ValueError: substring not found
 ```
 
+:::
+
+
+
+::: code-tabs
+
 @tab 3. 子字符串 for 第一次出现的位置
 
 ```python
@@ -593,6 +599,8 @@ ValueError: substring not found
 :::  note 使用场景
 
 ```python
+# 通过符号 . 的下标提取文件名和后缀
+
 string = "Experiment-record.xlsx"
 index_result = string.index('.')
 filename = string[:index_result]
@@ -610,6 +618,8 @@ xlsx
 ::: note 使用场景练习
 
 ```python
+# 根据要提取的内容，检索左侧和右侧内容下标，确定提取的 start 和 end
+
 line = "ID=1234;NAME=Tom;AGE=25"
 name_start = line.index('NAME=')
 name_end = line.index(';AGE')
@@ -629,9 +639,11 @@ Tom
 
 :::
 
-### 4.10 isdigit()
+### 4.10 .isdigit()
 
-判断字符串是不是纯数字字符串，字符串中但凡有个字符是非数字，则返回 False 。
+判断字符串是不是纯数字字符串，字符串中但凡有个字符是非数字，则返回 False （若输入的是负数，依旧带负号 `-` ，因此会判断为 False ）。
+
+
 
 ::: code-tabs
 
@@ -663,7 +675,7 @@ False
 
 
 
-### 4.11 isalpha()
+### 4.11 .isalpha()
 
 判断字符串是不是纯字母字符串，字符串中但凡有一个非字母的，则返回 False 。
 
@@ -697,7 +709,7 @@ False
 
 
 
-### 4.12 isalnum()
+### 4.12 .isalnum()
 
 判断字符串是否纯数字、纯字母、纯数字字母字符串，字符串中如果包含任何非数字或字母字符，则返回 False 。
 
@@ -729,7 +741,7 @@ False
 
 :::
 
-### 4.13 isupper()
+### 4.13 .isupper()
 
 判断字符串是否全大写字母组成。
 
@@ -783,7 +795,7 @@ False
 
 :::
 
-### 4.14 islower()
+### 4.14 .islower()
 
 判断字符串是否全小写字母组成。
 
@@ -826,13 +838,13 @@ False
 
 :::
 
-### 4.15 isspace()
+### 4.15 .isspace()
 
-判断字符串是否全部由空格组成。
+判断字符串是否全部由空格组成，注意区分==空格==字符串和==空==字符串。
 
 ::: code-tabs
 
-@tab **空格**字符串
+@tab 空格字符串
 
 ```python
 input1 = "   "
@@ -843,7 +855,7 @@ print(isspace_input1)
 True
 ```
 
-@tab **空**字符串
+@tab 空 字符串
 
 ```python
 input1 = ""
@@ -869,9 +881,9 @@ False
 
 :::
 
-### 4.16 strip()
+### 4.16 .strip()
 
-
+- 字符串前后需要清除的内容相同
 
 ::: code-tabs
 
@@ -904,6 +916,10 @@ String after stripping: I'm pepper pig.
 
 
 :::
+
+
+
+- 需要清除的内容不同
 
 ::: code-tabs
 
@@ -939,7 +955,7 @@ String after stripping: I'm pepper pig.
 
 
 
-### 4.17 lstrip()
+### 4.17 .lstrip()
 
 去掉左侧，()内包含的所有字符的连续字符串。
 
@@ -988,7 +1004,7 @@ String after stripping: I'm pepper pig.-!---?-
 
 :::
 
-### 4.18 rstrip()
+### 4.18 .rstrip()
 
 去掉右侧，()内包含的所有字符的连续字符串。
 
@@ -996,7 +1012,7 @@ String after stripping: I'm pepper pig.-!---?-
 
 
 
-### 4.19 replace()
+### 4.19 .replace()
 
 `.replace(old, new count)` 括号内第一个位置传入需要替换的 ”旧字符“ ，第二个位置传入要替换的 ”新字符“ ，默认替换全部，count 控制替换次数。
 
@@ -1034,9 +1050,9 @@ print("替换后的字符串:", replace_result)
 
 
 
-### 4.20 split()
+### 4.20 .split()
 
-`.split(sep, maxsplit)` 以特定字符进行分割，默认空格分割。
+`.split(sep, maxsplit)` 以特定字符进行分割，==默认空格分割==。
 
 若传入参数 `sep` ，则以参数进行分割。
 
@@ -1106,7 +1122,7 @@ print("替换后的字符串:", split_result)
 
 具体使用中遇到的情况参见： https://pythiaroot.com/programming/python/08-set.html#_16-%E5%B0%8F%E8%AF%95%E7%89%9B%E5%88%80
 
-### 4.21 rsplit()
+### 4.21 .rsplit()
 
 `.rsplit(sep, maxsplit)` 从字符串右边开始分割。
 
@@ -1129,9 +1145,11 @@ print("替换后的字符串:", rsplit_result)
 
 
 
-### 4.22 join()
+### 4.22 .join()
 
 `.join(iterable)` 将可迭代（指可以继续拆分）对象（如列表、元组等）中的字符串元素连接成一个新的字符串，可以指定连接符。
+
+
 
 ::: code-tabs
 
@@ -1165,7 +1183,7 @@ print("拼接后的列表:", join_result)
 
 :::
 
-### 4.23 Quiz 1
+### 4.23 Quiz
 
 统计下面字符串中的字数，不包含标点符号、空格、换行，字符串内容如下：
 
