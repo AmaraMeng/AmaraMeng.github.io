@@ -1230,7 +1230,7 @@ print(len(replace_para6))
 
 
 
-## 4.24 字符串格式化
+## 4.24 字符串格式化（按照一定的格式输出）
 
 格式化：按照一定的格式输出。
 
@@ -1666,10 +1666,10 @@ print(s * 10)
 *-love*-love*-love*-love*-love*-love*-love*-love*-love*-love
 ```
 
-quiz 1
+quiz:
 
 ```python
-输出*-love*-love*-love*-love*-love*-love*-love*-love*-love*-love*
+# 输出*-love*-love*-love*-love*-love*-love*-love*-love*-love*-love*
 
 #三种方法
 
@@ -1684,7 +1684,9 @@ print(s * 10, end = "*")
 
 
 
-## 4.29 input 的使用
+## 4.29 input()
+
+### 4.29.1 input 的使用
 
 1.  input 的使用
 
@@ -1740,6 +1742,8 @@ In [5]:  type(input(':>>>'))
 Out[7]: str
 
 ```
+
+### 4.29.2 输入的数据类型转换
 
 解决方法：
 
@@ -1941,11 +1945,19 @@ In [68]: eval(input('>>>:'))
 Out[68]: 3.0
 ```
 
-![](./04-string.assets/image-20250415154642973.png)
 
-小试牛刀
 
-![](./04-string.assets/image-20250415154821845.png)
+**为什么不推荐使用 eval ？安全性！**
+
+![](./04-string.assets/image-20250609212746031.png)
+
+
+
+**小试牛刀**
+
+![](./04-string.assets/image-20250609212927640.png)
+
+
 
 **Answer:**
 
@@ -1976,7 +1988,7 @@ print(eval(num_replace))
 15
 ```
 
-@ split + eval 解决
+@tab split + eval 解决
 
 ```python
 string = input()
