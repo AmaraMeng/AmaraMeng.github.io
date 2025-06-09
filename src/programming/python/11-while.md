@@ -211,11 +211,13 @@ print(f"从{min_num}到{max_num}的和是{total}")
 
 ## 5. 小试牛刀
 
-![](./11-while.assets/image-20250605153640350.png)
+### 5.1 实现更灵活的数字转换
 
+![](./11-while.assets/image-20250609221741258.png)
 
+ 
 
-### 5.1 尝试解决过程出现的错误
+**尝试解决过程出现的错误**
 
 **错误1：** 
 
@@ -258,4 +260,59 @@ while not is_digit:
 
 
 **错误2：** 
+
+`.isdigit()` 只能判断字符串内是否全是数字，若用户输入的是负数，则出现负号，也会判定为非数字。
+
+
+
+**错误3：** 
+
+按照上述逻辑通过小数点判断浮点数，若输入出现两个小数点或者输入的字符串中带有小数点？
+
+
+
+Answer:
+
+![](./11-while.assets/image-20250609221509846.png)
+
+以下代码方便复制：
+
+```python
+is_digit = False
+
+while not is_digit:
+    num_input = input("请输入数字：").strip()      # 获得输入，并清除字符串左右两侧的空格
+    if num_input.isdigit() or num_input[0] == '-' and num_input[1:].isdigit():    
+        # 判断字符串是否全是整数或负整数
+        print(f'该数字是整数：{int(num_input)}')
+        is_digit = True
+    elif '.' in num_input:
+        if num_input.split('.')[0].isdigit() and num_input.split('.')[1].isdigit() and len(num_input.split('.')) == 2\
+            or num_input[0] == '-' and num_input[1:].split('.')[0].isdigit() and num_input[1:].split('.')[1].isdigit() and len(num_input.split('.')) == 2:
+            print(f'该数字是浮点数：{float(num_input)}')
+            is_digit = True
+        else:
+            print('该输入不合法，请重新输入或退出程序！')
+    else:
+        print('该输入不合法，请重新输入或退出程序！')
+```
+
+
+
+
+
+
+
+### 5.2 猜数
+
+将该链接中的猜数游戏在 python 中实现 https://bornforthis.cn/tool/works/game/GuessNumber.html 。
+
+提示：
+
+```python
+import random
+print(random.randint(1, 100))
+```
+
+
 
