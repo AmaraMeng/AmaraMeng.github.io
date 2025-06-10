@@ -316,3 +316,25 @@ print(random.randint(1, 100))
 
 
 
+```python
+import random
+
+while True:
+    answer = random.randint(1, 100)          # 系统随机生成一个 1-100 的数字
+
+    is_correct = False
+    while not is_correct:
+        user_input = input('请输入 1-100 的整数：')
+        if user_input.isdigit() and 1 <= int(user_input) <= 100:
+            if int(user_input) == answer:
+                print('恭喜答对！')
+                print('开始新一轮游戏。。。')
+                is_correct = True
+            elif int(user_input) < answer:
+                print('小了！')
+            else:
+                print('大了！')
+        else:
+            print('输入错误，请输入 1-100 的整数！')
+```
+
