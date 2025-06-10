@@ -299,6 +299,68 @@ while not is_digit:
 
 
 
+其他代码可选/优化：
+
+- **建议一：** 原代码 line5 需要加括号保证优先级，防止出现错误：
+
+```python
+if num_input.isdigit() or (num_input[0] == '-') and (num_input[1:].isdigit()):  
+```
+
+
+
+- **建议二：** 判断是否为负数的时候，可以用内置函数 `.startswith()` 判断，因此 line5 可修改如下：
+
+```python
+    if num_input.isdigit() or num_input.startswith('-') and num_input[1:].isdigit():    
+```
+
+
+
+- **建议三：** line7 直接输出 `print(f'该数字是整数：{int(num_input)}')` ，可以将 `int(num_input)` 命名为一个变量。
+
+```python
+number = int(num_input)
+print(f'该数字是整数：{number}')
+```
+
+- **建议四：** 代码逻辑：先成功运行一遍，再在外面套上一个 `while` 实现多次。
+
+- **建议五：** 浮点数解决办法：
+
+    原代码中 line9  `elif '.' in num_input:`  条件过泛，不能直指浮点数的特点。
+
+    浮点数里面只有一个点，多于一个点的情况就不成立，那么考虑用 `count()` 来限制点出现的次数：
+
+```python 
+elif num_input.count('.') == 1       # 输入中只有一个点
+```
+
+
+
+- **建议六：** line 10 - line 11 中 `num_input.split('.')` 需要多次使用，可以在运行一次后直接赋值为变量，不仅简化了代码的长度，还减少了重复操作。
+
+```python 
+num_split = num_input.split('.')                          # 正数
+        num_split2 = num_input[1:].split('.')             # 负数
+        if num_split[0].isdigit() and num_split[1].isdigit() and len(num_split) == 2\
+            or num_input.startwith('-') and num_split2[0].isdigit() and num_split2[1].isdigit() and len(num_split) == 2:
+```
+
+因为 line9 在上文进行了优化，对按照点分割得到的列表长度的判断可以去掉，得到代码如下：
+
+```python 
+if num_split[0].isdigit() and num_split[1].isdigit() or num_input.startswith('-') and num_split2[0].isdigit() and num_split2[1].isdigit():
+```
+
+
+
+- **建议七：** 返璞归真：不需要 split 就可判断是否为浮点数。
+
+
+
+
+
 
 
 
