@@ -21,7 +21,7 @@ toc: true
 
 ## 1. 标题编写
 
-::: md-demo 标题示范
+::: preview 标题示范
 
 ## 二级标题
 
@@ -39,7 +39,7 @@ toc: true
 
 ## 2. 代码块
 
-::: md-demo 代码块示范
+::: preview 代码块示范
 
 1. Markdown 语法
 
@@ -99,7 +99,7 @@ public class HelloWorld {
 
 ## 3. 链接插入
 
-::: md-demo 链接插入示范
+::: preview 链接插入示范
 
 `[链接名称](链接)`  此处为语法格式，按照此格式输入形成下文：
 
@@ -111,7 +111,7 @@ public class HelloWorld {
 
 ## 4. 图片插入
 
-::: md-demo 图片插入示范
+::: preview 图片插入示范
 
 `[图片描述](图片链接地址)`
 
@@ -129,7 +129,7 @@ public class HelloWorld {
 
 ## 5. 有序序列
 
-::: md-demo
+::: preview
 
 1. 赵
 2. 钱
@@ -143,7 +143,7 @@ public class HelloWorld {
 
 ## 6. 无序序列
 
-::: md-demo
+::: preview
 
 - 大中华地区
     - 解放碑
@@ -168,7 +168,7 @@ $$
 
 ### 7.2 行内公式语法
 
-::: md-demo
+::: preview
 
 Euler's identity $e^{i\pi}+1=0$ is a beautiful formula in $\mathbb{R}^2$.
 
@@ -176,7 +176,7 @@ Euler's identity $e^{i\pi}+1=0$ is a beautiful formula in $\mathbb{R}^2$.
 
 ### 7.3 公式块语法
 
-::: md-demo
+::: preview
 $$
 \frac{\partial^r}{\partial\omega^r}\left(\frac{y^{\omega}}{\omega}\right)
 =\left(\frac{y^{\omega}}{\omega}\right)\left\{(\log y)^r+\sum_{i=1}^r\frac{(-1)^i r\cdots(r-i+1)(\log y)^{r-i}}{\omega^i}\right\}
@@ -187,7 +187,7 @@ $$
 
 ## 8. 任务列表
 
-::: md-demo
+::: preview
 
 - [x] 计划 A
 - [ ] 计划 B
@@ -198,7 +198,7 @@ $$
 
 ## 9. 选项卡
 
-:::: md-demo
+:::: preview
 
 ::: tabs
 
@@ -238,7 +238,7 @@ print ("1234567890")
 
 ## 10. 代码块分组
 
-:::: md-demo
+:::: preview
 
 ::: code-tabs
 
@@ -272,7 +272,7 @@ print(a + b)
 
 ## 11. 行内代码
 
-::: md-demo
+::: preview
 
 `pnpm install XXXX`
 
@@ -282,7 +282,7 @@ print(a + b)
 
 ## 12. 提示容器
 
-:::: md-demo
+:::: preview
 
 
 
@@ -346,7 +346,7 @@ print(a + b)
 
 ## 13. 高亮
 
-::: md-demo
+::: preview
 
 你好，==William==.
 
@@ -354,7 +354,7 @@ print(a + b)
 
 ## 14. 加密显示
 
-::: md-demo
+::: preview
 
 你好，!!William!!
 
@@ -362,7 +362,7 @@ print(a + b)
 
 ## 15. 自定义对齐
 
-:::: md-demo
+:::: preview
 
 ::: left
 
@@ -402,7 +402,7 @@ print(a + b)
 
 ## 16. 文章加密
 
-::: md-demo
+::: preview
 
 VScode 的 `theme.ts`文件中找到加密配置，代码如下：
 
