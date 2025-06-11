@@ -133,7 +133,7 @@ print(a, b, c, sep=' 间隔 ')
 
 注意：`sep`只有在输出多个变量时才有效果。
 
-### 3.3 end的使用
+### 3.3 end 的使用
 
 单独输出一个变量时，末尾会自动换行，即 `end = '\n'` ，其中 `\n` 表示换行，引号内的字符可以修改，**空格也有意义**。
 
@@ -351,10 +351,6 @@ step 2：将`Jaden_cup`取到的值，和 `Austin_cup`取到的值再分别赋�
         print(print)
     TypeError: 'str' object is not callable
     ```
-
-## 6. tips
-
-选中代码，`crtl + /` 注释掉选中的代码
 
 
 
