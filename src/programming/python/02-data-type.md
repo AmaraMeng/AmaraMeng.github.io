@@ -355,94 +355,94 @@ x = 20, y = 30, z = 10
 
 ## 7. 练习总结
 
-1. `print` 使用，将浮点型输出为字符串。
+### 1. print 输出多变量，将浮点型输出为字符串。
+
+:::code-tabs
+
+@tab print输出多个变量
+
+```python
+my_float = 5.67
+print(my_float, "is my float")
+
+#-------output-------
+5.67 is my float    #此处为 print 输出多个变量，因此浮点型变量和字符串变量输出，中间自动用空格隔开
+```
+
+@tab 将浮点型输出为字符串
+
+```python
+my_float = 5.67
+print(str(my_float) + " is my floating number")    # 加号+ 将两部分拼接，因此中间不会自动用空格隔开，需要手动补充
+
+#-------output-------
+5.67 is my floating number     #此处以字符串形式输出
+```
+
+:::
+
+### 2. print 输出格式问题
+
+- `print` 输出换行缩进问题
 
     :::code-tabs
 
-    @tab print输出多个变量
+    @tab 输出换行缩进问题
 
     ```python
-    my_float = 5.67
-    print(my_float, "is my float")
+    x, y, z = 1, 2, 3
+    print("x=", x, "\n", "y=", y, "\n", "z=", z)
     
     #-------output-------
-    5.67 is my float    #此处为 print 输出多个变量，因此浮点型变量和字符串变量输出，中间自动用空格隔开
+    x= 1 
+     y= 2 
+     z= 3
     ```
 
-    @tab 将浮点型输出为字符串
+    @tab 解决方法
 
     ```python
-    my_float = 5.67
-    print(str(my_float) + " is my floating number")    # 加号+ 将两部分拼接，因此中间不会自动用空格隔开，需要手动补充
+    x, y, z = 1, 2, 3
+    print("x=", x, "\n", "y=", y, "\n", "z=", z，sep = "")
     
-    #-------output-------
-    5.67 is my floating number     #此处以字符串形式输出
+    #-------output-------   出现缩进的原因在于 print 输出多个变量，间隔默认空格，那么用 sep 将空格去掉即可解决
+    x=1
+    y=2
+    z=3
     ```
 
     :::
 
-2. 输出格式问题
+- `print` 输出达到 “x=1, y=2, z=3” 效果
 
-    - `print` 输出换行缩进问题
+    :::code-tabs
 
-        :::code-tabs
+    @tab 问题
 
-        @tab 输出换行缩进问题
+    ```python
+    x, y, z = 1, 2, 3
+    print("x=", x, "y=", y, "z=", z, sep = ",")
+    
+    #-------output-------
+    x=,1,y=,2,z=,3
+    ```
 
-        ```python
-        x, y, z = 1, 2, 3
-        print("x=", x, "\n", "y=", y, "\n", "z=", z)
-        
-        #-------output-------
-        x= 1 
-         y= 2 
-         z= 3
-        ```
+    @tab 解决方法
 
-        @tab 解决方法
+    ```python
+    x, y, z = 1, 2, 3
+    print("x=" + str(x), "y=" + str(y), "z=" + str(z), sep = ",")
+    
+    #-------output-------   
+    #原因在于不同变量间都有间隔，则将 x=1 变成一个类型的变量作为一个整体，用 + 拼接，加号左右变量类型要一致
+    x=1,y=2,z=3
+    ```
 
-        ```python
-        x, y, z = 1, 2, 3
-        print("x=", x, "\n", "y=", y, "\n", "z=", z，sep = "")
-        
-        #-------output-------   出现缩进的原因在于 print 输出多个变量，间隔默认空格，那么用 sep 将空格去掉即可解决
-        x=1
-        y=2
-        z=3
-        ```
+    
 
-        :::
+    :::
 
-    - `print` 输出达到 “x=1, y=2, z=3” 效果
-
-        :::code-tabs
-
-        @tab 问题
-
-        ```python
-        x, y, z = 1, 2, 3
-        print("x=", x, "y=", y, "z=", z, sep = ",")
-        
-        #-------output-------
-        x=,1,y=,2,z=,3
-        ```
-
-        @tab 解决方法
-
-        ```python
-        x, y, z = 1, 2, 3
-        print("x=" + str(x), "y=" + str(y), "z=" + str(z), sep = ",")
-        
-        #-------output-------   
-        #原因在于不同变量间都有间隔，则将 x=1 变成一个类型的变量作为一个整体，用 + 拼接，加号左右变量类型要一致
-        x=1,y=2,z=3
-        ```
-
-        
-
-        :::
-
-        
+    
 
 ## 8. 字典
 
