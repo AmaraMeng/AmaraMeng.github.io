@@ -215,7 +215,7 @@ print(len(student_list))
 
 ### 8.1 列表元素的增加
 
-1. 按照下标增加
+#### 8.1.1 按照下标增加
 
 ```python
 name = ['peppa', 'gorge', 'mummy', 'daddy']
@@ -341,9 +341,11 @@ TypeError: can only assign an iterable
 
 
 
-2. 用 `.append()`在列表末尾增加一个元素
+#### 8.1.2 用 `.append()`在列表末尾增加一个元素
 
 该命令只能在末尾增加一个内容，增加多个元素需要执行多个 `.append()` ，若增加的内容为列表、元组、字典、集合、布尔，则会将其作为一个元素加入到列表中。
+
+ **`.append()` 是直接在原列表上修改。** 
 
 ```python
 inventory = ['钥匙', '毒药']
