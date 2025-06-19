@@ -236,13 +236,18 @@ print(list(range(0, 101)))
 
 
 
-因此上文输出带序号的元素可以用 `range()` 完成：
+因此上文输出元素可以用 `range()` 完成，此处用 `len(student_list)` ，若有两个相关联的列表，则可以用另一个列表的长度来提取该列表的元素。
 
 ```python
 student_list = ['李雷', '韩梅梅', '马冬梅']
 
 for student in range(len(student_list)):
     print(student_list[student])
+    
+#-------output-------
+李雷
+韩梅梅
+马冬梅
 ```
 
 ## 5. 小试牛刀2：打印星号三角形
@@ -373,7 +378,7 @@ for index, fruit in enumerate(fruits, start=1):
 
 
 
-### 6.4 找到列表的最大值
+## 7. 找到列表的最大值
 
 ![](./12-for.assets/image-20250619134610409.png)
 
@@ -403,7 +408,7 @@ Max Value is 91
 
 
 
-### 6.5 找到列表最大值的下标
+## 8. 找到列表最大值的下标
 
 ```python
 nums = [12, 43, 5, 2, 66, 74, 28, 91, 66]
@@ -423,9 +428,9 @@ The index of max value is 7
 
 
 
-### 6.6 找到列表的多个最大值以及对应的多个下标
+## 9. 找到列表的多个最大值以及对应的多个下标
 
-
+### 9.1 两次循环结合 `enumerate()` 方法
 
 ```python
 nums = [12, 43, 5, 2, 66, 74, 91, 28, 91, 66]
@@ -450,13 +455,347 @@ print(max_indices_tuple)
 (6, 8)
 ```
 
+### 9.2 两次循环结合下标赋值方法
 
+思考：用下标方法如何实现？
+
+```python
+nums = [12, 43, 5, 2, 66, 74, 91, 28, 91, 66]
+
+# 初始化最大值和最大值下标的列表
+max_value = nums[0]
+max_indices = []
+
+# 第一次循环，找到最大值
+for num in nums:
+    if num > max_value:
+        max_value = num
+        
+# 第二次循环，找到所有最大值的下标
+n = 0
+for num in nums:
+    if num == max_value:
+        max_indices.append(n)
+        n += 1
+    else:
+        n += 1
+
+# 将列表转化为元组
+max_indices_tuple = tuple(max_indices)
+print(max_indices_tuple)
+
+#-------output-------
+(6, 8)
+```
+
+优化：将 `n += 1` 这一句提出来到 `if`  外即可。
+
+```python
+# 第二次循环，找到所有最大值的下标
+n = 0
+for num in nums:
+    if num == max_value:
+        max_indices.append(n)
+    n += 1
+```
+
+### 9.3 两次循环结合 `range()` 方法
+
+思考：如何用 `range` 实现？
+
+```python
+nums = [12, 43, 5, 2, 66, 74, 91, 28, 91, 66]
+
+# 初始化最大值和最大值下标的列表
+max_value = nums[0]
+max_indices = []
+
+# 第一次循环，找到最大值
+for index in range(len(nums)):
+    if nums[index] > max_value:
+        max_value = nums[index]
+
+# 第二次循环，找到所有最大值的下标
+for index in range(len(nums)):
+    if nums[index] == max_value:
+        max_indices.append(index)
+
+
+# 将列表转化为元组
+max_indices_tuple = tuple(max_indices)
+print(max_indices_tuple)
+
+#-------output-------
+(6, 8)
+```
+
+### 9.4 一个循环结合 `enumerate()`  实现
 
 思考：如何一个循环实现？
 
-其他思考：不用enumerate，用其他比如range, 下标，max之类的实现
+```python
+nums = [12, 43, 5, 2, 66, 74, 91, 28, 91, 66]
+
+# 假设第一个元素最大，那么第一个元素的下标也最大
+max_num = nums[0]
+max_indices = [0]
+
+for index, num in enumerate(nums):
+    if num > max_num:
+        max_num = num
+        max_indices = [index]
+    elif num == max_num:
+        max_indices.append(index)
+
+print(f'最大的元素是 {max_num}，对应的下标为 {max_indices}')
+
+#-------output-------
+最大的元素是 91，对应的下标为 [6, 8]
+```
 
 
+
+优化：
+
+`line 5` 代码 `max_indices = [0]` 不需要在列表中填一个 0 了，修改为：
+
+```python
+max_indices = []
+```
+
+
+
+### 9.5 一个循环结合 `range()` 实现
+
+```python
+nums = [12, 43, 5, 2, 66, 74, 91, 28, 91, 66]
+
+# 假设第一个元素最大，那么第一个元素的下标也最大
+max_num = nums[0]
+max_indices = []
+
+for index in range(len(nums)):
+    if nums[index] > max_num:
+        max_num = nums[index]
+        max_indices = [index]
+    elif nums[index] == max_num:
+        max_indices.append(index)
+
+print(f'最大的元素是 {max_num}，对应的下标为 {max_indices}')
+
+#-------output-------
+最大的元素是 91，对应的下标为 [6, 8]
+```
+
+
+
+### 9.6 一个循环结合下标实现（纠错）
+
+某同学代码：
+
+```python
+nums = [12, 43, 5, 2, 66, 74, 91, 28, 91, 66]
+
+# 初始化最大值和最大值下标的列表
+max_value = nums[0]
+max_indices = []
+
+# 思考下面代码所存在的问题
+n = 0
+for num in nums:
+    if num > max_value:
+        max_value = num
+        max_indices = [n]
+        n += 1
+    elif num == max_value:
+        max_indices.append(n)
+        n += 1
+
+max_indices_tuple = tuple(max_indices)
+print(max_indices_tuple)
+```
+
+
+
+修改：少了小于的情况
+
+```python
+nums = [12, 43, 5, 2, 66, 74, 91, 28, 91, 66]
+
+# 初始化最大值和最大值下标的列表
+max_value = nums[0]
+max_indices = []
+
+# 思考下面代码所存在的问题
+n = 0
+for num in nums:
+    if num > max_value:
+        max_value = num
+        max_indices = [n]
+        n += 1
+
+    elif num == max_value:
+        max_indices.append(n)
+        n += 1
+
+    else:
+        n += 1
+
+max_indices_tuple = tuple(max_indices)
+print(max_indices_tuple)
+```
+
+
+
+不加 `else` 如何修改？
+
+将 `n += 1` 从 if 中提取出来。
+
+```python
+nums = [12, 43, 5, 2, 66, 74, 91, 28, 91, 66]
+
+# 初始化最大值和最大值下标的列表
+max_value = nums[0]
+max_indices = []
+
+# 思考下面代码所存在的问题
+n = 0
+for num in nums:
+    if num > max_value:
+        max_value = num
+        max_indices = [n]
+
+
+    elif num == max_value:
+        max_indices.append(n)
+    n += 1
+
+
+max_indices_tuple = tuple(max_indices)
+print(max_indices_tuple)
+```
+
+
+
+## 10. 嵌套 for 循环
+
+### 10.1 基本结构
+
+一个嵌套的 `for` 循环通常的书写形式如下：
+
+```python
+for 变量1 in 可迭代对象1：
+	for 变量2 in 可迭代对象2：
+    	#执行代码块
+```
+
+例子：
+
+```python
+for i in range(2):
+    print(f'外层循环执行了第 {i+1} 次')
+    for j in range(3):
+        print(f'\t内层循环执行了第 {j+1}次')
+        
+#-------output-------
+外层循环执行了第 1 次
+	内层循环执行了第 1次
+	内层循环执行了第 2次
+	内层循环执行了第 3次
+外层循环执行了第 2 次
+	内层循环执行了第 1次
+	内层循环执行了第 2次
+	内层循环执行了第 3次
+```
+
+外层代码每执行一次，内层代码都要全部执行一遍。
+
+
+
+## 10.2 遍历求和
+
+将下列矩阵中所有的元素相加。
+
+```python
+matrix = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+]
+```
+
+原始思路：（不好）
+
+```python
+matrix = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+]
+
+sum_rows = []
+for rows in matrix:
+    sum_rows.append(sum(rows))
+sum_all = sum(sum_rows)
+
+print(sum_all)
+```
+
+
+
+思考：如何从0加到100？
+
+首先需要设置一个 total 的变量为 0 ，然后提出一个数字，在 total 上加一个数字。
+
+```python
+total = 0
+for i in range(101):
+    total = total + i
+print(total)
+```
+
+
+
+同样的逻辑：
+
+```python
+matrix = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+]
+
+total = 0
+for rows in matrix:            # 提出每个列表
+    for row in rows:           # 提出每个列表里的元素
+        total += row           # 往 total 里加
+print(total)
+
+#-------output-------
+45
+```
+
+
+
+## 10.3 求每一单独列的和
+
+```python 
+# 手动方法
+col1 = 0
+col2 = 0
+col3 = 0
+
+for row in matrix:
+    col1 += row[0]
+    col2 += row[1]
+    col3 += row[2]
+print([col1, col2, col3])
+
+#-------output-------
+[12, 15, 18]
+```
+
+用循环方法：
 
 
 
