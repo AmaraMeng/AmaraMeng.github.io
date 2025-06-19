@@ -797,6 +797,53 @@ print([col1, col2, col3])
 
 用循环方法：
 
+思路：
+
+- 仿照手动解决，第`1` 列的和是自增下标为 `0`  的 `row` ，第`2` 列的和是自增下标为 `1`  的 `row` ，以此类推，可以初始化一个列表，专门放第`1、2、3`  列的和，而这个列表的长度，就是 `matrix`  含有的列表元素的个数，因此，初始化一个列表，长度为 `matrix`  的列数（即每个列表元素的长度），每个元素的初始值为 `0` 。
+
+- 原本的 `col1`  就是 `column_sums[0]` ， `col2`  就是 `column_sums[1]`  ， `col3`  就是 `column_sums[2]` ，那么上述代码中的 `line 7-9`  
+
+    ```python 
+    col1 += row[0]
+    col2 += row[1]
+    col3 += row[2]
+    ```
+
+    就变为
+
+    ```python 
+    column_sums[0] += rows[0]
+    column_sums[1] += rows[1]
+    column_sums[2] += rows[2]
+    ```
+
+    发现两者的下标一致，即可遍历 `matrix` 包含的列表元素的个数（`matrix` 的长度）。
+
+
+
+最终代码如下：
+
+```python 
+matrix = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+]
+
+# 初始化一个列表，长度为 matrix 的列数（即每个列表元素的长度），每个元素的初始值为0
+column_sums = [0] * len(matrix[0])
+
+
+for rows in matrix:
+    for i in range(len(rows)):
+        column_sums[i] += rows[i]
+
+print(column_sums)
+
+#-------output-------
+[12, 15, 18]
+```
+
 
 
  
