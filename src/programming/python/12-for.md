@@ -74,7 +74,11 @@ while i < len(student_list):
 
 ## 3. 小试牛刀
 
-![](./12-for.assets/image-20250613134457686.png)
+### 3.1 遍历列表并将每个元素平方后放回原列表
+
+![](./12-for.assets/image-20250619133403964.png)
+
+
 
 **Answer:** 
 
@@ -103,15 +107,15 @@ step3: 提取
 
 
 
-![](./12-for.assets/image-20250613135817316.png)
+### 3.2 输出带序号的数据
 
-
+![](./12-for.assets/image-20250619133451110.png)
 
 
 
 **Answer:**
 
-方法一：
+方法一：内置函数 `.index()` 
 
 ```python
 student_list = ['李雷', '韩梅梅', '马冬梅']
@@ -125,7 +129,7 @@ for student in student_list:
 2 马冬梅
 ```
 
-方法二：
+方法二：创建储存下标的变量
 
 ```python
 student_list = ['李雷', '韩梅梅', '马冬梅']
@@ -161,7 +165,7 @@ for st in student_list:
 
 ## 4. range()
 
-当需要生成一系列连续数字时，例如遍历列表、控制循环次数等。Python 提供了一个简单又高效的工具—— `range()` 函数，专门用于生成 ==不可变==（immutable）的数字序列，尤其配合 `for` 循环进行迭代操作。
+当需要生成一系列连续数字时，例如遍历列表、控制循环次数等。Python 提供了一个简单又高效的工具—— `range()` 函数，专门用于生成 ==不可变==（immutable）的==数字序列==，尤其配合 `for` 循环进行迭代操作。
 
 ### 4.1 基本用法
 
@@ -241,9 +245,9 @@ for student in range(len(student_list)):
     print(student_list[student])
 ```
 
+## 5. 小试牛刀2：打印星号三角形
 
-
-![](./12-for.assets/image-20250617140716588.png)
+![](./12-for.assets/image-20250619134318766.png)
 
 **Answer:** 
 
@@ -260,7 +264,7 @@ for i in range(1, int(n)+1):
 ***
 ```
 
-思路：
+**思路：**
 
 先输出一次，再考虑循环
 
@@ -284,9 +288,9 @@ for i in range(1, int(n)+1):
 
 
 
-## 5. enumerate
+## 6. enumerate()
 
-任务：按照索引得到水果：
+任务：按照索引得到水果。
 
 ```python
 fruits = ["apple", "banana", "cherry"]
@@ -307,9 +311,9 @@ for index in range(len(fruits)):
 索引为 2 的水果是 cherry
 ```
 
-### 5.1 基本用法
+### 6.1 基本用法
 
-引入新函数`enumerate`
+引入新函数`enumerate()`
 
 ```python
 fruits = ["apple", "banana", "cherry"]
@@ -345,7 +349,7 @@ for index, fruit in fruits_list:
 for index, fruit in enumerate(fruits)
 ```
 
-### 5.2 指定起始索引
+### 6.2 指定起始索引
 
 默认情况下， `enumerate` 是从 0 开始计数，可以通过添加一个可选的 `start` 参数来指定起始索引。
 
@@ -361,7 +365,7 @@ for index, fruit in enumerate(fruits, start=1):
 3 cherry
 ```
 
-### 5.3 使用场景
+### 6.3 使用场景
 
 1. 需要同时对索引和元素处理；
 2. 需要修改原列表或数组的某些特定位置（修改或替换某些元素时拿到索引比较必要，在循环内可以完成索引和元素的映射）；
@@ -369,14 +373,20 @@ for index, fruit in enumerate(fruits, start=1):
 
 
 
-### 5.4 找到列表的最大值
+### 6.4 找到列表的最大值
 
-![](./12-for.assets/image-20250617145937414.png)
+![](./12-for.assets/image-20250619134610409.png)
+
+![](./12-for.assets/image-20250619134629785.png)
+
+
+
+**Answer:** 
 
 ```python
 nums = [12, 43, 5, 2, 66, 74, 28, 91, 66]
 
-max_num = nums[0]
+max_num = nums[0]             # 先假设第一个元素是最大的
 for n in nums:
     if n > max_num:
         max_num = n
@@ -393,7 +403,7 @@ Max Value is 91
 
 
 
-### 5.5 找到列表最大值的下标
+### 6.5 找到列表最大值的下标
 
 ```python
 nums = [12, 43, 5, 2, 66, 74, 28, 91, 66]
@@ -413,7 +423,7 @@ The index of max value is 7
 
 
 
-### 5.6 多个最大值多个下标
+### 6.6 找到列表的多个最大值以及对应的多个下标
 
 
 
@@ -450,3 +460,4 @@ print(max_indices_tuple)
 
 
 
+ 
