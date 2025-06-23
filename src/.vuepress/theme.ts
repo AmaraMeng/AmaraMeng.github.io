@@ -174,7 +174,7 @@ export default hopeTheme({
       prefix: "iconfont icon-",
       assets: [
         //"https://bornforthis.cn/icon/iconfont.css",
-        "//at.alicdn.com/t/c/font_4853525_ms1tayhrnj.css"
+        "//at.alicdn.com/t/c/font_4853525_fp3ucqc53a5.css"
       ],
     },
     search: {
