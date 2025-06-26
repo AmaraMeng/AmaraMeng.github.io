@@ -1082,7 +1082,7 @@ for i in range(1, 10):
 
 
 
-小技巧：
+**小技巧：** 
 
 在探究过程中，我们从最开始的整列实现，到后面转化为一行一行实现，辅助探究和理解的好工具是 `time` 库。
 
@@ -1109,6 +1109,366 @@ for i in range(1, 10):
 第 9 次循环： 9 x 1 = 9	9 x 2 = 18	9 x 3 = 27	9 x 4 = 36	9 x 5 = 45	9 x 6 = 54	9 x 7 = 63	9 x 8 = 72	9 x 9 = 81	
 
 ```
+
+
+
+## 11. continue——跳过这一步，直接奔向下一轮
+
+`continue` 用于跳过当前循环的剩余部分，并直接进入下一次循环的判断。也就是说，当循环体内遇到`continue` 语句时，会跳过该次循环中 `continue` 之后的代码，并直接进入下一次循环。
+
+### 11.1 现实生活中的例子
+
+检查一篮苹果，挑出好的苹果防在袋子里。如果发现苹果坏了，不会放到袋子里，而是直接跳过它，检查下一个苹果。这种情况就可以使用 `continue` 表示。
+
+`for`  例子：
+
+```python
+for i in range(1, 6):
+    if i == 3:
+        continue
+    print(i)
+    
+#-------output-------  
+1
+2
+4
+5
+```
+
+`while` 例子：
+
+```python
+num = 0
+while num < 5:
+    num += 1          # 为什么写在if之前，因为如果等于3， continue了之后会跳过
+    if num == 3:
+        continue
+    print(num)
+    
+#-------output-------  
+1
+2
+4
+5    
+```
+
+
+
+### 11.2 continue只会影响当前循环
+
+1. `continue` 只会影响当前循环，不会影响外部或其他循环。
+2. 在嵌套循环中，如果你想控制外层循环的运行，需要在外层循环的层级写相应的判断或语句，而不是简单的在内层调用 `continue` 。
+
+```python
+for i in range(2):
+    print(f'外层循环: i = {i}')
+    for j in range(3):
+        if j == 1:
+            continue
+        print(f'内层循环： j = {j}')
+    print('内层循环结束，外层循环继续。')
+print('所有循环结束。')
+
+#-------output-------  
+外层循环: i = 0
+内层循环： j = 0
+内层循环： j = 2
+内层循环结束，外层循环继续。
+外层循环: i = 1
+内层循环： j = 0
+内层循环： j = 2
+内层循环结束，外层循环继续。
+所有循环结束。
+```
+
+
+
+## 12. break ——提前结束循环的“紧急刹车”
+
+在编程中，可能遇到这样的场景：一但满足了某个条件，就不需要浪费时间在接下来的循环操作上。Python 提供的 `break` 语句，正是用来在循环中“紧急刹车”的指令。一但执行到 `break` ，循环会被立刻打断，无论循环原本还需要跑多久。**`break` 只能终止当前所在的那一层循环，循环结束以后，程序会继续往下执行。** 
+
+```python
+for i in range(10):
+    print(i)
+    if i > 5:
+        break
+        
+#-------output------- 
+0
+1
+2
+3
+4
+5
+6
+```
+
+
+
+```python
+for i in range(10):
+    if i == 3:
+        break
+    print(i)
+print('for 循环结束之后的代码，当你看见这句话时，表明这个print正常执行~')
+
+#-------output------- 
+0
+1
+2
+for 循环结束之后的代码，当你看见这句话时，表明这个print正常执行~
+```
+
+
+
+### 12.1 `break`  只会影响当前循环，不影响外层循环。
+
+```python
+for i in range(3):
+    print(f'外层循环: i = {i}')
+    for j in range(3):
+        if j == 1:
+            break
+        print(f'内层循环： j = {j}')
+    print('内层循环结束，外层循环继续。')
+    
+#-------output-------
+外层循环: i = 0
+内层循环： j = 0
+内层循环结束，外层循环继续。
+外层循环: i = 1
+内层循环： j = 0
+内层循环结束，外层循环继续。
+外层循环: i = 2
+内层循环： j = 0
+内层循环结束，外层循环继续。
+```
+
+
+
+### 12.2 如何实现内层循环结束，外层循环也随之结束
+
+修改如下代码，使内层循环结束，外层循环也随之结束。
+
+```python
+for i in range(5):
+    for j in range(5):
+        print(f"i={i}, j={j}")
+        if (i + j) == 3:
+            print("触发条件，准备终止所有循环！")
+            break  # 先结束内层循环
+print("外层循环结束，这里才是程序真正的结束点。")
+```
+
+
+
+**Answer:**
+
+```python
+for i in range(5):
+    for j in range(5):
+        print(f"i={i}, j={j}")
+        if (i + j) == 3:
+            print("触发条件，准备终止所有循环！")
+            break  # 先结束内层循环
+    if (i + j) == 3:
+        break 
+print("外层循环结束，这里才是程序真正的结束点。")
+
+#-------output-------
+i=0, j=0
+i=0, j=1
+i=0, j=2
+i=0, j=3
+触发条件，准备终止所有循环！
+外层循环结束，这里才是程序真正的结束点。
+```
+
+
+
+优化：
+
+```python
+should_break = False
+
+for i in range(5):
+    for j in range(5):
+        print(f"i={i}, j={j}")
+        if (i + j) == 3:
+            print("触发条件，准备终止所有循环！")
+            should_break = True
+            break  # 先结束内层循环
+    if should_break:
+        break
+print("外层循环结束，这里才是程序真正的结束点。")
+
+#-------output-------
+i=0, j=0
+i=0, j=1
+i=0, j=2
+i=0, j=3
+触发条件，准备终止所有循环！
+外层循环结束，这里才是程序真正的结束点。
+```
+
+
+
+## 13. while 与 for 如何选择
+
+### 13.1 while 循环的特点
+
+`while`  是基于条件判断（是否满足某个条件）的循环结构。只要满足给定的条件，循环就会一直执行，适合==循环次数不确定==的情况。
+
+**例子：抄写《红豆》**
+
+安排任务，我出门一下，你在家里抄写《红豆》这首诗。当我出门以后，你就开始不停地抄写，直到我回家。在这个过程中，不知道具体要写多少遍，只能根据“我是否回家“来判断是否停止抄写，只知道循环结束的条件，不知道循环的次数（抄几遍），所以此时用 `while` 循环比较合适。
+
+### 13.2 for 循环的特点
+
+`for` 循环能在循环开始前就确定循环几次，是基于**序列或计数**的循环结构。`for` 循环的语法为`for 变量 in 可迭代对象：` 这里的可迭代对象是有一定范围的。并且前文中学到的`range()`、 `enumerate`  等都是给定了范围，确认了循环的次数。因此，当你明确知道需要执行多少次循环，或者需要遍历一个固定集合时，for 循环会让代码显得更加直观和简洁
+
+**例子：跑步**
+
+去操场跑步减肥，计划跑 10 圈。此时非常清楚循环的次数是 10 。当 10 圈跑完以后，自然停止，循环也相应的结束了，此时用 `for` 循环就非常合适。
+
+若是计划跑步 30 分钟，那么 30 分钟内需要跑多少圈不得而知，此时则用 `while` 循环更合适。
+
+### 13.3 如何选择 while 和 for？
+
+主要依据以下两个方面：
+
+1. 循环次数的确定性
+    1. 已知次数：事先清除循环需要执行的次数，或利用一个已知序列来遍历数据，可以考虑使用 `for` 循环。
+    2. 未知次数：如果循环的终止条件是动态的，依赖于程序运行时的状态而非一个固定的次数，那么就可以考虑 `while` 循环。例如：不断获取用户输入直到合法；不断读取文件数据直到文件末尾。
+2. 代码的简洁性和灵活性
+    1. `for`  循环：将初始化、条件判断和更新迭代变量整合到一行代码中，代码结构清晰、紧凑。
+    2. `while` 循环：提供了更大的灵活性，但需要额外关注循环条件和退出机制，防止出现无限循环的问题。
+
+**小提示：** 
+
+尽管所有的 `while` 循环都可以通过 `for` 循环实现，反之亦然。但在实际编程中，选择最直观、最能反应问题本质的循环结构，会让代码更容易理解和维护。
+
+
+
+## 14. 程序循环的逐步实现
+
+### 14.1 for 循环实现0到100的总和
+
+```python
+total = 0
+
+for i in range(101):
+    total += i
+print(total)
+```
+
+### 14.2 增加用户输入功能，用户指定开始整数和结束整数
+
+```python
+total = 0
+print('现在需要求和')
+start = int(input('请输入开始整数：'))
+end =  int(input('请输入结束整数：'))
+
+
+for i in range(start, end+1):
+    total += i
+print(total)
+
+#-------output-------
+现在需要求和
+请输入开始整数：0
+请输入结束整数：100
+5050
+```
+
+获取一次用户输入：
+
+```python
+user_input = input('请输入两个数字，用空格分隔：').split()
+total = 0
+
+
+for i in range(int(user_input[0]), int(user_input[1]) + 1):
+    total += i
+print(total)
+
+#-------output-------
+请输入两个数字，用空格分隔：0 100
+5050
+```
+
+### 14.3 防止用户先输入结束整数
+
+```python
+user_input = input('请输入两个数字，用空格分隔：').split()
+start_num, end_num = int(user_input[0]), int(user_input[1])
+
+# 检查起始数字是否小于结束数字
+if start_num >= end_num:
+    print('输入不合法，程序停止~')
+else:
+    total = 0
+    for i in range(start_num, end_num+1):
+        total += i
+    print(f'{start_num} 到 {end_num} 之间的总和 =  {total}')
+    
+#-------output-------
+请输入两个数字，用空格分隔：100 0
+输入不合法，程序停止~
+```
+
+
+
+### 14.4 防止用户输入的非纯数字
+
+```python
+user_input = input('请输入两个数字，用空格分隔：')
+user_input_replace = user_input.replace(' ', '')
+if user_input_replace.isdigit():
+    start_num, end_num = int(user_input.split()[0]), int(user_input.split()[1])
+    # 检查起始数字是否小于结束数字
+    if start_num >= end_num:
+        print('输入不合法，请先输入开始整数，再输入结束整数，程序停止~')
+    else:
+        total = 0
+        for i in range(start_num, end_num+1):
+            total += i
+        print(f'{start_num} 到 {end_num} 之间的总和 =  {total}')
+else:
+    print('输入不合法，需要输入纯数字~')
+    
+#-------output-------
+请输入两个数字，用空格分隔：abc 98
+输入不合法，需要输入纯数字~
+```
+
+注意：也可将 `line3` 改为 `if not` ，将核心内容放在`else` 里。
+
+```python
+# 获取用户输入
+user_input = input('请输入两个数字（用空格分隔）：')
+# 判断输入是否为纯数字（忽略空格）
+if not user_input.replace(' ', '').isdigit():
+    print('输入不合法，需要输入纯数字～')
+else:
+    # 拆分输入，转换为整数
+    str_to_nums = user_input.strip().split()
+    start_num, end_num = int(str_to_nums[0]), int(str_to_nums[1])
+    if start_num >= end_num:
+        print('输入不合法，程序停止～')
+    else:
+        total = 0
+        for num in range(start_num, end_num + 1):
+            total += num
+        print(f"{start_num} 到 {end_num} 之间的总和 = {total}")
+```
+
+
+
+### 14.5 实现输入不合法重新输入
+
+输入错误后，用户往往需要再试一次，而不是直接停止运行，这就用到 `while` 循环来反复检查。
 
 
 
