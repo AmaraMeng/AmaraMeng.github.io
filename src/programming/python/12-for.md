@@ -1470,9 +1470,67 @@ else:
 
 输入错误后，用户往往需要再试一次，而不是直接停止运行，这就用到 `while` 循环来反复检查。
 
+思路：
 
+在上述代码外侧加一个`while` 循环判断输入是否合法
 
+```python
+is_valid = False
 
+while not is_valid:
+    # 获取用户输入
+    user_input = input('请输入两个数字（用空格分隔）：')
+    # 判断输入是否为纯数字（忽略空格）
+    if not user_input.replace(' ', '').isdigit():
+        print('输入不合法，需要输入纯数字～')
+    else:
+        # 拆分输入，转换为整数
+        str_to_nums = user_input.strip().split()
+        start_num, end_num = int(str_to_nums[0]), int(str_to_nums[1])
+        if start_num >= end_num:
+            print('输入不合法，程序停止～')
+        else:
+            total = 0
+            for num in range(start_num, end_num + 1):
+                total += num
+            print(f"{start_num} 到 {end_num} 之间的总和 = {total}")
+            is_valid = True
+
+#-------output-------            
+请输入两个数字（用空格分隔）：x y
+输入不合法，需要输入纯数字～
+请输入两个数字（用空格分隔）：3 1
+输入不合法，程序停止～
+请输入两个数字（用空格分隔）：1 3
+1 到 3 之间的总和 = 6
+```
+
+发现问题：如果用户没输入完不小心按了回车，输入中不包含空格，那么程序会报错，可以再加一句 `if` 判断。
+
+```python
+is_valid = False
+
+while not is_valid:
+    # 获取用户输入
+    user_input = input('请输入两个数字（用空格分隔）：')
+    # 判断输入是否为纯数字（忽略空格）
+    if not user_input.replace(' ', '').isdigit():
+        print('输入不合法，需要输入纯数字～')
+    elif not ' ' in user_input.strip():
+        print('输入不合法，请重新输入～')
+    else:
+        # 拆分输入，转换为整数
+        str_to_nums = user_input.strip().split()
+        start_num, end_num = int(str_to_nums[0]), int(str_to_nums[1])
+        if start_num >= end_num:
+            print('输入不合法，程序停止～')
+        else:
+            total = 0
+            for num in range(start_num, end_num + 1):
+                total += num
+            print(f"{start_num} 到 {end_num} 之间的总和 = {total}")
+            is_valid = True
+```
 
 
 
