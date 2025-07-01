@@ -1516,7 +1516,7 @@ while not is_valid:
     # 判断输入是否为纯数字（忽略空格）
     if not user_input.replace(' ', '').isdigit():
         print('输入不合法，需要输入纯数字～')
-    elif not ' ' in user_input.strip():
+    elif not (' ' in user_input.strip()):          # 加括号确保括号内的语句先执行
         print('输入不合法，请重新输入～')
     else:
         # 拆分输入，转换为整数
@@ -1531,6 +1531,391 @@ while not is_valid:
             print(f"{start_num} 到 {end_num} 之间的总和 = {total}")
             is_valid = True
 ```
+
+
+
+不用嵌套如何实现？
+
+方法一：
+
+```python
+is_valid = False
+
+while not is_valid:
+    # 获取用户输入
+    user_input = input('请输入两个数字（用空格分隔）：')
+    # 判断输入是否为纯数字（忽略空格）
+    if not user_input.replace(' ', '').isdigit():
+        print('输入不合法，需要输入纯数字～')
+        continue
+    # 拆分输入，转换为整数
+    str_to_nums = user_input.strip().split()
+    start_num, end_num = int(str_to_nums[0]), int(str_to_nums[1])
+    if start_num >= end_num:
+        print('输入不合法，请重新输入～')
+        continue
+    total = 0
+    for num in range(start_num, end_num + 1):
+        total += num
+    print(f"{start_num} 到 {end_num} 之间的总和 = {total}")
+    is_valid = True
+
+#-------output-------       
+请输入两个数字（用空格分隔）：3 1
+输入不合法，请重新输入～
+请输入两个数字（用空格分隔）：x y
+输入不合法，需要输入纯数字～
+请输入两个数字（用空格分隔）：1 3
+1 到 3 之间的总和 = 6
+```
+
+上述循环结束是根据 `is_valid` 的状态判断的。
+
+方法二：
+
+```python
+while True:
+    user_input = input('请输入两个数字（用空格分隔）：')
+
+    # 判断输入是否只含空格和数字
+    if not user_input.replace(' ', '').isdigit():
+        print('输入不合法，需要输入纯数字～')
+        continue
+
+    # 拆分输入,判断输入是否为两个数字
+    parts = user_input.strip().split()
+    if len(parts) != 2:
+        print('输入不合法，需要输入两个数字！')
+        continue
+
+    # 判断输入是否是单独的数字
+    if not (' ' in user_input.strip()):
+        continue
+        
+    # 将分割后的字符串转换为整数
+    start_num = int(parts[0])
+    end_num = int(parts[1])
+    
+    # 验证起始和结束数字的关系
+    if start_num >= end_num:
+        print('开始数字需要小于结束数字，请重新输入～')
+        continue
+        
+    # 若输入合法则开始计算并输入结果，然后跳出循环
+    count = end_num - start_num + 1
+    total = (start_num + end_num) * count / 2
+    print(f'{start_num} 到 {end_num} 之间的总和 = {total}')
+    break
+```
+
+注意：`continue` 的使用之存在于 `while` 或 `for` 循环中，虽然看起来 `continue` 是处于 `if` 判断中，但实际是处于 `while` 循环中，因此 `if` 只是用来确定 `continue` 执行的条件，`continue` 执行后，所在循环中，该语句后的代码均不执行。
+
+该方法用 `break` 来结束循环，因此前面是 `while True` 也并不会一直循环下去。
+
+
+
+## 15. 练习
+
+![](./12-for.assets/image-20250701143553072.png)
+
+```python
+import random
+
+# 运势库
+fortunes = {
+    'F': {
+        'young': [
+            "你会考上清华并找到一个完美的男朋友",
+            "你会变得更漂亮，大家都羡慕你",
+            "会遇到志同道合的好朋友",
+            "你的成绩会突飞猛进，老师都表扬",
+            "爸妈会给你买新手机",
+            "暗恋的人可能也喜欢你哦"
+        ],
+        'adult': [
+            "事业顺利，爱情美满，钱包鼓鼓",
+            "有人暗恋你，要留意身边的人哦",
+            "会遇到贵人相助，烦恼一扫光",
+            "投资理财有收获，生活更自在",
+            "家庭和睦，福气满满",
+            "今年会有一趟说走就走的旅行"
+        ]
+    },
+    'M': {
+        'young': [
+            "学习进步，勇夺年级第一",
+            "打游戏运气爆棚，开箱必出金",
+            "人缘爆棚，朋友都挺你",
+            "体育表现优异，拿到好名次",
+            "暗恋的女生会和你说话",
+            "爸妈可能给你奖励零花钱"
+        ],
+        'adult': [
+            "升职加薪，迎娶白富美，走上人生巅峰",
+            "投资顺利，钱包鼓鼓",
+            "事业稳定，家庭幸福",
+            "兄弟朋友助力多，心想事成",
+            "工作顺利，老板赏识",
+            "有机会实现小目标，换车买房不是梦"
+        ]
+    }
+}
+
+is_stop = False
+while not is_stop:
+    while True:
+        # 获取性别输入并判断是否合法
+        gender = input('请输入您的性别（F/M）：')
+        if gender.strip() != 'F' and gender != 'M':
+            print('性别输入不合法，请输入 F 或 M ！')
+            continue
+        break
+    while True:
+        # 获取年龄输入并判断是否合法
+        age = input('请输入您的年龄：')
+        if not age.strip().isdigit():
+            print('年龄输入不合法，请输入纯数字！')
+            continue
+        if int(age) >= 120:
+            print('请输入合适的年龄！')
+            continue
+        break
+
+    # 输入合法，判断什么运势
+    if int(age) < 18:
+        if gender == 'F':
+            fortune = random.choice(fortunes['F']['young'])
+            print(fortune)
+            choice = input('是否继续测运势（Y/N）：')
+            if choice == 'N':
+                is_stop = True
+        else:
+            fortune = random.choice(fortunes['M']['young'])
+            print(fortune)
+            choice = input('是否继续测运势（Y/N）：')
+            if choice == 'N':
+                is_stop = True
+    elif int(age) <= 120:
+        if gender == 'F':
+            fortune = random.choice(fortunes['F']['adult'])
+            print(fortune)
+            choice = input('是否继续测运势（Y/N）：')
+            if choice == 'N':
+                is_stop = True
+        else:
+            fortune = random.choice(fortunes['M']['adult'])
+            print(fortune)
+            choice = input('是否继续测运势（Y/N）：')
+            if choice == 'N':
+                is_stop = True
+```
+
+注意：
+
+判断输入是否合法的时候，可以建立两个循环，性别的时候一个循环，年龄的时候一个循环。
+
+
+
+优化：
+
+1. 多次判断是否继续，可以全部提出来 （line 78-80）。
+
+```python
+import random
+
+# 运势库
+fortunes = {
+    'F': {
+        'young': [
+            "你会考上清华并找到一个完美的男朋友",
+            "你会变得更漂亮，大家都羡慕你",
+            "会遇到志同道合的好朋友",
+            "你的成绩会突飞猛进，老师都表扬",
+            "爸妈会给你买新手机",
+            "暗恋的人可能也喜欢你哦"
+        ],
+        'adult': [
+            "事业顺利，爱情美满，钱包鼓鼓",
+            "有人暗恋你，要留意身边的人哦",
+            "会遇到贵人相助，烦恼一扫光",
+            "投资理财有收获，生活更自在",
+            "家庭和睦，福气满满",
+            "今年会有一趟说走就走的旅行"
+        ]
+    },
+    'M': {
+        'young': [
+            "学习进步，勇夺年级第一",
+            "打游戏运气爆棚，开箱必出金",
+            "人缘爆棚，朋友都挺你",
+            "体育表现优异，拿到好名次",
+            "暗恋的女生会和你说话",
+            "爸妈可能给你奖励零花钱"
+        ],
+        'adult': [
+            "升职加薪，迎娶白富美，走上人生巅峰",
+            "投资顺利，钱包鼓鼓",
+            "事业稳定，家庭幸福",
+            "兄弟朋友助力多，心想事成",
+            "工作顺利，老板赏识",
+            "有机会实现小目标，换车买房不是梦"
+        ]
+    }
+}
+
+is_stop = False
+while not is_stop:
+    while True:
+        # 获取性别输入并判断是否合法
+        gender = input('请输入您的性别（F/M）：')
+        if gender.strip() != 'F' and gender != 'M':
+            print('性别输入不合法，请输入 F 或 M ！')
+            continue
+        break
+    while True:
+        # 获取年龄输入并判断是否合法
+        age = input('请输入您的年龄：')
+        if not age.strip().isdigit():
+            print('年龄输入不合法，请输入纯数字！')
+            continue
+        if int(age) >= 120:
+            print('请输入合适的年龄！')
+            continue
+        break
+
+    # 输入合法，判断什么运势
+    if int(age) < 18:
+        if gender == 'F':
+            fortune = random.choice(fortunes['F']['young'])
+            print(fortune)
+        else:
+            fortune = random.choice(fortunes['M']['young'])
+            print(fortune)
+    elif int(age) <= 120:
+        if gender == 'F':
+            fortune = random.choice(fortunes['F']['adult'])
+            print(fortune)
+        else:
+            fortune = random.choice(fortunes['M']['adult'])
+            print(fortune)
+    choice = input('是否继续测运势（Y/N）：')
+    if choice == 'N':
+        is_stop = True
+```
+
+
+
+2. `int(age)` 多次出现，在判断完它是否合法以后可以存成一个变量，在 `line 62` 加入代码 `age = int(age)`  。
+
+```python
+age = int(age)
+    # 输入合法，判断什么运势
+    if age < 18:
+        if gender == 'F':
+            fortune = random.choice(fortunes['F']['young'])
+            print(fortune)
+        else:
+            fortune = random.choice(fortunes['M']['young'])
+            print(fortune)
+    elif age <= 120:
+        if gender == 'F':
+            fortune = random.choice(fortunes['F']['adult'])
+            print(fortune)
+        else:
+            fortune = random.choice(fortunes['M']['adult'])
+            print(fortune)
+    choice = input('是否继续测运势（Y/N）：')
+    if choice == 'N':
+        is_stop = True
+```
+
+
+
+其他方法：
+
+```python
+import random
+
+# 运势库
+fortunes = {
+    'F': {
+        'young': [
+            "你会考上清华并找到一个完美的男朋友",
+            "你会变得更漂亮，大家都羡慕你",
+            "会遇到志同道合的好朋友",
+            "你的成绩会突飞猛进，老师都表扬",
+            "爸妈会给你买新手机",
+            "暗恋的人可能也喜欢你哦"
+        ],
+        'adult': [
+            "事业顺利，爱情美满，钱包鼓鼓",
+            "有人暗恋你，要留意身边的人哦",
+            "会遇到贵人相助，烦恼一扫光",
+            "投资理财有收获，生活更自在",
+            "家庭和睦，福气满满",
+            "今年会有一趟说走就走的旅行"
+        ]
+    },
+    'M': {
+        'young': [
+            "学习进步，勇夺年级第一",
+            "打游戏运气爆棚，开箱必出金",
+            "人缘爆棚，朋友都挺你",
+            "体育表现优异，拿到好名次",
+            "暗恋的女生会和你说话",
+            "爸妈可能给你奖励零花钱"
+        ],
+        'adult': [
+            "升职加薪，迎娶白富美，走上人生巅峰"
+            "投资顺利，钱包鼓鼓",
+            "事业稳定，家庭幸福",
+            "兄弟朋友助力多，心想事成",
+            "工作顺利，老板赏识",
+            "有机会实现小目标，换车买房不是梦"
+        ]
+    }
+}
+
+while True:
+    gender = input('请输入您的性别（F/M），输入 Q 退出：').strip().upper()
+    if gender == 'Q':
+        print('已退出程序。')
+        break
+    
+    age_input = input('请输入您的年龄：').strip()
+    if not age_input.isdigit():
+        print('输入年龄无效，请输入正确数字！\n')
+        continue
+        
+    age = int(age_input)
+    
+    if gender in fortunes:
+        if age < 18:
+            age_group = 'young'
+        else:
+            age_group = 'adult'
+        
+        # age_group = 'young' if age < 18 else 'adult'    （简写形式）
+        
+        fortune_list = fortunes[gender][age_group]
+        print('***您今年的运势***')
+        print(random.choice(fortune_list))
+        print()
+    else:
+        print('输入性别无效，请输入 F 或 M！\n')
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
