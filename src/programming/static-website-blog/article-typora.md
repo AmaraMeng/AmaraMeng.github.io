@@ -37,6 +37,8 @@ toc: true
 
 ::: 
 
+**注意：**  使用 `preview` 功能时，后面需要加上空格。
+
 ## 2. 代码块
 
 ::: preview 代码块示范
@@ -129,7 +131,7 @@ public class HelloWorld {
 
 ## 5. 有序序列
 
-::: preview
+::: preview 
 
 1. 赵
 2. 钱
@@ -141,9 +143,11 @@ public class HelloWorld {
 
 :::
 
+
+
 ## 6. 无序序列
 
-::: preview
+::: preview 
 
 - 大中华地区
     - 解放碑
@@ -152,6 +156,8 @@ public class HelloWorld {
 - 解放路
 
 :::
+
+
 
 ## 7. 数学公式
 
@@ -168,39 +174,39 @@ $$
 
 ### 7.2 行内公式语法
 
-::: preview
+::: preview 
 
 Euler's identity $e^{i\pi}+1=0$ is a beautiful formula in $\mathbb{R}^2$.
 
-:::
+::: 
 
 ### 7.3 公式块语法
 
-::: preview
+::: preview 
 $$
 \frac{\partial^r}{\partial\omega^r}\left(\frac{y^{\omega}}{\omega}\right)
 =\left(\frac{y^{\omega}}{\omega}\right)\left\{(\log y)^r+\sum_{i=1}^r\frac{(-1)^i r\cdots(r-i+1)(\log y)^{r-i}}{\omega^i}\right\}
 $$
 
 
-:::
+::: 
 
 ## 8. 任务列表
 
-::: preview
+::: preview 
 
 - [x] 计划 A
 - [ ] 计划 B
 
-:::
+::: 
 
 
 
 ## 9. 选项卡
 
-:::: preview
+:::: preview 
 
-::: tabs
+::: tabs 
 
 @tab 教学栗子
 
@@ -220,27 +226,27 @@ print ("1234567890")
 
 
 
-@tab 实操
+@tab 实操 
 
 0987654321
 
 
 
-@tab 作业
+@tab 作业 
 
 自己做一遍
 
-:::
+::: 
 
-::::
+:::: 
 
 
 
 ## 10. 代码块分组
 
-:::: preview
+:::: preview 
 
-::: code-tabs
+::: code-tabs 
 
 @tab 代码1
 
@@ -272,49 +278,49 @@ print(a + b)
 
 ## 11. 行内代码
 
-::: preview
+::: preview 
 
 `pnpm install XXXX`
 
-:::
+::: 
 
 
 
 ## 12. 提示容器
 
-:::: preview
+:::: preview 
 
 
 
-::: important
+::: important 
 
 重要点。
 
-:::
+::: 
 
 
 
-::: info 特殊信息！
+::: info 特殊信息！ 
 
 信息点。
 
-:::
+::: 
 
 
 
-::: note
+::: note 
 
 注释点。
 
-:::
+::: 
 
 
 
-::: tip
+::: tip 
 
 小技巧。
 
-:::
+::: 
 
 
 
@@ -340,13 +346,13 @@ print(a + b)
 
 :::
 
-::::
+:::: 
 
 
 
 ## 13. 高亮
 
-::: preview
+::: preview 
 
 你好，==William==.
 
@@ -354,7 +360,7 @@ print(a + b)
 
 ## 14. 加密显示
 
-::: preview
+::: preview 
 
 你好，!!William!!
 
@@ -362,7 +368,7 @@ print(a + b)
 
 ## 15. 自定义对齐
 
-:::: preview
+:::: preview 
 
 ::: left
 
@@ -402,7 +408,7 @@ print(a + b)
 
 ## 16. 文章加密
 
-::: preview
+::: preview 
 
 VScode 的 `theme.ts`文件中找到加密配置，代码如下：
 
@@ -458,7 +464,7 @@ VScode 的 `theme.ts`文件中找到加密配置，代码如下：
 
 在 Typora 中输入竖线 `|` 作为表格的边界，中间以空格隔开，按回车键形成表格。
 
-::: preview
+::: preview 
 
 | 表格标题（默认） | 表格标题（默认） | 表格标题（默认） |
 | :--------------: | :--------------: | :--------------: |
@@ -471,3 +477,13 @@ VScode 的 `theme.ts`文件中找到加密配置，代码如下：
 :::
 
 **tips:**  加行 `ctrl + enter`，加列则在表格内鼠标右键 `表格→在左侧/右侧插入` 。
+
+
+
+## 20. 文字加粗
+
+两个方法：
+
+- 在需要加粗的文字左右两侧输入两个星号。
+- 选中需要加粗的文字，快捷键 `Ctrl+B` 。
+
