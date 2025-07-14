@@ -29,7 +29,8 @@ export default navbar([
   text: "翻译", 
   icon: "fanyi", 
   children:[
-    {text:"词汇",icon:"cihuiben", link:"/translation/vocabulary/"}
+    {text:"词汇", icon:"cihuiben", link:"/translation/vocabulary/"},
+    {text:"Peki", icon:"fanyi", link:"/translation/peki/"}
   ] 
 },
 {text: "运动", icon:"jianshenfang", link: "/sports/"},
