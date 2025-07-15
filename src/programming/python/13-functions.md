@@ -792,6 +792,288 @@ print(result4)
 
 
 
+设定默认值的情况下传入参数：
+
+```python
+def make_drink(size='中杯', drink_type='奶茶', ice=True):
+    result = f'{size}的{drink_type}'
+    result += f'(去冰)' if not ice else ''       # if not ice 成立 输出前面，不成立输出 else 后面
+    # 等价于
+    # if not ice:
+    #     result += '去冰'
+    # else:
+    #     result += ''
+    print(f'正在制作：{result}')
+
+# 调用举例
+make_drink()           # 中杯奶茶
+make_drink('大杯')      # 大杯的奶茶
+make_drink('大杯', '柠檬茶')      # 大杯的柠檬茶
+make_drink(drink_type='果汁')                  # 中杯的果汁
+make_drink(ice=False)                         # 中杯的奶茶（去冰）
+```
+
+
+
+### 3.5 练习
+
+![](./13-functions.assets/image-20250715141622735.png)
+
+
+
+方法一：使用乘法
+
+```python
+def print_stars(char, count):
+    for i in range(1, int(count) + 1):
+        print(char * i)
+
+print_stars('*', 3)
+```
+
+优化：
+
+传入 count 参数时就是整型，因此不必转换数据类型
+
+```python
+def print_stars(char, count):
+    for i in range(1, count + 1):
+        print(char * i)
+
+print_stars('*', 3)
+```
+
+
+
+方法二：两层循环
+
+```python
+def print_stars(char, count):
+    for i in range(1, int(count) + 1):
+        for j in range(i):
+            print(char, end='')          # 内层循环每次结尾改为空，不换行
+        print()                          # 内层循环全部结束后输出换行
+
+print_stars('*', 3)
+```
+
+
+
+![](./13-functions.assets/image-20250715150045286.png)
+
+Answer:
+
+```python
+def order_coffee(size, sugar=True, milk=True, temperature='热'):
+    if sugar:
+        if milk:
+            print(f'您点了一杯{size}杯{temperature}咖啡，含糖，含牛奶')
+        else:
+            print(f'您点了一杯{size}杯{temperature}咖啡，含糖，不加牛奶')
+    else:
+        if milk:
+            print(f'您点了一杯{size}杯{temperature}咖啡，无糖，含牛奶')
+        else:
+            print(f'您点了一杯{size}杯{temperature}咖啡，无糖，不加牛奶')
+
+order_coffee('中')
+order_coffee('大', sugar=False, milk=False, temperature='冰')
+```
+
+优化：
+
+取消重复工作
+
+1. `您点了一杯{size}杯{temperature}咖啡` 重复了四次，可以单独设置一个变量作为模板  `message = f'您点了一杯{size}杯{temperature}咖啡，'`  或 `message = '您点了一杯{size}杯{temperature}咖啡，'.format(size=size, temperature=temperature)`  。
+2. “含糖”重复2次，类似的四个词语均重复，考虑在模板后拼接，因此代码可以修改如下：
+
+```python
+def order_coffee(size, sugar=True, milk=True, temperature='热'):
+    message = f'您点了一杯{size}杯{temperature}咖啡，'
+    # message = '您点了一杯{size}杯{temperature}咖啡，'.format(size=size, temperature=temperature)
+    if sugar:
+        message += '含糖，'
+    else:
+        message += '无糖，'
+    if milk:
+        message += '含牛奶'
+    else:
+        message += '不加牛奶'
+        
+    print(message)
+
+
+order_coffee('中')
+order_coffee('大', sugar=False, milk=False, temperature='冰')
+```
+
+
+
+
+
+## 4. 适当的使用函数便于协作
+
+将复杂的代码和逻辑封装成一个函数，对外提供一个简单的接口，解决了代码冗余和难以理解的问题。
+
+例如：计算两地距离
+
+代码如下：
+
+```python
+import math
+
+# 定义地球半径（单位：公里）
+R = 6371.0
+
+# 示例：计算洛杉矶到纽约的距离
+lat1, lon1 = 34.052235, -118.243683  # 洛杉矶
+lat2, lon2 = 40.712776, -74.005974  # 纽约
+
+# 将纬度和经度从度数转换为弧度
+lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+
+# Haversine公式
+dlat = lat2 - lat1
+dlon = lon2 - lon1
+a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+# 计算距离
+distance = R * c
+print(f"两个地点之间的距离为 {distance:.2f} 公里")
+```
+
+
+
+上面实现了两个经纬度之间坐标的距离，朋友想要使用这个程序计算距离，但是他不懂代码看的头都大了，只想知道“如何输入经纬度，如何得到结果”，对内部算法毫无兴趣，因此可以将代码封装成函数再发给朋友。
+
+封装后的代码如下：
+
+```python
+import math
+
+def distance_cal(lat1, lon1, lat2, lon2):
+
+    # 定义地球半径（单位：公里）
+    R = 6371.0
+
+    # 将纬度和经度从度数转换为弧度
+    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+
+    # Haversine公式
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    # 计算距离
+    distance = R * c
+    print(f"两个地点之间的距离为 {distance:.2f} 公里")
+```
+
+我们可以将这个代码文件直接命名为 `LoveDistance` 方便在另一个代码文件中调用。
+
+![](./13-functions.assets/image-20250715152428887.png)
+
+新建一个代码文件，注意要和刚才的 `LoveDistance` 文件在同一个层级下，第一行导入这个封装的代码 `import LoveDistance` 。
+
+```python
+import LoveDistance
+
+# 示例：计算洛杉矶到纽约的距离
+lat1, lon1 = 34.052235, -118.243683  # 洛杉矶
+lat2, lon2 = 40.712776, -74.005974  # 纽约
+
+distance = LoveDistance.distance_cal(lat1, lon1, lat2, lon2)     # 这一步可以不进行赋值，因为封装的代码里包含 print 语句
+```
+
+
+
+优点：
+
+- 简化调用：朋友只需要关心如何传入坐标，无需了解内部计算细节。
+- 方便维护：若需要调整算法，只需要修改 `distance_cal`  函数内部代码，调用部分的代码保持不变。
+- 提高协作效率：代码模块化后，团队成员之间可以独立开发和调试。
+
+注意：这个部分的重点在于更加理解函数存在的意义，至于不同文件之间函数的调用，后续会详细讲解。
+
+
+
+## 5. 返回值 return
+
+作用：返回函数的计算结果、并结束函数的执行。
+
+当执行到 `return` 时，会把后面的结果（如果有的话）返回给调用者，随后立即结束当前函数。
+
+若没写，默认返回 `None` ，表示不返回任何有意义的值。
+
+语法如下：
+
+```python
+def 函数名(参数):
+    # 函数体
+    return 返回值
+```
+
+理解 `return` ：家具 vs. 管道疏通
+
+word 做成 PPT vs. 送材料
+
+所以说函数的 `return` 不是必须的，那么什么时候需要？什么时候不需要呢？
+
+依据一：看函数操作的结果是否需要，类似数据计算/红木家具制作，就需要；
+
+依据二：如果只需要函数操作，不需要返回具体的操作结果，就可以不用 return；
+
+依据三：函数需要提前结束时，可以借助 return 对函数的特性。
+
+
+
+```python
+# 只能看见结果（函数没有返回值）
+# 就像只能看到仪器输出的结果，但却无法在其他地方使用它
+def show_calculation_result(x, y):
+    result = x + y
+    print(f'计算结果是：{result}')     # 只能在此看到结果
+
+# 调用函数
+output = show_calculation_result(3, 4)
+print(f'函数的返回值是：{output}')            # 函数实际没有返回值，因此得到 None
+
+#-------output-------
+计算结果是：7
+函数的返回值是：None
+```
+
+
+
+如果尝试在函数外调用 `result`  的值，则会报错。因此必须得到返回值才能进一步操作
+
+```python
+def get_calculation_result(x, y):
+    result = x + y
+    return result
+
+# 调用函数并接收函数返回值
+output = get_calculation_result(3, 4)
+print(f'拿到的计算结果是：{output}')
+
+# 有了结果后续可以继续更多操作
+print(f'后续操作比如结果再乘以10：{output*10}')
+
+#-------output-------
+拿到的计算结果是：7
+后续操作比如结果再乘以10：70
+```
+
+
+
+
+
+
+
+
+
 
 
 
