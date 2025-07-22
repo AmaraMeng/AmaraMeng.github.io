@@ -143,7 +143,7 @@ result = math.pow(2, 3)
 print('2 的 3 次幂 = ', result)      # 8.0
 ```
 
-与内置的 `**` 运算符类似，但 `math.pow()` 总是返回 **`float` ** 。
+与内置的 `**` 运算符类似，但 `math.pow()` 总是返回   **`float`**   。
 
 
 
@@ -1047,7 +1047,7 @@ print(f'函数的返回值是：{output}')            # 函数实际没有返回
 
 
 
-如果尝试在函数外调用 `result`  的值，则会报错。因此必须得到返回值才能进一步操作
+如果尝试在函数外调用 `result`  的值，则会报错。因此必须得到返回值才能进一步操作。
 
 ```python
 def get_calculation_result(x, y):
@@ -1068,6 +1068,288 @@ print(f'后续操作比如结果再乘以10：{output*10}')
 
 
 
+是否有返回值不能判断程序是否执行。
+
+不需要返回值情况一：
+
+```python
+def unblock_toilet():
+    print('开始处理——有人拉了一根巨大的屎，导致厕所堵了。')
+    # 模拟耗费了 30 分钟
+    print('正在通厕所中...（耗时 30 分钟）')
+    print('厕所已经通了，问题解决！')
+    # 这里没有 return ，因为不需要交付任何结果给外部   
+    
+# 主程序
+unblock_toilet()       # 调用函数，虽然没有返回值，但是“师傅”确实执行了工作
+
+#-------output-------
+开始处理——有人拉了一根巨大的屎，导致厕所堵了。
+正在通厕所中...（耗时 30 分钟）
+厕所已经通了，问题解决！
+```
+
+不需要返回值情况二：
+
+```python
+def add_member(member_list, new_member):
+    """
+    将 new_member 添加到 member_list中。
+    函数没有 return， 因为操作结果（添加新成员）
+    直接反映在原列表上。
+    """
+
+    print(f'正在添加新成员：{new_member}')
+    member_list.append(new_member)            # 直接修改了传入的列表对象
+    print('添加完成，当前列表：', member_list)
+
+# 定义一个列表
+my_team = ['Alice', 'Bob']
+print('初始列表：', my_team)
+
+
+# 调用函数，不接收任何返回值
+add_member(my_team, 'Charlie')
+
+# 函数虽然没有 return，但 my_team 已经被修改
+print('最终列表：', my_team)
+
+#-------output-------
+初始列表： ['Alice', 'Bob']
+正在添加新成员：Charlie
+添加完成，当前列表： ['Alice', 'Bob', 'Charlie']
+最终列表： ['Alice', 'Bob', 'Charlie']
+```
+
+上述代码虽然没有返回值，但是对传入的列表做了实质性的修改，说明函数确实干了活，原列表直接发生了变化，因此无需再返回新列表。
+
+**总结：** 上述两个代码都证明了，不需要返回值，但是也完成了这个工作。
+
+
+
+需要返回值情况：
+
+- 返回单个值
+
+![](./13-functions.assets/image-20250717143015046.png)
+
+因此最后输出值为 `16` 。
+
+
+
+- 返回多个值
+
+其实当我们想要返回多个值时，我们可以取巧的方法。先来一个实际场景：
+
+午饭你做了两菜一汤，此刻你要把饭菜带到家里的三楼书房中用餐，如何只走一趟把饭菜拿到楼上。我们就可以拿一个托盘或菜篮装进去，就可以一次性带到三楼书房。哎，这个把饭菜（两菜一汤）带到三楼书房的过程，就像是返回多个值。
+
+来个小插曲：谁是函数？——做好饭、拿饭菜的你！没错，就是牛马的你～
+
+从上面这个场景可以看出，托盘、菜篮这两个是容器！
+
+有了容器这个关键词，我们触发到 python 中的列表、元组、字典、集合等容器的数据类型。
+
+所以对于函数返回多个值的方法之一就是：把多个值放到一个容器里，然后再去返回。（把多个值放到列表、元组、字典、集合等容器中，再去 return）。
+
+
+
+列表、元组、字典、集合如何选择？
+
+抓住两点：
+
+- 待返回的数据有什么特点；
+- 知道 python 的每种数据类型有什么特点。
+
+**汇总：** 基于要点一、要点二，可以选择出合适的数据类型。对于要点一来说，如果返回的数据是联系人（姓名、手机号），那么就可以选择字典；如果每个结果是独立的，那么可以选择列表、元组、集合。
+
+
+
+偷懒的方法就是将输出的多个数据用逗号 `,` 隔开，会默认返回：元组类型。
+
+代码示例如下：
+
+```python
+def get_coordinates():
+    x = 10
+    y = 20
+    return x,y                          # 返回多个值可以直接按照元组形式输出 return (x, y), 也可以按照列表形式 return [x, y]
+
+
+x_coord,y_coord = get_coordinates()
+print(x_coord,y_coord)
+
+result = get_coordinates()               # 默认多个返回值按照元组输出
+print(result)
+
+#-------output-------
+10 20
+(10, 20)
+```
+
+
+
+函数没有返回值，直接输出结果会得到 None。
+
+```python
+def greet():
+    print("Hello!")
+
+result = greet()
+print(result)
+
+#-------output-------
+Hello!
+None
+```
+
+
+
+**再次强调**：函数没有返回值，赋值操作会得到 None。此刻，可以想想之前哪些函数拥有返回值，哪些函数没有拥有？
+
+比如 `sort` 和 `sorted` ，`sort` 修改列表本身，因此没有返回值，也不需要赋值；`sorted` 的结果有返回值，要进行赋值再进一步使用。
+
+**等补充** 
+
+
+
+return 的结束函数功能：
+
+```python
+def check_number(num):
+    if num > 0:
+        return 'Positive'
+    else:
+        return 'Negative'
+    print('猜一猜会不会执行~')
+
+print(check_number(5))
+print(check_number(-3))
+
+#-------output-------
+Positive
+Negative
+```
+
+因为返回值会结束函数，因此不会执行函数内 `return` 后的代码。
+
+**总结：** 
+
+- `return` 语句可以返回值并结束函数。
+- 如果没有指定 `return` ，函数会返回 `None` 。
+- `return` 可以返回单个值、多值，甚至什么也不返回。
+- 只有循环存在于函数当中，就算循环没有执行完成，一遇到 `return` 就会马上停止，因为 `return` 会结束函数，而循环会存在于函数之中，故而函数结束影响到循环，循环随之结束。
+
+
+
+### 6. 题目：构造拼字游戏
+
+你需要编写一个函数，它接受一个由多个单词组成的字符串列表，目标是找出所有能用列表中的单词拼成的新单词，并返回拼出的新单词的个数。
+
+**要求**：
+
+1. 如果某个单词由两个或多个列表中的单词拼接而成，则认为它是一个拼出的单词。
+2. 比如，给定 `["cat", "dog", "cats", "dogcat"]`，`"dogcat"` 是由 `"dog"` 和 `"cat"` 拼成的，算作一个新单词。
+3. 如果某个单词本身就在列表中，不算作拼出的单词。
+
+### 输入：
+
+* 一个字符串列表 `words`，表示多个单词。
+
+### 输出：
+
+* 返回一个整数，表示可以由其他单词拼接而成的单词数量。
+
+### 示例：
+
+```python
+words = ["cat", "dog", "cats", "dogcat", "rat", "catsdog"]
+result = find_composed_words(words)
+print(result)
+```
+
+### 示例输出：
+
+```
+2
+```
+
+### 提示：
+
+1. "dogcat" 和 "catsdog" 是可以拼成的新单词。
+2. `"cat"`, `"dog"`, `"rat"` 等单词本身不算。
+
+### 代码模板：
+
+```python
+def find_composed_words(words: list) -> int:   # 该代码表示words这个参数的类型是列表，箭头后说明返回值是整型
+    pass
+```
+
+
+
+### 题目说明：
+
+我们需要编写一个函数，找出列表中所有由其他单词拼接成的单词。拼接是指两个或更多的单词组合成一个新单词，但这个新单词不能仅仅是原本在列表中存在的单词。
+
+### 示例1：
+
+`words = ["cat", "dog", "cats", "dogcat"]`
+
+* `"dogcat"` 是由 `"dog"` 和 `"cat"` 拼接而成的，所以它是一个拼接出来的新单词。
+* `"cat"`, `"dog"`, `"cats"` 本身已经在列表中，不算作拼接的单词。
+* 所以，返回值应该是 `1`，因为只有 `"dogcat"` 能够拼接出来。
+
+### 示例2：
+
+`words = ["bat", "man", "batman"]`
+
+* `"batman"` 是由 `"bat"` 和 `"man"` 拼接而成的。
+* `"bat"`, `"man"` 本身在列表中，所以不算拼接的单词。
+* 所以，返回值是 `1`，因为 `"batman"` 是唯一一个拼接的单词。
+
+### 结论：
+
+这个问题的关键是判断一个单词是否能通过拼接其他列表中的单词来构成，而不仅仅是列表中已经存在的单词。
+
+
+
+
+
+---
+
+Answer:
+
+```python
+def find_composed_words(words: list) -> int:
+    # 将单词列表转为集合，便于快速查找和判断
+    word_set = set(words)
+    
+    # 用来判断某个单词是否能由其他单词组成
+    def can_form(word):
+        # 从位置 i 切分为 word[:i] 和 word[i:]
+        for i in range(1, len(word)):
+            prefix = word[:i]      # 前缀部分
+            suffix = word[i:]      # 后缀部分
+
+            # 如果前缀是集合中的单词，且后缀满足：
+            # 1. 后缀本身是单词，或者
+            # 2. 后缀可以递归地由其他单词组成
+            if prefix in word_set and (suffix in word_set or can_form(suffix)):
+                return True
+        return False
+
+    count = 0  # 统计拼接成的新单词数量
+
+    for word in words:
+        # 先从集合中移除自己，避免拼接时用到自己本身
+        word_set.remove(word)
+        if can_form(word):  # 检查是否能被拼出
+            count += 1
+        word_set.add(word)  # 加回集合，供后续判断使用
+
+    return count
+
+```
 
 
 
@@ -1075,10 +1357,118 @@ print(f'后续操作比如结果再乘以10：{output*10}')
 
 
 
+---
+
+### 7. 题目：旋转数组
+
+#### 描述：
+
+给定一个整数列表`nums`，请编写一个函数，**将该列表循环右移k个位置**。你可以使用多种方法解决这个问题，但要求实现时不能直接使用列表的`reverse()`方法。你需要实现一个算法来优化旋转过程。
+
+#### 示例：
+
+```python
+rotate([1, 2, 3, 4, 5, 6, 7], 3)
+```
+
+**输出**：
+
+```
+[5, 6, 7, 1, 2, 3, 4]
+```
+
+#### 说明：
+
+1. 给定一个列表`[1, 2, 3, 4, 5, 6, 7]`，如果我们将其右移3位，得到的结果应该是`[5, 6, 7, 1, 2, 3, 4]`。
+2. `k`的值可能大于列表长度，但你可以使用`k % len(nums)`来减少不必要的旋转。
+
+### 要求：
+
+* 你需要编写一个函数来完成这个操作，并且尽量优化时间复杂度（考虑空间和时间复杂度的平衡）。
+
+#### 提示：
+
+* 如果`k`大于列表的长度，可以使用`k % len(nums)`来优化旋转次数。
+
+---
+
+Answer:
+
+```python
+def rotate(nums, k):
+    list1 = nums[:(len(nums)-(k % len(nums)))]
+    list2 = nums[(len(nums)-(k % len(nums))):]
+    return list2+list1
+
+
+# 示例 1：标准情况，旋转 3 位
+print(rotate([1, 2, 3, 4, 5, 6, 7], 3))
+# 输出：[5, 6, 7, 1, 2, 3, 4]
+
+# 示例 2：k 大于列表长度，测试是否能正确取模
+print(rotate([1, 2, 3], 5))
+# 输出：[2, 3, 1]
+
+# 示例 3：k 为 0，不旋转
+print(rotate([10, 20, 30], 0))
+# 输出：[10, 20, 30]
+
+# 示例 4：空列表
+print(rotate([], 4))
+# 输出：[]
+
+#-------output-------
+Traceback (most recent call last):
+  File "D:\Coder\test 1\test 2.py", line 21, in <module>
+    print(rotate([], 4))
+  File "D:\Coder\test 1\test 2.py", line 2, in rotate
+    list1 = nums[:(len(nums)-(k % len(nums)))]
+ZeroDivisionError: integer division or modulo by zero
+[5, 6, 7, 1, 2, 3, 4]
+[2, 3, 1]
+[10, 20, 30]
+```
 
 
 
+修改：要考虑空列表的情况
 
+```python
+def rotate(nums, k):
+    """
+    将列表 nums 向右旋转 k 位
+
+    参数:
+    nums -- 待旋转的整数列表
+    k -- 旋转的位数
+    """
+    n = len(nums)  # 获取原始列表的长度
+    if n == 0:
+        return []  # 空列表，直接返回空列表
+
+    k = k % n  # 防止k大于列表长度，取模进行优化
+
+    # 使用切片操作：列表的最后 k 个元素 + 剩下的前 n-k 个元素
+    rotated = nums[-k:] + nums[:-k]
+
+    return rotated  # 返回旋转后的新列表
+
+# 示例 1：标准情况，旋转 3 位 
+print(rotate([1, 2, 3, 4, 5, 6, 7], 3))
+# 输出：[5, 6, 7, 1, 2, 3, 4]
+
+# 示例 2：k 大于列表长度，测试是否能正确取模
+print(rotate([1, 2, 3], 5))
+# 输出：[2, 3, 1]
+
+# 示例 3：k 为 0，不旋转
+print(rotate([10, 20, 30], 0))
+# 输出：[10, 20, 30]
+
+# 示例 4：空列表
+print(rotate([], 4))
+# 输出：[]
+```
 
 
 
