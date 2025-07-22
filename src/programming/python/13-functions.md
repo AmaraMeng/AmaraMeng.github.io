@@ -1472,6 +1472,221 @@ print(rotate([], 4))
 
 
 
+## 8. 有无 return 的区别与场景
+
+简单总结：当需要获取函数的结果再做进一步处理的时候，就要返回值；如果只需要在函数中做一件事情，比如打印或存文件，而不需要往外提供结果，可以不用 return。
+
+### 8.1 场景1：函数需要返回计算结果
+
+1. 有 return 的情况
+
+```python
+def add(a, b):
+    return a + b
+
+result =  add(3, 5)
+print(result)     # 输出8
+```
+
+- **场景**：在需要获取函数计算结果并在后续代码中使用的情况下，必须使用 `return` 返回结果。
+- **解释**：`add` 函数返回两个参数的和，调用 `add(3, 5)` 返回 `8`，结果赋值给 `result`，随后可以用于其他操作。
+
+
+
+2. 无 return 情况
+
+```python
+def add_no_return(a, b):
+    print(a + b)
+
+result =  add_no_return(3, 5)
+print(result)        # 输出 8和None
+```
+
+- **场景**：函数只是执行某些操作（例如打印）而不需要返回任何值时，可以不使用 `return`。
+- **解释**：函数中没有 `return`，因此它执行 `print` 后不返回任何值，`result` 的值为 `None`。
+
+
+
+### 8.2 场景2：函数控制流程并根据条件返回值
+
+1. 有 return 情况
+
+```python
+def check_even_or_odd(num):
+    if num % 2 == 0:
+        return 'Even'
+    return 'Odd'
+
+result = check_even_or_odd(4)
+print(result)            # 输出 Even
+```
+
+- **场景**：在需要根据不同条件返回不同值的场景下，使用 `return` 可以确保在条件满足时立即返回结果。
+
+- **解释**：这里 `check_even_or_odd` 函数根据输入是否为偶数或奇数返回不同的结果。当 `num` 是偶数时，立即返回 "Even"。
+
+- **问题**：为什么这里可以支持省略 `else` ？   原因是：`return`  可以使函数提前停止，其他情况不能随意省略。
+
+
+
+2. 无 return 情况
+
+```python
+def check_even_or_odd_or_no_return(num):
+    if num % 2 == 0:
+        print("Even")
+    else:
+        print("Odd")
+
+result = check_even_or_odd_or_no_return(4)
+print(result)            # 输出 Even 和 None
+```
+
+- **场景**：如果不需要返回值，只是为了执行某些操作，例如打印不同的输出，可以不使用 `return`。
+
+- **解释**：函数只是打印偶数或奇数，不返回任何值，`result` 仍为 `None`。
+
+
+
+### 8.3 场景3：复杂逻辑中的提前终止。
+
+1. 有 return 提前终止
+
+```python
+def find_first_even(numbers):
+    for num in numbers:
+        if num % 2 == 0:
+            return num
+    return None        # 如果没有找到偶数
+
+
+result = find_first_even([1, 3, 6, 7, 10])
+print(result)                       # 输出 6，到输出就停止了
+```
+
+相较于 break, continue, return 的实现作用会更大，break 与 continue 的操作对象仅限于**当前循环**，return 是直接**结束整个函数**。（管理员与非管理员的区别）
+
+为什么这么说呢？就算是嵌套循环，都可以提前结束。
+
+- break 示例
+
+```python
+def demo_break():
+    for i in range(3):
+        print(f'外层循环开始：i = {i}')
+        for j in range(3):
+            print(f'内层循环：j = {j}')
+            if j == 1:
+                print('触发 break -> 仅跳出内层循环')
+                break
+        print('外层循环结束\n')
+
+demo_break()
+
+#-------output-------
+外层循环开始：i = 0
+内层循环：j = 0
+内层循环：j = 1
+触发 break -> 仅跳出内层循环
+外层循环结束
+
+外层循环开始：i = 1
+内层循环：j = 0
+内层循环：j = 1
+触发 break -> 仅跳出内层循环
+外层循环结束
+
+外层循环开始：i = 2
+内层循环：j = 0
+内层循环：j = 1
+触发 break -> 仅跳出内层循环
+外层循环结束
+```
+
+从上述代码可以看出：`break` 一但触发了就结束了当前循环，但外层循环会继续执行。
+
+- continue 示例
+
+```python
+def demo_continue():
+    for i in range(2):
+        print(f'外层循环开始：i = {i}')
+        for j in range(3):
+            print(f'内层循环：j = {j}')
+            if j == 1:
+                print('触发 continue -> 跳出本次循环剩余部分')
+                continue
+            print(f'内层循环：j = {j}')
+        print('外层循环结束\n')
+
+demo_continue()
+
+#-------output-------
+外层循环开始：i = 0
+内层循环：j = 0
+内层循环：j = 0
+内层循环：j = 1
+触发 continue -> 跳出本次循环剩余部分
+内层循环：j = 2
+内层循环：j = 2
+外层循环结束
+
+外层循环开始：i = 1
+内层循环：j = 0
+内层循环：j = 0
+内层循环：j = 1
+触发 continue -> 跳出本次循环剩余部分
+内层循环：j = 2
+内层循环：j = 2
+外层循环结束
+```
+
+- return 示例
+
+return 一旦执行，整个函数就结束了。与 break 只退出当前循环不同， return 会直接停止（退出）函数，不管有多少层循环都无法再往后执行。
+
+```python
+def demo_return():
+    for i in range(3):
+        print(f'外层循环开始：i = {i}')
+        for j in range(3):
+            print(f'内层循环：j = {j}')
+            if j == 1:
+                print('触发 return -> 直接结束函数！')
+                return     # 函数直接返回，不再执行后续语句
+        print(f'这一行将永远不会被执行到\n')
+    print('这一行也不会执行，因为函数在内层循环时就 return 了 \n')
+
+demo_return()
+
+#-------output-------
+外层循环开始：i = 0
+内层循环：j = 0
+内层循环：j = 1
+触发 return -> 直接结束函数！
+```
+
+
+
+小结：
+
+1. **`break`**：仅跳出当前循环层级，对外层循环无影响。
+
+2. **`continue`**：跳过当前循环剩余部分，直接开始下一次循环迭代。
+
+3. **`return`**：直接结束所在的整个函数，无论有多少层循环都会被立即终止。
+
+
+
+
+
+
+
+
+
+
+
 
 
 
