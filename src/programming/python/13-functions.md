@@ -1679,6 +1679,282 @@ demo_return()
 
 
 
+## 9. 函数变量的作用域
+
+### 9.1 局部变量与全局变量
+
+#### 9.1.1 局部变量
+
+Python 函数中变量的作用域和其他语言类似。如果变量是在函数内部定义的，就称为**局部变量** ，只在函数内部有效。一旦函数执行玩不，局部变量就会被收回，无法访问，例如：
+
+```python
+def add_sum(a, b):
+    result = a + b   
+```
+
+在函数内部定义了 result 这个变量，这个变量只在 `add_sum` 这个函数内有效，在函数外部则无法访问。
+
+#### 9.1.2 全局变量
+
+全局变量指的是函数外命名的变量，是定义在整个文件层次上的，例如：
+
+```python
+MIN_VALUE = 1
+MAX_VALUE = 10
+def validation_check(value):
+    if value < MIN_VALUE or value > MAX_VALUE:
+        print('validation check fails')
+```
+
+
+
+### 9.2 特殊情况举例
+
+#### 9.2.1 局部变量与全局变量同名情况
+
+当遇到函数内部局部变量和全局变量同名的情况，那么在函数内部，局部变量会覆盖全局变量，比如下面这种：
+
+```python
+MIN_VALUE = 1
+
+def validation_check(value):
+    MIN_VALUE = 5
+    if value == MIN_VALUE :
+        print(f'函数内 value 的值与 MIN_VALUE 相同：{MIN_VALUE}')
+
+validation_check(5)
+print(f'函数外的 MIN_VALUE 值为： {MIN_VALUE}')
+```
+
+```python
+a = 1
+def hello():
+    a = 2
+    print(a)
+    
+hello()
+print(a)
+
+#-------output-------
+2
+1
+```
+
+
+
+#### 9.2.2 只存在全局变量的情况
+
+如果遇到只存在全局变量的情况，也就是函数内部没有与全局变量同名的变量的情况下。编写下面的代码并思考会输出什么结果：
+
+```python
+a = 1
+
+def hello():
+    print(a)
+
+hello()
+print(a)
+
+#-------output-------
+1
+1
+```
+
+
+
+#### 9.2.3 函数内部的变量在声明前被调用
+
+如果函数内部的变量在声明前被调用，会出现什么情况。编写下面的代码并思考会输出什么结果：
+
+```python
+a = 1
+
+def hello():
+    print(a)
+    a = 2
+
+hello()
+print(a)
+```
+
+上述代码会报错！
+
+因为：当局部变量和全局变量同名时，函数内优先使用局部变量，但内部的变量 `a` 在调用时并没有被创建出来，因此会报错。
+
+
+
+解决方法：在函数内用 `global` 声明，函数内使用的变量 a 都是全局变量。
+
+```python
+a = 1
+
+def hello():
+    global a     # 使用 global 关键字声明 a 是全局变量
+    print(a)
+    a = 2
+
+print(a)
+hello()
+print(a)
+
+#-------output-------
+1
+1
+2
+```
+
+思考：输出的结果为什么是 `1, 1, 2` 呢？
+
+因为函数内声明了函数内使用的 a 都是全局变量，那么第一次调用时，程序运行到 line6，即 `a=2` 时，是对全局变量 a 做了修改，因此第二次调用时，全局变量 a 已经变成 2 了。
+
+
+
+#### 9.2.4 函数内部不能修改全局变量
+
+我们不能在函数内部随意改变全局变量的值。比如下面的写法就是错误的：
+
+ ```python
+ MIN_VALUE = 1
+ MAX_VALUE = 10
+ def validation_check(value):
+     # global MIN_VALUE, MAX_VALUE
+     MIN_VALUE += 1
+     print(MIN_VALUE)
+ 
+ validation_check(5)
+ ```
+
+只有像 line4 一样声明了是全局变量，代码才能正常运行，否则会报错。
+
+
+
+#### 9.2.5 嵌套函数
+
+类似的，对于嵌套函数来说，内部函数可以访问外部函数定义的变量，但是无法修改，若要修改，必须加上 `nonlocal` 这个关键词：
+
+```python
+def outer():
+    x = 'local'
+    def inner():
+        nonlocal x        # nonlocal 关键字表示这里的 x 就是外部函数 outer 定义的变量 x
+        x = 'nonlocal'
+        print('inner:', x)
+    inner()
+    print('outer:', x)
+    
+outer()
+
+#-------output-------
+inner: nonlocal
+outer: nonlocal
+```
+
+不加 `nonlocal` 时的结果如下：
+
+```python
+def outer():
+    x = 'local'
+    def inner():
+        x = 'nonlocal'
+        print('inner:', x)
+    inner()
+    print('outer:', x)
+
+outer()
+
+#-------output-------
+inner: nonlocal
+outer: local
+```
+
+
+
+## 10. 闭包
+
+### 10.1 什么是闭包？
+
+闭包 （closure）和前面讲到的嵌套函数类似，不同的是这里外部函数返回的是一个函数，而不是一个具体的值。返回的函数通常赋予一个变量，这个变量可以在后面被继续执行调用。
+
+
+
+```python
+def nth_power_rewrite(base, exponent):
+    return base ** exponent
+
+def nth_power(exponent):
+    def exponent_of(base):
+        return base ** exponent
+    return exponent_of            # 返回值是 exponent_of 函数
+
+
+square = nth_power(2)     # 计算一个数的平方
+cube = nth_power(3)       # 计算一个数的立方
+
+print(square)             # 输出的是里面含的函数
+print(cube)               # 输出的是里面含的函数
+
+print(square(3))          # 输出的是 3 的平方
+print(cube(3))            # 输出的是 3 的立方
+
+#-------output-------
+<function nth_power.<locals>.exponent_of at 0x000001BA846513A0>
+<function nth_power.<locals>.exponent_of at 0x000001BA850E03A0>
+9
+27
+```
+
+上述代码，line 10-11 是传入 `exponent` ，line 16-17 是传入 `base` 这个参数，而 `square` 和 `cube` 输出的是函数。
+
+
+
+### 10.2 是否使用闭包的区别
+
+使用闭包只需要传入一次 `exponent` 。
+
+```python 
+def nth_power_rewrite(base, exponent):
+    return base ** exponent
+
+def nth_power(exponent):
+    def exponent_of(base):
+        return base ** exponent
+    return exponent_of
+
+# 不使用闭包
+res1 = nth_power_rewrite(2, 2)
+res2 = nth_power_rewrite(2, 2)
+res3 = nth_power_rewrite(2, 2)
+
+
+# 使用闭包
+square = nth_power(2)
+res1 = nth_power(2)
+res2 = nth_power(2)
+res3 = nth_power(2)
+```
+
+
+
+![](./13-functions.assets/image-20250729152359701.png)
+
+```python 
+def most_frequent_char(s):
+    char_count = {}             # 建立一个空字典
+    for char in s:
+        char_count[char] = char_count.get(char, 0) + 1       # 按照键值对添加元素，char_count[char] 为添加 key, 右侧起到的作用是增加/修改
+                                                             # 此处回顾 get() 的用法，0 是检索不到 key 的时候返回默认值，检索到后执行 +1
+        # 此处用 if 来写逻辑更简单一些
+        # if char in char_count.keys():
+        #     char_count[char] += 1
+        # else:
+        #     char_count[char] = 1
+            
+    if not char_count:           # 如果字典没有更新到，返回 None
+        return None
+```
+
+
+
 
 
 
