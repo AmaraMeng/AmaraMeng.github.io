@@ -1937,6 +1937,16 @@ res3 = nth_power(2)
 
 ![](./13-functions.assets/image-20250729152359701.png)
 
+
+
+思路：
+
+step 1：
+
+输出的结构非常像字典，key 是检索出来的字符，出现的次数为 value，因此尝试先建立一个字典。1
+
+注意：字符串可以被遍历，即 `for char in s` 。
+
 ```python 
 def most_frequent_char(s):
     char_count = {}             # 建立一个空字典
@@ -1955,13 +1965,101 @@ def most_frequent_char(s):
 
 
 
+step 2：
+
+通过上述步骤已经将检索出来的字符按照字典的形式生成，下一步就是排序，并输出。
+
+```python
+def most_frequent_char(s):
+    char_count = {}             # 建立一个空字典
+    for char in s:
+        if char in char_count.keys():
+            char_count[char] += 1
+        else:
+            char_count[char] = 1
+
+    if not char_count:           # 如果字典没有更新到，返回 None
+        return None
+
+    sorted_char_count = sorted(char_count.items(), key=lambda x: x[1], reverse=True)
+    print(tuple(sorted_char_count[0]))
+
+
+most_frequent_char('abcaabbcc')
+most_frequent_char('Hello World!')
+
+#-------output-------
+('a', 3)
+('l', 3)
+```
+
+其他思路：比较最大值可以用 for 循环，假定第一个元素是最大值，然后把后面的元素都拎出来和这个元素比较，大的更新，小的放弃，继续比较下一个元素。因此，第二步的代码可以改成如下形式：
+
+```python
+   max_item = list(char_count.items())[0]          # 注意这里 char_count.items() 得到的不能直接用，要转化成需要的形式
+    for item in char_count.items():
+        if item[1] >= max_item[1]:
+            max_item = item
+
+    print(max_item)
+```
+
+其他方法：
+
+```python
+    max_char = None                                # 一开始的字符不知道是哪个，就设为 None
+    max_count = 0
+    for char, count in char_count.items():         # 这个形式参见 enumerate 的用法
+        if count > max_count:
+            max_char = char
+            max_count = count
+    return max_char, max_count
+
+print(most_frequent_char('abcaabbcc'))
+print(most_frequent_char('Hello, World!'))
+```
 
 
 
+![](./13-functions.assets/image-20250731145155331.png)
+
+方法一：
+
+```python
+def sum_of_digits(n):
+    if n > 0 and type(n) == int:
+        sum = 0
+        for num in str(n):
+            sum += int(num)
+        return sum
+    else:
+        print('请输入一个正整数！')
+
+print(sum_of_digits(1234))
+print(sum_of_digits(987))
+```
 
 
 
+方法二：
 
+```python
+def sum_of_digits_math(n):
+    total = 0
+    while n > 0:
+        total += n % 10
+        n = n // 10
+    return total
+
+print(sum_of_digits_math(1234))
+print(sum_of_digits_math(987))
+
+```
+
+方法二带注释版：
+
+```python
+```
 
 
 

@@ -509,9 +509,25 @@ dict_values(['lilei', '98', True])
 ['lilei', '98', True]
 ```
 
+## 14. `.items()`
+
+`.items()` 用来获取字典中的键值对。
+
+```python
+student = {'name': 'lilei', 'grade': '98', "实验班": True}
+
+student_items = student.items()
+print(student_items)
+print(list(student_items))
+
+#-------output-------
+dict_items([('name', 'lilei'), ('grade', '98'), ('实验班', True)])
+[('name', 'lilei'), ('grade', '98'), ('实验班', True)]
+```
 
 
-## 14. `XX in dictionary` 判断键是否在字典内
+
+## 15. `XX in dictionary` 判断键是否在字典内
 
 ```python
 student = {'name': 'lilei', 'grade': '98', "实验班": True}
@@ -537,7 +553,7 @@ True
 
 
 
-## 15. `.update()` 批量更新
+## 16. `.update()` 批量更新
 
 - 用法一
 
@@ -626,7 +642,7 @@ print(default_config)
 
 
 
-## 16. Quiz:
+## 17. Quiz:
 
 ![](./07-dict.assets/image-20250522140519981.png)
 
@@ -672,7 +688,7 @@ value = tuple(map(int，value_input.split('-'))
 
 
 
-## 17. 字典的排序
+## 18. 字典的排序
 
 1. 用 `sorted`  默认排序
 
@@ -759,9 +775,9 @@ print(sorted_lst)
 sorted_lst = sorted(lst, key=lambda x: x[2])
 ```
 
-## 18. 字典的深浅拷贝
+## 19. 字典的深浅拷贝
 
-### 18.1 浅拷贝
+### 19.1 浅拷贝
 
 ```python
 original = {'a': 1, 'b': [2,3]}
@@ -831,7 +847,7 @@ shallow copy: {'a': 1, 'b': [2, 3, 4]}
 
 
 
-### 18.2 深拷贝
+### 19.2 深拷贝
 
 ```python
 import copy
