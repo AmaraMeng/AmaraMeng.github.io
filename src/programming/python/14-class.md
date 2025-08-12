@@ -378,7 +378,7 @@ dog address: <__main__.Animal object at 0x000001FB0AC48F40>
 类似宝宝出生前想名字
 
 ```python
-class Baby:
+class Baby():
     def __init__(self, name):
         """
         初始化宝宝对象时，必须提供名字，
@@ -425,7 +425,7 @@ baby1.introduce()           # 输出介绍
 回答三：叫其他变量名可以，但是本身变量名是“见名知意”，且指代的是同一个东西，因此不需要再想一个合适的变量名。示例如下：
 
 ```python
-class Baby:
+class Baby():
     def __init__(self, name):
 
         self.name = name
@@ -455,7 +455,7 @@ init name: 棠棠, username: 棠棠
 在初始化时，如果设定了参数，那么将类实例化时必须将该参数传入，否则会报错。
 
 ```python
-class Baby:
+class Baby():
     def __init__(self, name):
 
         self.name = name
@@ -473,7 +473,7 @@ TypeError: __init__() missing 1 required positional argument: 'name'
 #### 2.5.4 传入多个参数
 
 ```python
-class Baby:
+class Baby():
     def __init__(self, name, gender):
 
         self.name = name
@@ -498,7 +498,7 @@ baby2.introduce()
 #### 2.5.5 设置默认值
 
 ```python
-class Baby:
+class Baby():
     def __init__(self, name = '小悦', gender = '男'):
         print(f'大家好，我叫{name}, 我是一个{gender}宝宝。')
 
@@ -517,7 +517,7 @@ baby1 = Baby()
 上述代码可以进一步优化：
 
 ```python
-class Baby:
+class Baby():
     def __init__(self, name, gender = None):
 
         self.name = name
@@ -546,7 +546,7 @@ baby3.introduce()
 
 
 
-### 2.6 类实例化时：指定传参数和位置传参
+### 2.6 类实例化时：指定传参和位置传参
 
 类的传入的三种原则：
 
@@ -579,6 +579,509 @@ baby3.introduce()
     ```
 
     
+
+4. 参数也可以通过变量传递进去
+
+    ```python
+    name = input("Enter your name: ")
+    gender = input("Enter your gender: ")
+    age = input("Enter your age: ")
+    weight = input("Enter your weight: ")
+    baby1 = Baby(name, gender, age, weight)
+    baby2 = Baby(name=name, gender=gender, age=age, weight=weight)
+    ```
+
+    baby2 里面，`=` 左面是类内包含的变量名，`=` 右面是作为变量名，通过指定的方式传入到里面，两者长的一样，其实是不同的。
+
+
+
+## 3. 小试牛刀
+
+### 3.1 宠物管理系统
+
+**题目要求：** 请你用面向对象的方式编写一个宠物管理系统的雏形，完成以下功能：
+
+1. **创建一个类 `Pet`**
+    - 属性：
+        - `name`（宠物名字，字符串）
+        - `age`（宠物年龄，整数）
+        - `species`（宠物种类，字符串，比如“狗”、“猫”）
+    - 方法：
+        - `show_info()`：打印宠物的基本信息（格式自定义）。
+        - `birthday()`：宠物过生日，年龄加 1，并打印“xxx 过生日啦，现在 xxx 岁了！”
+2. **编写主程序**
+    - 创建 2 个不同的宠物对象（属性不同）
+    - 分别调用 `show_info()` 方法展示它们的基本信息
+    - 给其中一个宠物调用一次 `birthday()` 方法，并再次展示它的信息
+
+运行示例（仅供参考）：
+
+```python
+小白 这只狗今年 2 岁。
+小黑 这只猫今年 3 岁。
+小白 过生日啦，现在 3 岁了！
+小白 这只狗今年 3 岁。
+小黑 这只猫今年 3 岁。
+```
+
+
+
+回答：
+
+```python
+class Pet():
+    def __init__(self,name,age, species):
+        self.name = name
+        self.age = age
+        self.species = species
+
+    def show_info(self):
+        print(f'Pet Info: 姓名: {self.name}, 年龄: {self.age}, 种族: {self.species}')
+
+    def birthday(self):
+        self.age += 1
+        print(f'{self.name}过生日啦！今年{self.age}岁了~')
+
+
+cat = Pet('阿尔法', 6, 'cat')
+cat.show_info()
+cat.birthday()
+
+dog = Pet('半斤', 1, 'dog')
+dog.show_info()
+dog.birthday()
+
+#-------output-------
+Pet Info: 姓名: 阿尔法, 年龄: 6, 种族: cat
+阿尔法过生日啦！今年7岁了~
+Pet Info: 姓名: 半斤, 年龄: 1, 种族: dog
+半斤过生日啦！今年2岁了~
+```
+
+
+
+---
+
+ ### 3.2 银行账户管理系统
+
+**题目要求：** 请你使用面向对象的方式，设计一个简单的银行账户类，完成以下功能：
+
+1. **创建一个类 `BankAccount`**
+    - 属性：
+        - `owner`（账户持有人姓名，字符串）
+        - `balance`（账户余额，浮点数，默认 0）
+    - 方法：
+        - `show_balance()`：打印当前账户余额。
+        - `deposit(amount)`：存钱到账户，金额必须大于 0，否则提示“存款金额必须大于 0”。
+        - `withdraw(amount)`：取钱，金额必须大于 0 且不能超过当前余额，否则提示“余额不足或金额无效”。
+2. **主程序**
+    - 创建一个账户对象（姓名自定义，初始余额可以为 0）。
+    - 进行一次存款操作（金额自定义）。
+    - 进行一次取款操作（金额自定义）。
+    - 最后显示账户余额。
+
+运行示例（仅供参考）：
+
+```
+账户持有人：张三
+当前余额：￥0.0
+存入 ￥1000.0 成功！
+当前余额：￥1000.0
+取出 ￥500.0 成功！
+当前余额：￥500.0
+```
+
+
+
+回答：
+
+```python
+class BankAccount():
+    def __init__(self, name, balance = 0.00):
+        self.name = name
+        self.balance = balance
+
+    def show_balance(self):
+        print(f'{self.name}的账户当前余额为{self.balance}。')
+
+    def deposit(self, amount):
+        if amount <= 0:
+            print('存款金额必须大于0')
+        else:
+            self.balance += amount
+            print(f'{self.name}的账户已存入{amount}元，当前余额{self.balance}元。')
+    def withdraw(self, amount):
+        if amount >0 and amount <= self.balance:                 # 可以写成 0<amount<=self.balance
+            self.balance -= amount
+            print(f'{self.name}的账户取出{amount}元，当前余额{self.balance}元。')
+        else:
+            print('余额不足或取款金额无效')
+
+ # 创建张三的账户
+Zhangsan = BankAccount('张三')
+Zhangsan.show_balance()
+
+# 存入1000元
+Zhangsan.deposit(1000)
+
+# 取出100元
+Zhangsan.withdraw(100)
+
+# 显示最后余额
+Zhangsan.show_balance()
+
+#-------output-------
+张三的账户当前余额为0.0。
+张三的账户已存入1000元，当前余额1000.0元。
+张三的账户取出100元，当前余额900.0元。
+张三的账户当前余额为900.0。
+```
+
+
+
+### 3.3 题目：交互式银行账户系统（扩展版）
+
+**题目要求：** 在上一个 `BankAccount` 类的基础上，编写一个**交互式控制台程序**，让用户可以自己输入指令完成存款、取款、查看余额、退出系统等操作。
+
+1. **类 `BankAccount`**（和之前基本一样）：
+
+    - `owner`（账户持有人姓名）
+    - `balance`（账户余额，默认 0）
+    - `show_balance()`：显示余额
+    - `deposit(amount)`：存款
+    - `withdraw(amount)`：取款
+
+2. **主程序交互功能**：
+
+    - 用户输入账户持有人姓名（创建账户）
+
+    - 进入循环菜单：
+
+        ```
+        请选择操作：
+        1. 存款
+        2. 取款
+        3. 查看余额
+        4. 退出
+        ```
+
+    - 根据用户输入的选项执行对应功能
+
+    - 用户输入 `4` 时退出系统
+
+3. **运行示例（参考）：**
+
+    ```python
+    请输入账户持有人姓名：张三
+    账户已创建，当前余额为 ￥0.0
+    
+    请选择操作：
+    1. 存款
+    2. 取款
+    3. 查看余额
+    4. 退出
+    请输入选项：1
+    请输入存款金额：1000
+    存入 ￥1000.0 成功！
+    
+    请选择操作：
+    1. 存款
+    2. 取款
+    3. 查看余额
+    4. 退出
+    请输入选项：3
+    账户持有人：张三
+    当前余额：￥1000.0
+    ```
+
+
+
+回答：
+
+版本一：
+
+```python
+class BankAccount():
+    def __init__(self, name, balance = 0.00):
+        self.name = name
+        self.balance = balance
+
+    def show_balance(self):
+        print(f'{self.name}的账户当前余额为{self.balance}。')
+
+    def deposit(self, amount):
+        if amount <= 0:
+            print('存款金额必须大于0')
+        else:
+            self.balance += amount
+            print(f'{self.name}的账户已存入{amount}元，当前余额{self.balance}元。')
+    def withdraw(self, amount):
+        if amount >0 and amount <= self.balance:                 # 可以写成 0<amount<=self.balance
+            self.balance -= amount
+            print(f'{self.name}的账户取出{amount}元，当前余额{self.balance}元。')
+        else:
+            print('余额不足或取款金额无效')
+
+# 创建账户
+name_input = input('请输入账户姓名：')
+
+while name_input == '张三':
+    account1 = BankAccount(name_input)
+
+    # 显示提示语
+    print()
+    print('请选择操作：')
+    print('1. 存款')
+    print('2. 取款')
+    print('3. 查看余额')
+    print('4. 退出')
+
+    # 获得用户指令
+    choice = input('请输入选项：')
+    if choice == '1':
+        amount = float(input('请输入存款金额：'))
+        account1.deposit(amount)
+    if choice == '2':
+        amount = float(input('请输入取款金额：'))
+        account1.withdraw(amount)
+    if choice == '3':
+        account1.show_balance()
+    if choice == '4':
+        del account1
+        print('账户已退出。')
+```
+
+
+
+问题：存款后信息无法保留
+
+原因：存款之后，因为是 `while` 循环，所以又回到了 `line 26` 那里重新创建账户，所以改动无法留存。
+
+
+
+```python
+class BankAccount():
+    def __init__(self, name, balance = 0.00):
+        self.name = name
+        self.balance = balance
+
+    def show_balance(self):
+        print(f'{self.name}的账户当前余额为{self.balance}。')
+
+    def deposit(self, amount):
+        if amount <= 0:
+            print('存款金额必须大于0')
+        else:
+            self.balance += amount
+            print(f'{self.name}的账户已存入{amount}元，当前余额{self.balance}元。')
+    def withdraw(self, amount):
+        if amount >0 and amount <= self.balance:                 # 可以写成 0<amount<=self.balance
+            self.balance -= amount
+            print(f'{self.name}的账户取出{amount}元，当前余额{self.balance}元。')
+        else:
+            print('余额不足或取款金额无效')
+
+# 创建账户
+name_input = input('请输入账户姓名：')
+account1 = BankAccount(name_input)
+
+while name_input:
+
+    # 显示提示语
+    print()
+    print('请选择操作：')
+    print('1. 存款')
+    print('2. 取款')
+    print('3. 查看余额')
+    print('4. 退出')
+# 获得用户指令
+    choice = input('请输入选项：')
+
+    if choice == '1':
+        amount = float(input('请输入存款金额：'))
+        account1.deposit(amount)
+    if choice == '2':
+        amount = float(input('请输入取款金额：'))
+        account1.withdraw(amount)
+    if choice == '3':
+        account1.show_balance()
+    if choice == '4':
+        print('账户已退出。')
+        name_input = False
+
+#-------output-------
+请输入账户姓名：张三
+
+请选择操作：
+1. 存款
+2. 取款
+3. 查看余额
+4. 退出
+请输入选项：1
+请输入存款金额：1000
+张三的账户已存入1000.0元，当前余额1000.0元。
+
+请选择操作：
+1. 存款
+2. 取款
+3. 查看余额
+4. 退出
+请输入选项：2
+请输入取款金额：100
+张三的账户取出100.0元，当前余额900.0元。
+
+请选择操作：
+1. 存款
+2. 取款
+3. 查看余额
+4. 退出
+请输入选项：3
+张三的账户当前余额为900.0。
+
+请选择操作：
+1. 存款
+2. 取款
+3. 查看余额
+4. 退出
+请输入选项：4
+账户已退出。
+```
+
+
+
+优化：将多个 `if` 连用改成 `elif` ，节省判断次数，因为多个 `if` 需要每个都判断一下，但是 `elif` 判断成立后，后面的就不会再执行了。
+
+其他方法：
+
+可以用 `while True`  和 `break` 搭配结束循环。
+
+
+
+## 4. 类里面的函数传入参数
+
+1. 传入一个参数
+
+```python
+class Dog:
+    def __init__(self, name):
+        self.name = name
+
+    def bark(self, times):
+        print(f'{self.name}汪 ' * times)
+
+my_dog = Dog('小黑')
+my_dog.bark(3)
+
+#-------output-------
+小黑汪 小黑汪 小黑汪 
+```
+
+
+
+2.  传入多个参数
+
+```python
+class Dog:
+    def __init__(self, name):
+        self.name = name
+
+    def bark(self, times, newline):
+        for _ in range(times):
+            if newline:
+                print(f'{self.name} 汪')
+            else:
+                print(f'{self.name} 汪 ', end=' ')
+
+my_dog = Dog('小黑')
+
+# 调用 bark 函数，传入两个函数，叫3次，并每次换行
+print('每次换行：')
+my_dog.bark(3, True)
+
+# 叫3次，不换行
+print('\n不换行： ')
+my_dog.bark(3, False)
+
+#-------output-------
+每次换行：
+小黑 汪
+小黑 汪
+小黑 汪
+
+不换行： 
+小黑 汪  小黑 汪  小黑 汪  
+```
+
+
+
+## 5. 通过实例化对象改属性值
+
+修改前的信息：
+
+```python
+class Person:
+    def __init__(self, name, gender = None, age = None, weight = None):
+        self.name = name
+        self.gender = gender
+        self.age = age
+        self.weight = weight
+
+    def introduce(self):
+        intro = f'大家好， 我叫 {self.name}。'
+        if self.gender:
+            if self.gender == '男':
+                intro += '我是一个男孩。'
+            else:
+                intro += '我是一个女孩。'
+        else:
+            intro += '我的性别暂时保密哦~'
+            
+        if self.age:
+            intro += f'我今年{self.age}岁了。'
+        else:
+            intro += '我的年龄保密~'
+
+        print(intro)
+
+person1 = Person(name= 'Bornforthis', gender= '男', age= 28, weight= 75)
+person1.introduce()
+
+#-------output-------
+大家好， 我叫 Bornforthis。我是一个男孩。我今年28岁了。
+```
+
+
+
+修改：
+
+通过直接变量赋值就可修改，如 `person1.weight = 80` 。
+
+```python
+return intro   # 上面函数不用 print 改成 return
+
+person1 = Person(name= 'Bornforthis', gender= '男', age= 28, weight= 75)
+person1.introduce()
+
+print(person1.name, person1.gender, person1.age, person1.weight)
+
+print('修改前：{}'.format(person1.introduce()))
+person1.name = 'AI创悦'
+person1.weight = 80
+print('修改后：{}'.format(person1.introduce()))
+
+#-------output-------
+Bornforthis 男 28 75
+修改前：大家好， 我叫 Bornforthis。我是一个男孩。我今年28岁了。 我的体重是 75 千克。
+修改后：大家好， 我叫 AI创悦。我是一个男孩。我今年28岁了。 我的体重是 80 千克。
+```
+
+
+
+
+
+
+
+
 
 
 
