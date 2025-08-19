@@ -1077,13 +1077,356 @@ Bornforthis 男 28 75
 
 
 
+## 6. 类的私有属性
+
+why 私有？例如手机密码，面部识别等，只有自己才能访问这些信息。同样，python 的类中，需要保护一些内部数据，不希望从外部就能轻易访问和修改，此时就会用到**私有属性**。
+
+### 6.1 什么是私有属性？
+
+在 Python 中，以双下划线（`__` ）开头的属性为私有属性，保护类内部的重要数据。我们不是希望别人完全访问不到这些数据，而是希望别人通过类的方法来间接的访问或修改这些数据，这样就能在方法中进行额外的逻辑控制，比如检查输入是否正确、访问记录日志等。
+
+### 6.2 现实举例：手机密码与解锁
+
+代码提示：
+
+```python
+# 创建一个手机对象，设置密码为：'123456'，私密数据为：我的秘密照片和聊天记录
+my_phone = Phone("123456", "我的秘密照片和聊天记录")
+
+# 我尝试直接访问数据，结果会失败（不能直接访问私有属性）
+# print(my_phone.__data)  # 错误！无法访问，报错：AttributeError: 'Phone' object has no attribute '__data'
+
+# 正确的访问方法：使用类提供的方法（函数）进行调用私有属性的值
+data = my_phone.unlock("123456")  # 输入正确的密码
+print("手机中的数据是：", data)
+
+data = my_phone.unlock("wrong_password")  # 输入错误的密码
+print("手机中的数据是：", data)
+```
+
+个人代码：
+
+```python
+class Phone():
+    def __init__(self, password, data):
+        self.__password = password
+        self.__data = data
+
+    def unlock(self, password):
+        if password == self.__password:
+            print(f'手机中的数据是：{self.__data}')
+        else:
+            print('密码输入错误，请重新输入！')
 
 
 
+my_phone = Phone("123456", "我的秘密照片和聊天记录")
+
+print(my_phone.__data)
+
+my_phone.unlock("123456")
+
+my_phone.unlock("wrong_password")
+```
 
 
 
+修改优化：
 
+- 代码中更适合用 return ，而非 print，print 只是把内容显示出来而已。
+
+```python
+class Phone():
+    def __init__(self, password, data):
+        self.__password = password          # 私有属性，不能直接访问
+        self.__data = data                  # 私有属性，保护数据
+
+    def unlock(self, password):
+        # 通过 unlock 的方法访问私有数据，进行逻辑控制
+        if password == self.__password:
+            print('密码正确，手机已解锁！')
+            return self.__data                   # return 返回私密数据
+        else:
+            print('密码输入错误，请重新输入！')
+            return None
+
+
+
+# 创建新的手机对象
+my_phone = Phone("123456", "我的秘密照片和聊天记录")
+
+# 尝试直接访问数据，会报错
+# print(my_phone.__data)
+
+# 正确访问方法
+data = my_phone.unlock("123456")
+print('手机中的数据是：', data)
+
+data = my_phone.unlock("wrong_password")
+print('手机中的数据是：', data)
+
+#-------output-------
+密码正确，手机已解锁！
+手机中的数据是： 我的秘密照片和聊天记录
+密码输入错误，请重新输入！
+手机中的数据是： None
+```
+
+
+
+**小贴士：** 
+
+1. 手机密码相当于类的私有属性，外人不能轻易查看，相对应的数据也是私有属性。
+2. 手机解锁的动作，相当于类规定的方法，通过这个方法可以访问未被公开的数据，这个方法也决定了哪些可以公开，哪些受到保护。
+
+
+
+### 6.3 为何使用私有属性？
+
+安全性：防止外人随意打开
+
+隐私性：防止外人随意查看内容
+
+保护性：防止里面的内容损毁
+
+控制性：有钥匙或密码，能决定什么时候打开，什么时候关上
+
+
+
+### 6.4 如何访问私有属性？
+
+Python 的私有属性并非绝对私有，可以通过特殊方法访问（不建议）
+
+```python
+# 通过特殊语法访问
+print(my_phone._Phone__data)    # 输出为：我的秘密照片和聊天记录
+```
+
+还可以通过这种方法来修改属性值：
+
+```python
+# 修改私有数据
+my_phone._Phone__data = '新的数据'
+print(my_phone._Phone__data)
+
+#-------output-------
+新的数据
+```
+
+在实际开发中，不建议这么做，这种特殊访问方式仅在调试或者特殊情况下使用。
+
+
+
+## 7. 小试牛刀
+
+
+
+![](./14-class.assets/image-20250819144744848.png)
+
+::: code-tabs
+
+@tab Answer
+
+```python
+class MagicBag():
+    def __init__(self, name, items = [], bag_capacity = 5):
+        self.name = name
+        self.__items = items
+        self.__bag_capacity = bag_capacity
+
+    def add_item(self, item):
+        if self.__bag_capacity >= 1:                    # 需要注意一下容量的范围
+            self.__items.append(item)
+            self.__bag_capacity -= 1
+            return self.__items, self.__bag_capacity
+        else:
+            print('背包已满，无法添加！')
+
+    def remove_item(self, item):
+        if item in self.__items:
+            self.__items.remove(item)
+            self.__bag_capacity += 1
+            print(f'{self.name}的背包中的{item}已移除')
+            return self.__items, self.__bag_capacity
+        else:
+            print('没有找到该物品。')
+
+    def show_items(self):
+        print(f'当前背包中有：{self.__items}')
+
+# ====== 测试代码 ======
+if __name__ == "__main__":
+    # 创建一个魔法背包对象
+    bag = MagicBag("勇者阿光")
+
+    # 添加 5 个物品
+    bag.add_item("木剑")
+    bag.add_item("皮甲")
+    bag.add_item("回复药水")
+    bag.add_item("火把")
+    bag.add_item("干粮")
+
+    # 再添加第 6 个物品，应该提示背包已满
+    bag.add_item("铁剑")
+
+    # 展示当前背包内容
+    bag.show_items()
+
+    # 移除一个物品
+    bag.remove_item("火把")
+
+    # 再次展示背包内容
+    bag.show_items()
+
+    # 尝试直接访问背包的私有属性（会报错）
+    try:
+        print(bag.__items)  # AttributeError
+    except AttributeError as e:
+        print("直接访问私有属性失败：", e)
+
+    # （补充演示，不推荐这么做）通过名称改写可以访问私有属性
+    # print("偷偷访问私有属性：", bag._MagicBag__items)
+```
+
+
+
+@tab init修改
+
+```python
+class MagicBag():
+    def __init__(self, name):
+        self.name = name
+        self.__items = []
+        self.__bag_capacity = 5
+```
+
+
+
+@tab add_item修改
+
+```python
+	def add_item(self, item):
+        if len(self.__items) >= self.__capacity:
+            print('背包已满，无法添加：', item)
+            return                # return 有结束代码的作用，因此如果背包满了，则不会继续执行后面的代码，因此不需要 else
+        # 否则添加物品到列表 
+        self.__items.append(item)
+        print(f'成功添加物品：{item}')
+```
+
+
+
+@tab remove_item修改
+
+```python
+	    def remove_item(self, item):
+        if item not in self.__items:
+            print('没有找到该物品', item)
+            return
+        # 移除指定物品
+        self.__items.remove(item)
+        print(f'成功移除物品：{item}')
+```
+
+
+
+@tab show_items修改
+
+```python
+    def show_items(self):
+        if not self.__items:
+            print('背包是空的')
+        else:
+            print(f'{self.name}的背包中有：{self.__items}')
+```
+
+
+
+@tab补充代码
+
+```python
+    def __repr__(self):
+        '''调试用的对象显示，不会暴露私有属性名'''
+        return f'MagicBag(name = {self.name}, items_count = {len(self.__items)}, capacity = {self.__bag_capacity})'
+```
+
+
+
+::: 
+
+
+
+## 8. 类内部的变量如何共用
+
+在类中，需要定义一些固定不变的变量，比如常量。这些常量每个对象都会用到，是否需要每次创建对象时都构建一次呢？
+
+不需要！
+
+只要在类的内部合适的位置定义好，就能实现类内变量共用。
+
+
+
+### 8.1 类中的常量（类变量）
+
+类似社团有统一的口号，python 中也有统一的口号，我们成为类变量。只需要定义一次，所有对象可以共享。
+
+```python
+class Entity:
+    WELCOME_STR = '欢迎来到 Python 学习社团！'     # 类变量（常量）
+
+    def __init__(self, name):
+        self.name = name
+
+    def say_welcome(self):
+        print(f'{self.name}说：{self.WELCOME_STR}')
+
+
+entity_a = Entity('Alice')
+entity_b = Entity('Bob')
+
+entity_a.say_welcome()
+entity_b.say_welcome()
+
+# 类变量也可以直接用类名访问
+print(Entity.WELCOME_STR)
+
+#-------output-------
+Alice说：欢迎来到 Python 学习社团！
+Bob说：欢迎来到 Python 学习社团！
+欢迎来到 Python 学习社团！
+```
+
+
+
+### 8.2 函数之间的局部变量无法共用
+
+现实生活中，人们的私有物品不能共用，函数也一样，只能在函数内部使用，无法被其他函数直接访问。
+
+```python
+def function_a():
+    a = 10 
+    print(f'function_a 的变量 a 是：', a)
+    
+def function_b():
+    print(a)   # 这里会报错，因为无法访问function_a 的局部变量 a
+```
+
+
+
+加上一个全局变量就能共用，例如：
+
+```python
+BOOK_NAME = '跟AI悦创学习最前沿的编程思维和人工智能'      # 全局变量，任何函数都能造访
+
+def function_a():
+    print(f'function_a 正在读书：', BOOK_NAME)
+
+def function_b():
+    print('function_b 正在读书：', BOOK_NAME)   
+
+function_a()
+function_b()
+```
 
 
 
