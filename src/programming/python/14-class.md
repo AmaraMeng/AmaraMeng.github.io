@@ -1430,6 +1430,396 @@ function_b()
 
 
 
+### 8.3 类内部变量各个函数随意调用
+
+示例如下：
+
+```python
+class Family:
+    def __init__(self):
+        self.bridge = ['草莓', '巧克力', '牛奶', '水果', '蛋糕']
+
+    def dad_take_food(self):
+        food = self.bridge.pop()
+        print('爸爸拿走了：', food)
+
+    def mam_take_food(self):
+        food = self.bridge.pop()
+        print('妈妈拿走了：', food)
+
+    def child_take_food(self):
+        food = self.bridge.pop()
+        print('孩子拿走了：', food)
+        
+
+family = Family()
+family.dad_take_food()
+family.mam_take_food()
+family.child_take_food()
+print(family.bridge)
+['草莓', '巧克力']
+
+#-------output-------
+爸爸拿走了： 蛋糕
+妈妈拿走了： 水果
+孩子拿走了： 牛奶
+```
+
+
+
+**使用全局变量的影响** 
+
+不使用 self 而使用全局变量的问题：全局变量会被更改。
+
+```python
+count = 0
+
+def increment():
+    global count
+    count += 1
+    
+def get_count():
+    return count
+
+increment()
+print(get_count())    # 输出为1，而不是0
+```
+
+
+
+
+
+**小结与回顾** 
+
+| 变量类型 | 定义位置                   | 作用域                 | 举个生活中的例子               |
+| -------- | -------------------------- | ---------------------- | ------------------------------ |
+| 局部变量 | 函数内部                   | 本函数内有效           | 自己的私人用品，别人不能随意拿 |
+| 全局变量 | 函数外部                   | 所有函数都有效         | 公共的物品，比如图书馆的书     |
+| 类变量   | 类的内部，方法之外         | 类内所有对象都有效     | 社团共有的口号                 |
+| 实例变量 | 类的方法内，通过`self`定义 | 单个对象内所有方法有效 | 家庭内部共享的冰箱             |
+
+
+
+
+
+### 8.4 类内部的函数互相调用
+
+类内部的变量可以共享，那么类内部的函数也可以共享。
+
+比如家里准备晚饭，有三个任务：
+
+- 妈妈准备食材
+- 爸爸烹饪
+- 孩子摆放餐桌
+
+此时，爸爸的任务中需要调用到妈妈任务中准备的食材。
+
+#### 8.4.1 第一步：定义多个方法
+
+```python
+class FamilyDinner:
+    def prepare_ingredients(self):
+        print('妈妈正在准备食材：洗菜、切菜、准备调料。')
+    
+    def cook_food(self):
+        print('爸爸开始烹饪了！')
+        self.prepare_ingredients()     # 调用准备食材的方法
+        print('爸爸正在烹饪菜肴：炒菜、煮汤。')
+        
+    def set_table(self):
+        print('孩子正在摆放餐桌。')
+```
+
+
+
+
+
+#### 8.4.2 第二步：方法之间如何调用
+
+```python
+dinner = FamilyDinner()
+
+dinner.cook_food()
+dinner.set_table()
+
+#-------output-------
+爸爸开始烹饪了！
+妈妈正在准备食材：洗菜、切菜、准备调料。
+爸爸正在烹饪菜肴：炒菜、煮汤。
+孩子正在摆放餐桌。
+```
+
+调用时，在需要调用的内部函数前添加 `self.` 即可实现类内部的函数调用，因此只需要使用类中的2个函数就可实现3个函数的功能。
+
+
+
+#### 8.4.2 继承，是每个富二代的梦想「选学」
+
+**提示**：接下来的继承内容，一时间看不懂学不会没有事的，完全不影响你入门 Python。
+
+既然类是一群相似的对象的集合，那么可不可以是一群相似的类的集合呢？
+
+接下来，我们来看第三个问题，既然类是一群相似的对象的集合，那么可不可以是一群相似的类的集合呢？
+
+答案是，当然可以。只要抽象得好，类可以描述成任何事物的集合。当然你要小心、严谨地去定义它，不然一不小心就会引起第三次数学危机 XD（维基百科：[https://en.wikipedia.org/wiki/Russell%27s_paradox](https://en.wikipedia.org/wiki/Russell%27s_paradox)。
+
+类的继承，顾名思义，指的是一个类既拥有另一个类的特征，也拥有不同于另一个类的独特特征。在这里的第一个类叫做子类，另一个叫做父类，特征其实就是类的属性和函数。
+
+```python
+class Entity():
+    def __init__(self, object_type):
+        print('parent class init called')
+        self.object_type = object_type
+    
+    def get_context_length(self):
+        raise Exception('get_context_length not implemented')     # 起到主动报错的作用
+    
+    def print_title(self):
+        print(self.title)
+
+class Document(Entity):
+    def __init__(self, title, author, context):
+        print('Document class init called')
+        Entity.__init__(self, 'document')
+        self.title = title
+        self.author = author
+        self.__context = context
+    
+    def get_context_length(self):
+        return len(self.__context)
+    
+class Video(Entity):
+    def __init__(self, title, author, video_length):
+        print('Video class init called')
+        Entity.__init__(self, 'video')
+        self.title = title
+        self.author = author
+        self.__video_length = video_length
+    
+    def get_context_length(self):
+        return self.__video_length
+
+harry_potter_book = Document('Harry Potter(Book)', 'J. K. Rowling', '... Forever Do not believe any thing is capable of thinking independently ...')
+harry_potter_movie = Video('Harry Potter(Movie)', 'J. K. Rowling', 120)
+
+print(harry_potter_book.object_type)
+print(harry_potter_movie.object_type)
+
+harry_potter_book.print_title()
+harry_potter_movie.print_title()
+
+print(harry_potter_book.get_context_length())
+print(harry_potter_movie.get_context_length())
+
+
+# ---output---
+Document class init called
+parent class init called
+Video class init called
+parent class init called
+document
+video
+Harry Potter(Book)
+Harry Potter(Movie)
+77
+120
+```
+
+我们同样结合代码来学习这些概念。在这段代码中，Document 和 Video 它们有相似的地方，都有相应的标题、作者和内容等属性。我们可以从中抽象出一个叫做 Entity 的类，来作为它俩的父类。
+
+首先需要注意的是构造函数。每个类都有构造函数，继承类在生成对象的时候，是不会自动调用父类的构造函数的，因此你必须在 `init()` 函数中显式调用父类的构造函数。它们的执行顺序是 子类的构造函数 -> 父类的构造函数。
+
+其次需要注意父类 `get_context_length()` 函数。如果使用 Entity 直接生成对象，调用 `get_context_length()` 函数，就会 raise error 中断程序的执行。这其实是一种很好的写法，叫做函数重写，可以使子类必须重新写一遍 `get_context_length()` 函数，来覆盖掉原有函数。
+
+最后需要注意到 `print_title()` 函数，这个函数定义在父类中，但是子类的对象可以毫无阻力地使用它来打印 title，这也就体现了继承的优势：减少重复的代码，降低系统的熵值（即复杂度）。
+
+到这里，你对继承就有了比较详细的了解了，面向对象编程也可以说已经入门了。当然，如果你想达到更高的层次，大量练习编程，学习更多的细节知识，都是必不可少的。
+
+
+
+## 9. 练习
+
+![](./14-class.assets/image-20250821144554990.png)
+
+![](./14-class.assets/image-20250821144627264.png)
+
+
+
+个人回答：
+
+```python
+import random
+
+class Game():
+    # 初始化玩家姓名、HP、敌人HP
+    def __init__(self, player_name):
+        self.player_name = player_name
+        self.player_hp = 100
+        self.enemy_hp = 80
+
+
+    # 玩家操作攻击/防守
+    def actions(self):
+        self.action = input('Attack or Defense (A/D):')
+        if self.action == 'A':
+            self.enemy_hp -= random.randint(1, 20)
+            if self.enemy_hp <=0:
+                return
+            self.player_hp -= random.randint(1, 20)
+        elif self.action == 'D':
+            self.player_hp -= random.randint(1, 20)/10
+        else:
+            print('Invalid action')
+
+#  main
+player_name = input('请输入玩家姓名：')
+player1 = Game(player_name)             # 创建实例并完成初始化
+
+
+while player1.player_hp > 0 and player1.enemy_hp >0:
+    # 显示玩家和敌人血量
+    print(f'{player1.player_name} HP: {player1.player_hp:.2f}')
+    print(f'Enemy HP: {player1.enemy_hp:.2f}')
+
+    # 调用操作函数，玩家选择攻击/防守
+    player1.actions()
+
+if player1.player_hp > 0:
+    print('You win!')
+else:
+    print('You lose!')
+
+
+# ---output---
+请输入玩家姓名：Ran
+Ran HP: 100.00
+Enemy HP: 80.00
+Attack or Defense (A/D):A
+Ran HP: 91.00
+Enemy HP: 61.00
+Attack or Defense (A/D):A
+Ran HP: 79.00
+Enemy HP: 48.00
+Attack or Defense (A/D):A
+Ran HP: 70.00
+Enemy HP: 30.00
+Attack or Defense (A/D):D
+Ran HP: 68.80
+Enemy HP: 30.00
+Attack or Defense (A/D):D
+Ran HP: 68.10
+Enemy HP: 30.00
+Attack or Defense (A/D):D
+Ran HP: 67.60
+Enemy HP: 30.00
+Attack or Defense (A/D):A
+Ran HP: 47.60
+Enemy HP: 27.00
+Attack or Defense (A/D):A
+Ran HP: 40.60
+Enemy HP: 26.00
+Attack or Defense (A/D):A
+Ran HP: 25.60
+Enemy HP: 23.00
+Attack or Defense (A/D):A
+Ran HP: 7.60
+Enemy HP: 8.00
+Attack or Defense (A/D):D
+Ran HP: 7.00
+Enemy HP: 8.00
+Attack or Defense (A/D):D
+Ran HP: 6.60
+Enemy HP: 8.00
+Attack or Defense (A/D):A
+You win!
+```
+
+
+
+优化：
+
+- 玩家和敌人都可以当做是对象，因此初始化时可以把敌人也当做是类似对象的实例。
+
+```python
+import random
+
+class Creature():
+    def attack(self):
+        attack_value = random.randint(1, 50)
+        return attack_value
+    
+player = Creature()
+enemy = Creature()
+```
+
+此处需要考虑类究竟如何使用，玩家和敌人都是类似的对象，因此可以通过类将其实例化出来。
+
+- 游戏继续的条件是玩家和敌人都还活着，因此可以建立一个 `while` 函数，条件就是 `player.not_dead() and enemy.not_dead()` ，此处又存在共性，所以可以在类中建立一个函数看玩家和敌人是否都存活。
+
+```python
+import random
+
+class Creature():
+    def attack(self):
+        attack_value = random.randint(1, 50)
+        return attack_value
+    
+    def not_dead(self):
+        pass
+
+player = Creature()
+enemy = Creature()
+
+while player.not_dead() and enemy.not_dead():
+    pass
+```
+
+
+
+- 当需要编写 `not-dead` 函数时，我们发现判断是否死亡的标准是血量，但是目前还没有血量这个参数，因此，可以在实例化的时候将血量当做参数传进去，就需要了 `init` 函数，此时再编写 `init` 函数，并加入需要的参数。
+
+```python
+import random
+
+class Creature():
+    def __init__(self, hp):                    # 根据需要设置参数，初始化
+        self.hp = hp
+        
+        
+    def attack(self):
+        attack_value = random.randint(1, 50)
+        return attack_value
+
+    def not_dead(self):
+        pass
+
+player = Creature(100)                          # 传入参数
+enemy = Creature(80)
+
+while player.not_dead() and enemy.not_dead():
+    pass
+```
+
+
+
+- 有了 hp 就可以编写 not_dead 这个函数了，即血量＞0 为 True。
+
+```python
+    def not_dead(self):
+        if self.hp > 0:
+            return True
+        else:
+            return False
+```
+
+
+
+
+
+
+
+
+
 
 
 
