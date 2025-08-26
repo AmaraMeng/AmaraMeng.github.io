@@ -1812,9 +1812,251 @@ while player.not_dead() and enemy.not_dead():
             return False
 ```
 
+继续优化：
+
+上述代码是为了当符合某种条件时，返回我们指定的结果，从比较运算符处可知，运行的结果是**布尔类型** ，恰好和我们本身希望返回的结果是一致的，因此可以优化成直接返回比较的结果，即 `return self.hp > 0`  。
+
+```python
+    def not_dead(self):
+        if self.hp <= 0:
+            return False
+        else:
+            return True
+        
+        # 等价 1
+        # if self.hp <= 0:
+        #     return False
+        # return True
+
+        # 等价 2
+        # 本身上述的写法，是为了当符合某种条件时，返回我们指定的结果
+        # 而我们现在需要返回的结果，恰好和我们本身指定的结果是一致的，因此可以优化成如下代码：
+        # return self.hp > 0
+```
 
 
 
+
+
+- 疑问点：是否需要写 defence？感觉逻辑复杂不通。
+
+自己继续上述思路补充的后续代码如下：
+
+```python
+import random
+
+class Game():
+    # 初始化玩家姓名、HP、敌人HP
+    def __init__(self, player_name):
+        self.player_name = player_name
+        self.player_hp = 100
+        self.enemy_hp = 80
+
+
+    # 玩家操作攻击/防守
+    def actions(self):
+        self.action = input('Attack or Defense (A/D):')
+        if self.action == 'A':
+            self.enemy_hp -= random.randint(1, 20)
+            if self.enemy_hp <=0:
+                return
+            self.player_hp -= random.randint(1, 20)
+        elif self.action == 'D':
+            self.player_hp -= random.randint(1, 20)/10
+        else:
+            print('Invalid action')
+
+#  main
+player_name = input('请输入玩家姓名：')
+player1 = Game(player_name)             # 创建实例并完成初始化
+
+
+while player1.player_hp > 0 and player1.enemy_hp >0:
+    # 显示玩家和敌人血量
+    print(f'{player1.player_name} HP: {player1.player_hp:.2f}')
+    print(f'Enemy HP: {player1.enemy_hp:.2f}')
+
+    # 调用操作函数，玩家选择攻击/防守
+    player1.actions()
+
+if player1.player_hp > 0:
+    print('You win!')
+else:
+    print('You lose!')
+```
+
+以上代码暂时保留，继续老师思路：
+
+- 有hp 值，下一步可以继续实现交互
+
+```python
+ if user_input == 'A':
+        player_attack_value = player.attack()
+        enemy_attack_value = enemy.attack()
+```
+
+上述代码有了，我们想到，无论敌人或玩家，都有收到攻击的情节，因此可以继续写一个函 能够实现`player.being_attack(enemy_attack_value)` 。
+
+```python
+   def being_attack(self, attack_value):
+        self.hp -= attack_value
+```
+
+因此，主程序处进行攻击和防守就可写成：
+
+```python
+    if user_input == 'A':
+        player_attack_value = player.attack()
+        enemy_attack_value = enemy.attack()
+
+        enemy.being_attack(player_attack_value)
+        player.being_attack(enemy_attack_value)
+
+    elif user_input == 'D':
+        enemy_attack_value = enemy.attack()
+        player.being_attack(enemy_attack_value * 0.1)      # 因为不同软件对除法的处理略有不同，更倾向使用乘法而不是除法
+```
+
+
+
+- 运行代码后，发现没有血量、不知道游戏进程、不知道游戏何时结束。首先补充血量显示：
+
+显示血量在什么位置呢？A or B or C or D
+
+```python
+player = Creature(100)
+enemy = Creature(80)
+# A
+while player.not_dead() and enemy.not_dead():
+    # B
+    user_input = input("Attack or Defence (A/D): ")  # 操作
+    # C
+    if user_input == 'A':
+        player_attack_value = player.attack()
+        enemy_attack_value = enemy.attack()
+
+        enemy.being_attack(player_attack_value)
+        player.being_attack(enemy_attack_value)
+    elif user_input == 'D':
+        enemy_attack_value = enemy.attack()
+        player.being_attack(enemy_attack_value * 0.1)
+    # D
+```
+
+---
+
+
+
+选择显示血量的代码位置时，首先需要判断在循环内外，由于血量需要实时更新，因此需要在循环内。
+
+其次，在操作前要根据血量判断执行什么操作，因此放在 `user_input` 之前。
+
+```python
+while player.not_dead() and enemy.not_dead():
+    # 此处添加血量显示
+    print()
+    user_input = input('Attack or Defence (A/D): ')          # 操作
+    if user_input == 'A':
+        player_attack_value = player.attack()
+        enemy_attack_value = enemy.attack()
+
+        enemy.being_attack(player_attack_value)
+        player.being_attack(enemy_attack_value)
+
+    elif user_input == 'D':
+        enemy_attack_value = enemy.attack()
+        player.being_attack(enemy_attack_value * 0.1)      # 因为不同软件对除法的处理略有不同，更倾向使用乘法而不是除法
+```
+
+
+
+- 可以把显示血量写成一个函数
+
+```python
+    def show_status(self):
+        print(f'HP: {self.hp}')
+```
+
+主程序调用
+
+```python
+while player.not_dead() and enemy.not_dead():
+    player.show_status()
+    enemy.show_status()
+    user_input = input('Attack or Defence (A/D): ')          # 操作
+```
+
+- 显示血量的时候发现不知道哪个是哪个的血量，如何解决？
+
+需要名字这个变量，那就初始化的时候传进去：
+
+```python
+    def __init__(self, name, hp):
+        self.name = name
+        self.hp = hp
+        
+    def show_status(self):
+        print(f"{self.name}'s HP: {self.hp}")
+    
+```
+
+```python
+player = Creature('Ran',100)
+enemy = Creature('Monster',80)
+```
+
+- 添加判断游戏结果的代码，放在循环结束后：
+
+```python
+if player.hp > 0:
+    print(f"You win! Your HP: {player.hp}")
+else:
+    print(f"You lose!")
+```
+
+
+
+疑问：什么时候选择写成函数？
+
+1. 需要重复使用，存在共性的东西，比如玩家有多个，不需要写多个 `print` 来显示血量。
+2. 有封装需求，方便后期统一修改维护。
+3. 若写在主程序里，修改时可能需要捋前后代码逻辑，输出可能变动，若封装成函数，只要保证 return 不变，主函数的代码出错的概率将会大大减少。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+对自己写的代码进行修改：
+
+- 玩家姓名可以当做参数传入类中，在初始化步骤中完成，也可对敌人起名。
+
+```python
+class Creature():
+    # 初始化姓名、HP
+    def __init__(self, name, hp):
+        self.name = name
+        self.hp = hp
+```
+
+因此，后续主程序中，可以添加 `Creature(player_name, 100)` 和 `Creature(Enemy, 80)` 创建玩家和敌人。
+
+```python
+player_name = input('请输入玩家姓名：')
+player = Creature(player_name, 100)             # 创建玩家并完成初始化
+enemy = Creature('Monster', 80)          # 创建敌人并初始化
+```
 
 
 
