@@ -18,6 +18,7 @@ export default navbar([
   children: [
     {text: "Static website building-blog", icon:"boke", link: "/programming/static-website-blog/"},
     {text: "Python", icon: "python", link: "/programming/python/"},
+    {text: "ThinkDSP", icon: "python", link: "/programming/ThinkDSP/"},
 
   ],
 
