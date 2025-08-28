@@ -1643,9 +1643,7 @@ Harry Potter(Movie)
 
 ![](./14-class.assets/image-20250821144627264.png)
 
-
-
-个人回答：
+### 9.1 个人回答
 
 ```python
 import random
@@ -1735,6 +1733,8 @@ You win!
 ```
 
 
+
+### 9.2 老师思路
 
 优化：
 
@@ -2022,21 +2022,9 @@ else:
 2. 有封装需求，方便后期统一修改维护。
 3. 若写在主程序里，修改时可能需要捋前后代码逻辑，输出可能变动，若封装成函数，只要保证 return 不变，主函数的代码出错的概率将会大大减少。
 
+---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+### 9.3 对自己的代码进行修改
 
 对自己写的代码进行修改：
 
@@ -2050,7 +2038,7 @@ class Creature():
         self.hp = hp
 ```
 
-因此，后续主程序中，可以添加 `Creature(player_name, 100)` 和 `Creature(Enemy, 80)` 创建玩家和敌人。
+因此，后续程序中，可以添加 `Creature(player_name, 100)` 和 `Creature(Enemy, 80)` 创建玩家和敌人。
 
 ```python
 player_name = input('请输入玩家姓名：')
@@ -2058,11 +2046,225 @@ player = Creature(player_name, 100)             # 创建玩家并完成初始化
 enemy = Creature('Monster', 80)          # 创建敌人并初始化
 ```
 
+个人代码修改如下：
+
+```python
+import random
+
+
+# 将玩家和敌人都抽象成一个类
+class Creature():
+    def __init__(self, name, hp):                          # 与玩家和敌人都相关的基本参数是姓名和血量
+        self.name = name
+        self.hp = hp
+
+    def show_HP(self):                                     # 显示血量
+        print(f"{self.name}'s HP: {self.hp}")
+
+    def is_alive(self):                                    # 与两者都相关的存亡状态
+        return self.hp > 0
+
+    def defence(self, harm):                               # 自己防守时，血量只减十分之一
+        self.hp -= 0.1*harm
+
+    def being_attack(self, harm, action):                  # 被攻击，自己血量变化
+        if action == "D":
+            self.defence(harm)
+        else:
+            self.hp -= harm
+
+    def attack(self, target, action='A'):                   # 攻击对方，为了区分玩家和敌人，需要有一个攻击对象
+        harm = random.randint(0, 50)
+        target.being_attack(harm, action)                   # 对方被攻击了，对方血量变动，只有被攻击和攻击分开两个函数，才能实现对方血量变动
+
+
+# 游戏交互阶段开始
+class Game():
+    def __init__(self, player_name):                            # 玩家给出的姓名作为参数传进去
+        self.player = Creature(player_name, 100)
+        self.enemy = Creature('Monster', 80)          # 初始化出敌人
+
+    def actions(self):
+        while True:
+            action = input('Attack or Defence (A/D): ')
+            if action in ('A', 'D'):
+                return action
+            else:
+                print("输入无效，请重新输入。")
+
+    def play(self):
+        while self.player.is_alive() and self.enemy.is_alive():
+            self.player.show_HP()
+            self.enemy.show_HP()
+
+            # 玩家开始选择攻击/防守
+            player_action = self.actions()
+            if player_action == 'A':
+                self.player.attack(self.enemy)         # 玩家攻击敌人减血，玩家防守时，敌人不减血，因此不需要操作
+
+            # 敌方开始反击
+            if self.enemy.is_alive():                  # 看看敌方还有血没，有血再打
+                self.enemy.attack(self.player, player_action)
+
+        # 结算结果
+        if self.player.is_alive():
+            print("\n🎉 你赢了！")
+        else:
+            print("\n💀 你输了！")
+
+# main
+player_name = input("请输入玩家姓名：")
+game = Game(player_name)
+game.play()
+
+```
+
+优化：
+
+- 函数命名尽量不要用大写，修改如下
+
+```python
+def show_hp(self):                                     # 显示血量
+        print(f"{self.name}'s HP: {self.hp}")
+```
+
+- 函数的注释可以直接在函数内第一行加三个双引号，如下：
+
+```python
+    def being_attack(self, harm, action):
+        """
+        被攻击时的血量变化
+        :param harm: 伤害值
+        :param action: "A" 表示攻击；"D" 表示防守
+        """
+        if action == "D":
+            self.defence(harm)
+        else:
+            self.hp -= harm
+```
+
+其中，`:param` 是形参，可以对传入的参数进行注释。
+
+
+
+### 9.4 功能扩展
+
+#### 9.4.1 优化血量的显示效果
+
+```python
+    def show_status(self):
+        print(f"{self.name}'s HP → {self.hp}")
+```
+
+#### 9.4.2 血量问题：会出现负数的情况
+
+如何验证血量负数情况？
+
+两个方向：扩大减血的范围，将0.1改掉；在输掉的时候显示血量。
+
+```python
+You lose! Your HP: -1.800000000000023
+```
+
+同理，也可以在结果出输出敌人血量：
+
+```python
+You win! Enemy HP: -1
+```
+
+此外，也可以修改 `while` 的条件，只保留玩家不死的条件，玩家一直攻击，敌人很快血量变复数，但是此时循环还未结束，显示血量 `show_status()` 阶段，会出现负数的敌人血量。
+
+```python
+Ran's HP → 100
+Monster's HP → 80
+Attack or Defence (A/D): A
+Ran's HP → 70
+Monster's HP → 36
+Attack or Defence (A/D): A
+Ran's HP → 64
+Monster's HP → -6
+Attack or Defence (A/D): A
+Ran's HP → 36
+Monster's HP → -32
+```
+
+如何修改血量是负数的情况？
+
+思路：什么时候会出现负数？减血量的时候。
+
+方法一：判断伤害值和剩余血量，伤害值高，血量归零，伤害值低，正常减：
+
+```python
+    def being_attack(self, attack_value):
+        if attack_value >= self.hp:
+            self.hp = 0
+        else:
+            self.hp -= attack_value
+```
+
+方法二：先进行减血，若减出负数，则进行归零处理：
+
+```python
+    def being_attack(self, attack_value):
+        self.hp -= attack_value
+        if self.hp <= 0:
+            self.hp = 0
+```
+
+方法三：使用 `max()` 函数
+
+`int(self.hp-attack_value)` 此处可能是负数，也可能是正数，但是 `max()` 做到了从两个元素中取最大值，因此该值是负数的时候，总会取到最大值 `0` ，因此也可以实现血量的控制。
+
+```python
+    def being_attack(self, attack_value):
+        """受到伤害（向下取整避免血量显示为浮点数，并且保证了血量不会出现负数"""
+        self.hp = max(0, int(self.hp-attack_value))
+```
 
 
 
 
 
+#### 9.4.3 用户输入控制
+
+要对用户输入可能出现的空格和小写控制，并且当输入错误时，可以实现重新输入：
+
+```python
+user_input = input('Attack or Defence (A/D): ').strip().upper()
+    while user_input not in ('A', 'D'):
+        user_input = input('输入无效，请重新输入 A 或 D').strip().upper()
+```
+
+
+
+#### 9.4.4 敌人状态随意
+
+敌人是随机状态，有可能是攻击，有可能是防守。如果敌人是防守状态，受到玩家伤害减半。
+
+1. 初步实现
+
+```python
+enemy_status = random.choice(['A', 'D'])
+        if enemy_status == 'D':
+            enemy.being_attack(0.5 * player_attack_value)
+```
+
+2. 在玩家的操作中实现
+
+```python
+    if user_input == 'A':
+        enemy_status = random.choice(['A', 'D'])
+        if enemy_status == 'D':
+            print(f'{enemy.name} chose to defend!')
+            player_attack_value = 0.5*player.attack()
+        else:
+            print(f'{enemy.name} chose to attack!')
+            player_attack_value = player.attack()
+            enemy_attack_value = enemy.attack()
+            player.being_attack(enemy_attack_value)
+            
+        enemy.being_attack(player_attack_value)    
+```
 
 
 
