@@ -2251,6 +2251,8 @@ enemy_status = random.choice(['A', 'D'])
 
 2. 在玩家的操作中实现
 
+玩家攻击时实现如下：
+
 ```python
     if user_input == 'A':
         enemy_status = random.choice(['A', 'D'])
@@ -2265,6 +2267,451 @@ enemy_status = random.choice(['A', 'D'])
             
         enemy.being_attack(player_attack_value)    
 ```
+
+当玩家防守时，应该如何实现？
+
+```python
+import random
+
+class Creature():
+    # ---snip---
+
+player = Creature('Ran',100)
+enemy = Creature('Monster',80)
+
+while player.not_dead() and enemy.not_dead():
+    # ---snip---
+
+    if user_input == 'A':
+        # ---snip---
+
+    elif user_input == 'D':
+        enemy_status = random.choice(['A', 'D'])
+        if enemy_status == 'D':
+            print(f'{enemy.name} chose to defend!')
+            print('Both defended, no damage dealt.')
+        else:
+            print(f'{enemy.name} chose to attack!')
+            enemy_attack_value = 0.1*enemy.attack()
+            player.being_attack(enemy_attack_value)
+
+# ---snip---
+```
+
+目前完整代码：
+
+```python
+import random
+
+class Creature():
+    def __init__(self, name, hp):
+        self.name = name
+        self.hp = hp
+
+    def attack(self):
+        attack_value = random.randint(0, 50)
+        return attack_value
+
+    def not_dead(self):
+        return self.hp > 0
+
+    def being_attack(self, attack_value):
+        """受到伤害（向下取整避免血量显示为浮点数，并且保证了血量不会出现负数"""
+        self.hp = max(0, int(self.hp-attack_value))
+
+    def show_status(self):
+        print(f"{self.name}'s HP → {self.hp}")
+
+
+
+player = Creature('Ran',100)
+enemy = Creature('Monster',80)
+
+while player.not_dead() and enemy.not_dead():
+    player.show_status()
+    enemy.show_status()
+
+    user_input = input('Attack or Defence (A/D): ').strip().upper()
+    while user_input not in ('A', 'D'):
+        user_input = input('输入无效，请重新输入 A 或 D').strip().upper()
+
+
+
+    if user_input == 'A':
+        enemy_status = random.choice(['A', 'D'])
+        if enemy_status == 'D':
+            print(f'{enemy.name} chose to defend!')
+            player_attack_value = 0.5*player.attack()
+        else:
+            print(f'{enemy.name} chose to attack!')
+            player_attack_value = player.attack()
+            enemy_attack_value = enemy.attack()
+            player.being_attack(enemy_attack_value)
+
+        enemy.being_attack(player_attack_value)
+
+    elif user_input == 'D':
+        enemy_status = random.choice(['A', 'D'])
+        if enemy_status == 'D':
+            print(f'{enemy.name} chose to defend!')
+            print('Both defended, no damage dealt.')
+        else:
+            print(f'{enemy.name} chose to attack!')
+            enemy_attack_value = 0.1*enemy.attack()
+            player.being_attack(enemy_attack_value)
+
+
+if player.hp > 0:
+    print(f"You win! Your HP: {player.hp}")
+else:
+    print(f"You lose! ")
+```
+
+
+
+#### 9.4.5 改良实现
+
+- 可优化点一：玩家进行攻击操作时，无论敌人什么状态（攻击or防守），玩家都要攻击，敌人一定会减血。
+
+    ::: code-tabs
+
+    @tab 优化前
+
+    ```python
+        if user_input == 'A':
+            enemy_status = random.choice(['A', 'D'])
+            if enemy_status == 'D':
+                print(f'{enemy.name} chose to defend!')
+                player_attack_value = 0.5*player.attack()
+            else:
+                print(f'{enemy.name} chose to attack!')
+                player_attack_value = player.attack()
+                enemy_attack_value = enemy.attack()
+                player.being_attack(enemy_attack_value)
+    
+            enemy.being_attack(player_attack_value)
+    ```
+
+    @tab 优化后
+
+    ```python
+        if user_input == 'A':
+            enemy_status = random.choice(['A', 'D'])
+            player_attack_coefficient = 1
+            if enemy_status == 'D':
+                print(f'{enemy.name} chose to defend!')
+                player_attack_coefficient = 0.5
+            else:
+                print(f'{enemy.name} chose to attack!')
+                enemy_attack_value = enemy.attack()
+                player.being_attack(enemy_attack_value)
+                
+            player_attack_value = player.attack()
+            enemy.being_attack(player_attack_value * player_attack_coefficient)
+    ```
+
+    
+
+    :::
+
+    
+
+
+- 可优化点二：玩家选择攻击后要判断敌人状态，玩家选择防守时也同样要判断敌人状态，都需要生成一个表示敌人状态的变量。
+
+    ::: code-tabs
+
+    @tab 优化前
+
+    ```python
+        if user_input == 'A':
+            enemy_status = random.choice(['A', 'D'])
+            player_attack_coefficient = 1
+            if enemy_status == 'D':
+                print(f'{enemy.name} chose to defend!')
+                player_attack_coefficient = 0.5
+            else:
+                print(f'{enemy.name} chose to attack!')
+                enemy_attack_value = enemy.attack()
+                player.being_attack(enemy_attack_value)
+    
+            player_attack_value = player.attack()
+            enemy.being_attack(player_attack_value * player_attack_coefficient)
+    
+    
+        elif user_input == 'D':
+            enemy_status = random.choice(['A', 'D'])
+            if enemy_status == 'D':
+                print(f'{enemy.name} chose to defend!')
+                print('Both defended, no damage dealt.')
+            else:
+                print(f'{enemy.name} chose to attack!')
+                enemy_attack_value = 0.1*enemy.attack()
+                player.being_attack(enemy_attack_value)
+    ```
+
+    @tab 优化后
+
+    ```python
+    # 将涉及敌人状态的代码提出来
+        enemy_status = random.choice(['A', 'D'])
+        if user_input == 'A':
+            player_attack_coefficient = 1
+            if enemy_status == 'D':
+                print(f'{enemy.name} chose to defend!')
+                player_attack_coefficient = 0.5
+            else:
+                print(f'{enemy.name} chose to attack!')
+                enemy_attack_value = enemy.attack()
+                player.being_attack(enemy_attack_value)
+    
+            player_attack_value = player.attack()
+            enemy.being_attack(player_attack_value * player_attack_coefficient)
+    
+    
+        elif user_input == 'D':
+            if enemy_status == 'D':
+                print(f'{enemy.name} chose to defend!')
+                print('Both defended, no damage dealt.')
+            else:
+                print(f'{enemy.name} chose to attack!')
+                enemy_attack_value = 0.1*enemy.attack()
+                player.being_attack(enemy_attack_value)
+    ```
+
+    
+
+    :::
+
+
+
+当我们优化后，发现第一个优化其实意义不大，但是在实际开发中就是如此，你更新了一个新的功能或代码，客户、用户觉得没必要，但是我们也懒得改回去。
+
+目前完整代码：
+
+```python
+import random
+
+class Creature():
+    def __init__(self, name, hp):
+        self.name = name
+        self.hp = hp
+
+    def attack(self):
+        attack_value = random.randint(0, 50)
+        return attack_value
+
+    def not_dead(self):
+        return self.hp > 0
+
+    def being_attack(self, attack_value):
+        """受到伤害（向下取整避免血量显示为浮点数，并且保证了血量不会出现负数"""
+        self.hp = max(0, int(self.hp-attack_value))
+
+    def show_status(self):
+        print(f"{self.name}'s HP → {self.hp}")
+
+
+
+player = Creature('Ran',100)
+enemy = Creature('Monster',80)
+
+while player.not_dead() and enemy.not_dead():
+    player.show_status()
+    enemy.show_status()
+
+    user_input = input('Attack or Defence (A/D): ').strip().upper()
+    while user_input not in ('A', 'D'):
+        user_input = input('输入无效，请重新输入 A 或 D').strip().upper()
+
+    enemy_status = random.choice(['A', 'D'])
+    if user_input == 'A':
+        player_attack_coefficient = 1
+        if enemy_status == 'D':
+            print(f'{enemy.name} chose to defend!')
+            player_attack_coefficient = 0.5
+        else:
+            print(f'{enemy.name} chose to attack!')
+            enemy_attack_value = enemy.attack()
+            player.being_attack(enemy_attack_value)
+
+        player_attack_value = player.attack()
+        enemy.being_attack(player_attack_value * player_attack_coefficient)
+
+
+    elif user_input == 'D':
+        if enemy_status == 'D':
+            print(f'{enemy.name} chose to defend!')
+            print('Both defended, no damage dealt.')
+        else:
+            print(f'{enemy.name} chose to attack!')
+            enemy_attack_value = 0.1*enemy.attack()
+            player.being_attack(enemy_attack_value)
+
+
+if player.hp > 0:
+    print(f"You win! Your HP: {player.hp}")
+else:
+    print(f"You lose! ")
+```
+
+#### 9.4.6 游戏策略升级
+
+当前游戏策略并不完备。
+
+因为玩家防守时，敌人必须要攻击，不能两个人都防守。
+
+因此优化为：玩家防守，敌人必攻击！
+
+玩家防守情况中的代码可以还原为前面的版本，里面不再包含判断敌人状态的步骤。
+
+```python
+    elif user_input == 'D':
+            print(f'{enemy.name} chose to attack!')
+            enemy_attack_value = 0.1*enemy.attack()
+            player.being_attack(enemy_attack_value)
+```
+
+发现：可能最开始的是最好的。
+
+目前完整代码：
+
+```python
+import random
+
+class Creature():
+    def __init__(self, name, hp):
+        self.name = name
+        self.hp = hp
+
+    def attack(self):
+        attack_value = random.randint(0, 50)
+        return attack_value
+
+    def not_dead(self):
+        return self.hp > 0
+
+    def being_attack(self, attack_value):
+        """受到伤害（向下取整避免血量显示为浮点数，并且保证了血量不会出现负数"""
+        self.hp = max(0, int(self.hp-attack_value))
+
+    def show_status(self):
+        print(f"{self.name}'s HP → {self.hp}")
+
+
+
+player = Creature('Ran',100)
+enemy = Creature('Monster',80)
+
+while player.not_dead() and enemy.not_dead():
+    player.show_status()
+    enemy.show_status()
+
+    user_input = input('Attack or Defence (A/D): ').strip().upper()
+    while user_input not in ('A', 'D'):
+        user_input = input('输入无效，请重新输入 A 或 D').strip().upper()
+
+    enemy_status = random.choice(['A', 'D'])
+    if user_input == 'A':
+        player_attack_coefficient = 1
+        if enemy_status == 'D':
+            print(f'{enemy.name} chose to defend!')
+            player_attack_coefficient = 0.5
+        else:
+            print(f'{enemy.name} chose to attack!')
+            enemy_attack_value = enemy.attack()
+            player.being_attack(enemy_attack_value)
+
+        player_attack_value = player.attack()
+        enemy.being_attack(player_attack_value * player_attack_coefficient)
+
+
+    elif user_input == 'D':
+            print(f'{enemy.name} chose to attack!')
+            enemy_attack_value = 0.1*enemy.attack()
+            player.being_attack(enemy_attack_value)
+
+
+if player.hp > 0:
+    print(f"You win! Your HP: {player.hp}")
+else:
+    print(f"You lose! ")
+```
+
+
+
+#### 9.4.7 玩家回血技能
+
+当玩家血量低于50%时，提示玩家可以输入“H”来使用治疗技能，直接回血 100% （满血）。
+
+要求：
+
+1. 只能使用一次！
+2. 无法随时使用回血技能，只有在提示出现时才能够使用。
+3. 血量低于一般按照初始化传入的参数决定，随其变化。
+
+
+
+第一步：增加初始血量值
+
+::: code-tabs
+
+@tab 个人方法
+
+```python
+player = Creature('Ran',100)
+enemy = Creature('Monster',80)
+player_initial_hp = player.hp         # 这里是一个值，成立，若是字典/列表则需要考虑深浅拷贝问题
+```
+
+@tab 老师方法
+
+```python
+class Creature():
+    def __init__(self, name, hp):
+        self.name = name
+        self.hp = hp
+        self.max_hp = hp              # 增加 max_hp 这个变量
+```
+
+
+
+:::
+
+第二步：类里增加一个函数
+
+```python
+    def heal_full(self):
+        """直接回到初始满血"""
+        self.hp = self.max_hp
+```
+
+
+
+第三步：显示血量的函数随之可以优化，显示当前血量/原始血量。
+
+```python
+    def show_status(self):
+        print(f"{self.name}'s HP → {self.hp/self.max_hp}")
+```
+
+
+
+第四步：因为只能提示一次，所以增加一个变量 `heal_used` 判断是否显示过了。个人修改时纠结的问题在于，在循环内设置了这个变量，那么循环时会被覆盖，重新初始化，解决的方法就是把这个变量放到循环外面。
+
+```python
+player = Creature('Ran',100)
+enemy = Creature('Monster',80)
+heal_used = False
+```
+
+
+
+
+
+
+
+
 
 
 
