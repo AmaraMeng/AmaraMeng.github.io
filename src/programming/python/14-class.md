@@ -2707,6 +2707,588 @@ heal_used = False
 
 
 
+后面具体实现过程如下：
+
+::: code-tabs
+
+@tab 个人代码
+
+```python
+    if (player.hp < player.max_hp*0.5) and (not heal_used):    # 原本包含2个if ，可以通过 and 的使用进行合并
+        recover = input('血量低于 50% ，可以输入 H 使用治疗技能，直接恢复满血状态：').strip().upper()
+        if recover == 'H':
+            player.heal_full()
+        heal_used = True
+```
+
+
+
+@tab 老师代码
+
+`````Python
+# 将回血和攻击/防守进行合并
+
+player = Creature('Ran',100)
+enemy = Creature('Monster',80)
+heal_used = False       # 限制回血只能用一次
+
+while player.not_dead() and enemy.not_dead():
+    player.show_status()
+    enemy.show_status()
+
+    # 是否出现治疗提示：仅当当前血量<初始值50% 并且尚未使用回血功能
+    can_heal_now = (not heal_used) and (player.hp < player.max_hp * 0.5)
+
+    if can_heal_now:
+        prompt = 'Attack or Defence or Heal (A/D/H): '
+        valid_inputs = {'A', 'D', 'H'}
+        extra_tip = '（提示：现在可以按 H 回满血，仅此一次）'
+        print(extra_tip)
+
+    else:
+        prompt = 'Attack or Defence (A/D): '
+        valid_inputs = {'A', 'D'}
+
+    user_input = input(prompt).strip().upper()
+    while user_input not in valid_inputs:
+        user_input = input('输入无效，请重新输入: ' + prompt).strip().upper()
+
+    enemy_status = random.choice(['A', 'D'])
+
+    if user_input == 'H':
+        # 只有在 can_heal_now 为 True 时才会进入这里
+        print('你使用了治疗技能，血量已经回满。')
+        player.heal_full()
+        heal_used = True
+
+    elif user_input == 'A':
+
+`````
+
+
+
+:::
+
+
+
+目前完整代码：
+
+::: code-tabs
+
+@tab 个人完整代码
+
+```python
+import random
+
+class Creature():
+    def __init__(self, name, hp):
+        self.name = name
+        self.hp = hp
+        self.max_hp = hp              # 记录初始血量
+
+    def attack(self):
+        attack_value = random.randint(0, 50)
+        return attack_value
+
+    def not_dead(self):
+        return self.hp > 0
+
+    def being_attack(self, attack_value):
+        """受到伤害（向下取整避免血量显示为浮点数，并且保证了血量不会出现负数"""
+        self.hp = max(0, int(self.hp-attack_value))
+
+    def show_status(self):
+        print(f"{self.name}'s HP → {self.hp/self.max_hp}")
+
+    def heal_full(self):
+        """直接回到初始满血"""
+        self.hp = self.max_hp
+
+
+
+
+player = Creature('Ran',100)
+enemy = Creature('Monster',80)
+heal_used = False
+
+while player.not_dead() and enemy.not_dead():
+    player.show_status()
+    enemy.show_status()
+
+    user_input = input('Attack or Defence (A/D): ').strip().upper()
+    while user_input not in ('A', 'D'):
+        user_input = input('输入无效，请重新输入 A 或 D').strip().upper()
+
+    enemy_status = random.choice(['A', 'D'])
+    if user_input == 'A':
+        player_attack_coefficient = 1
+        if enemy_status == 'D':
+            print(f'{enemy.name} chose to defend!')
+            player_attack_coefficient = 0.5
+        else:
+            print(f'{enemy.name} chose to attack!')
+            enemy_attack_value = enemy.attack()
+            player.being_attack(enemy_attack_value)
+
+        player_attack_value = player.attack()
+        enemy.being_attack(player_attack_value * player_attack_coefficient)
+
+
+    elif user_input == 'D':
+            print(f'{enemy.name} chose to attack!')
+            enemy_attack_value = 0.1*enemy.attack()
+            player.being_attack(enemy_attack_value)
+
+
+    if (player.hp < player.max_hp*0.5) and (not heal_used):
+        recover = input('血量低于 50% ，可以输入 H 使用治疗技能，直接恢复满血状态：').strip().upper()
+        if recover == 'H':
+            player.heal_full()
+        heal_used = True
+
+
+if player.hp > 0:
+    print(f"You win! Your HP: {player.hp}")
+else:
+    print(f"You lose! ")
+
+```
+
+@tab 老师完整代码
+
+```python
+import random
+
+class Creature():
+    def __init__(self, name, hp):
+        self.name = name
+        self.hp = hp
+        self.max_hp = hp              # 记录初始血量
+
+    def attack(self):
+        attack_value = random.randint(0, 50)
+        return attack_value
+
+    def not_dead(self):
+        return self.hp > 0
+
+    def being_attack(self, attack_value):
+        """受到伤害（向下取整避免血量显示为浮点数，并且保证了血量不会出现负数"""
+        self.hp = max(0, int(self.hp-attack_value))
+
+    def show_status(self):
+        print(f"{self.name}'s HP → {self.hp/self.max_hp}")
+
+    def heal_full(self):
+        """直接回到初始满血"""
+        self.hp = self.max_hp
+
+
+player = Creature('Ran',100)
+enemy = Creature('Monster',80)
+heal_used = False       # 限制回血只能用一次
+
+while player.not_dead() and enemy.not_dead():
+    player.show_status()
+    enemy.show_status()
+
+    # 是否出现治疗提示：仅当当前血量<初始值50% 并且尚未使用回血功能
+    can_heal_now = (not heal_used) and (player.hp < player.max_hp * 0.5)
+
+    if can_heal_now:
+        prompt = 'Attack or Defence or Heal (A/D/H): '
+        valid_inputs = {'A', 'D', 'H'}
+        extra_tip = '（提示：现在可以按 H 回满血，仅此一次）'
+        print(extra_tip)
+
+    else:
+        prompt = 'Attack or Defence (A/D): '
+        valid_inputs = {'A', 'D'}
+
+    user_input = input(prompt).strip().upper()
+    while user_input not in valid_inputs:
+        user_input = input('输入无效，请重新输入: ' + prompt).strip().upper()
+
+    enemy_status = random.choice(['A', 'D'])
+
+    if user_input == 'H':
+        # 只有在 can_heal_now 为 True 时才会进入这里
+        print('你使用了治疗技能，血量已经回满。')
+        player.heal_full()
+        heal_used = True
+
+    elif user_input == 'A':
+        player_attack_coefficient = 1
+        if enemy_status == 'D':
+            print(f'{enemy.name} chose to defend!')
+            player_attack_coefficient = 0.5
+        else:
+            print(f'{enemy.name} chose to attack!')
+            enemy_attack_value = enemy.attack()
+            player.being_attack(enemy_attack_value)
+
+        player_attack_value = player.attack()
+        enemy.being_attack(player_attack_value * player_attack_coefficient)
+
+
+    elif user_input == 'D':
+            print(f'{enemy.name} chose to attack!')
+            enemy_attack_value = 0.1*enemy.attack()
+            player.being_attack(enemy_attack_value)
+
+
+
+if player.hp > 0:
+    print(f"You win! Your HP: {player.hp}")
+else:
+    print(f"You lose! ")
+
+```
+
+
+
+:::
+
+但是上述老师的代码也有个小问题，如果没有选择回血的话，就会一直提示可以使用回血。如果我们希望这个提示和回血的选择只出现一次，就是过这村没这店的情况，就可以将 `heal_used = True` 从玩家选择 `H` 的判断中提出来，可以放在提示出现后。
+
+---
+
+此外，在将回血功能加入时，需要考虑用户输入 `H` 的情况，那么可以在用户输入的提示语上进行修改，代码如下：
+
+```Python
+import random
+
+
+class Creature():
+    def __init__(self, hp, name):
+        self.hp = hp
+        self.max_hp = hp  # 记录初始满血
+        self.name = name
+
+    def attack(self):
+        return random.randint(0, 50)
+
+    def not_dead(self):
+        return self.hp > 0
+
+    def being_attack(self, dmg: float):
+        """受到伤害（向下取整以避免浮点 HP），并保证 HP 不会掉到负数以下"""
+        self.hp = max(0, int(self.hp - dmg))
+
+    def heal_full(self):
+        """直接回到初始满血"""
+        self.hp = self.max_hp
+
+    def show_status(self):
+        # print(f"{self.name}'s HP → {self.hp}")
+        print(f"{self.name}'s HP → {self.hp}/{self.max_hp}")
+
+
+heal_used = False  # 治疗仅限一次
+
+player = Creature(100, "AI悦创")
+enemy = Creature(80, "Enemy")
+
+while player.not_dead() and enemy.not_dead():
+    player.show_status()
+    enemy.show_status()
+
+    prompt = "Attack or Defence (A/D)："
+
+    if (player.hp < player.max_hp * 0.5) and (not heal_used):
+        print("（提示：你现在可以按 H 回满血，仅此一次）")
+        prompt = "Attack or Defence or Heal (A/D/H)："
+
+    user_input = input(prompt).strip().upper()
+    while user_input not in ("A", "D", "H"):
+        user_input = input("输入无效，请重新输入 A 或 D：").strip().upper()
+
+    enemy_status = ['Attack', 'Defence']
+    enemy_choice = random.choice(enemy_status)
+    if user_input == "A":
+        player_attack_coefficient = 1  # MR 取名
+        if enemy_choice == "Defence":
+            print(f"{enemy.name} chose to defend!")
+            player_attack_coefficient = 0.5
+        else:
+            print(f"{enemy.name} chose to attack!")
+            enemy_attack_value = enemy.attack()
+            player.being_attack(enemy_attack_value)
+        player_attack_value = player.attack()
+        enemy.being_attack(player_attack_value * player_attack_coefficient)
+
+    elif user_input == "D":
+        enemy_attack_value = enemy.attack() * 0.1
+        player.being_attack(enemy_attack_value)
+
+    elif user_input == "H":
+        player.heal_full()
+        heal_used = True
+        print(f"{player.name} healed to full health!")
+        prompt = "Attack or Defence (A/D)："
+
+if player.not_dead():
+    print("You Win!")
+else:
+    print("You Lose!")
+
+```
+
+
+
+
+
+#### 9.4.8 回血技能代价
+
+回血是有代价的，如果玩家使用了回血技能，后续敌人一定会攻击，并且攻击将翻倍。
+
+可以在敌人攻击时，判断回血技能是否使用，如果使用了，那么攻击 乘2。
+
+下述代码是在 `heal_used = True` 放在输入是 `H` 下的判断中的情况： 
+
+```Python
+    if user_input == 'H':
+        # 只有在 can_heal_now 为 True 时才会进入这里
+        print('你使用了治疗技能，血量已经回满。')
+        player.heal_full()
+        heal_used = True
+
+    elif user_input == 'A':
+        player_attack_coefficient = 1
+        if enemy_status == 'D':
+            print(f'{enemy.name} chose to defend!')
+            player_attack_coefficient = 0.5
+        else:
+            print(f'{enemy.name} chose to attack!')
+            if heal_used:         # 判断是否回血治疗了
+                enemy_attack_value = 2 * enemy.attack()
+            else:
+                enemy_attack_value = enemy.attack()
+            player.being_attack(enemy_attack_value)
+
+        player_attack_value = player.attack()
+        enemy.being_attack(player_attack_value * player_attack_coefficient)
+
+
+    elif user_input == 'D':
+            print(f'{enemy.name} chose to attack!')
+            if heal_used:         # 判断是否回血治疗了
+                enemy_attack_value = 2*(0.1*enemy.attack())
+            else:
+                enemy_attack_value = 0.1*enemy.attack()
+            player.being_attack(enemy_attack_value)
+```
+
+如果我们想要指定“过这村没这店”的情况，那么像我们上面提到过的 `heal_used = True`  被提到外面，就需要将“提示过”和“使用回血”区分开，因此需要引入一个新变量 `heal_penalty_active` ，具体代码如下：
+
+```Python
+player = Creature('Ran',100)
+enemy = Creature('Monster',80)
+heal_used = False       # 限制回血只能用一次
+heal_penalty_active = False      # 回血代价激活状态
+
+while player.not_dead() and enemy.not_dead():
+    player.show_status()
+    enemy.show_status()
+
+    # 是否出现治疗提示：仅当当前血量<初始值50% 并且尚未使用回血功能
+    can_heal_now = (not heal_used) and (player.hp < player.max_hp * 0.5)
+
+    if can_heal_now:
+        prompt = 'Attack or Defence or Heal (A/D/H): '
+        valid_inputs = {'A', 'D', 'H'}
+        extra_tip = '（提示：现在可以按 H 回满血，仅此一次）'
+        print(extra_tip)
+        heal_used = True  # 说明回血提示出现了，之后不会再出现
+
+    else:
+        prompt = 'Attack or Defence (A/D): '
+        valid_inputs = {'A', 'D'}
+
+    if heal_penalty_active:
+        print('【警告】治疗代价生效中，敌人对你的伤害 ×2 ！')
+
+
+    user_input = input(prompt).strip().upper()
+    while user_input not in valid_inputs:
+        user_input = input('输入无效，请重新输入: ' + prompt).strip().upper()
+
+    # 敌人选择（若玩家选择 D 或者 H ，敌人都直接攻击）
+    enemy_status = random.choice(['A', 'D'])
+
+    # 当前敌人伤害倍率（是否翻倍）
+    def enemy_mul():
+        return 2.0 if heal_penalty_active else 1.0
+
+    if user_input == 'H':
+        # 只有在 can_heal_now 为 True 时才会进入这里
+        print('你使用了治疗技能，血量已经回满。')
+        player.heal_full()
+        heal_penalty_active = True             # 触发治疗代价
+
+        # 敌人回合：直接攻击，先治疗再挨打
+        raw_enemy_attack_value = enemy.attack()
+        damage = raw_enemy_attack_value * enemy_mul()
+        print(f'{enemy.name}攻击了你，造成{int(damage)}点伤害！（原始{int(raw_enemy_attack_value)}×倍率{enemy_mul():.0f}）')
+        player.being_attack(damage)
+
+
+    elif user_input == 'A':
+        player_attack_coefficient = 1
+        if enemy_status == 'D':
+            print(f'{enemy.name} chose to defend!')
+            player_attack_coefficient = 0.5
+        else:
+            print(f'{enemy.name} chose to attack!')
+            raw_enemy_attack_value = enemy.attack()
+            damage = raw_enemy_attack_value * enemy_mul()
+            print(f'{enemy.name}攻击了你，造成{int(damage)}点伤害！（原始{int(raw_enemy_attack_value)}×倍率{enemy_mul():.0f}）')
+            player.being_attack(damage)
+
+        player_attack_value = player.attack()
+        enemy.being_attack(player_attack_value * player_attack_coefficient)
+
+
+    elif user_input == 'D':
+        # 防御：敌人攻击减伤为 90% ，然后再应用翻倍倍率
+        print(f'{enemy.name} chose to attack!')
+        raw_enemy_attack_value = enemy.attack()
+        damage = (raw_enemy_attack_value*0.1) * enemy_mul()
+        print(f'{enemy.name}攻击了你（被你防住大部分），造成{int(damage)}点伤害！'
+              f'（原始{int(raw_enemy_attack_value)}×倍率{enemy_mul():.0f}）')
+        player.being_attack(damage)
+```
+
+
+
+目前完整代码如下：
+
+```Python
+import random
+
+class Creature():
+    def __init__(self, name, hp):
+        self.name = name
+        self.hp = hp
+        self.max_hp = hp              # 记录初始血量
+
+    def attack(self):
+        attack_value = random.randint(0, 50)
+        return attack_value
+
+    def not_dead(self):
+        return self.hp > 0
+
+    def being_attack(self, attack_value):
+        """受到伤害（向下取整避免血量显示为浮点数，并且保证了血量不会出现负数"""
+        self.hp = max(0, int(self.hp-attack_value))
+
+    def show_status(self):
+        print(f"{self.name}'s HP → {self.hp}/{self.max_hp}")
+
+    def heal_full(self):
+        """直接回到初始满血"""
+        self.hp = self.max_hp
+
+
+
+player = Creature('Ran',100)
+enemy = Creature('Monster',80)
+heal_used = False       # 限制回血只能用一次
+heal_penalty_active = False      # 回血代价激活状态
+
+while player.not_dead() and enemy.not_dead():
+    player.show_status()
+    enemy.show_status()
+
+    # 是否出现治疗提示：仅当当前血量<初始值50% 并且尚未使用回血功能
+    can_heal_now = (not heal_used) and (player.hp < player.max_hp * 0.5)
+
+    if can_heal_now:
+        prompt = 'Attack or Defence or Heal (A/D/H): '
+        valid_inputs = {'A', 'D', 'H'}
+        extra_tip = '（提示：现在可以按 H 回满血，仅此一次）'
+        print(extra_tip)
+        heal_used = True  # 说明回血提示出现了，之后不会再出现
+
+    else:
+        prompt = 'Attack or Defence (A/D): '
+        valid_inputs = {'A', 'D'}
+
+    if heal_penalty_active:
+        print('【警告】治疗代价生效中，敌人对你的伤害 ×2 ！')
+
+
+    user_input = input(prompt).strip().upper()
+    while user_input not in valid_inputs:
+        user_input = input('输入无效，请重新输入: ' + prompt).strip().upper()
+
+    # 敌人选择（若玩家选择 D 或者 H ，敌人都直接攻击）
+    enemy_status = random.choice(['A', 'D'])
+
+    # 当前敌人伤害倍率（是否翻倍）
+    def enemy_mul():
+        return 2.0 if heal_penalty_active else 1.0
+
+    if user_input == 'H':
+        # 只有在 can_heal_now 为 True 时才会进入这里
+        print('你使用了治疗技能，血量已经回满。')
+        player.heal_full()
+        heal_penalty_active = True             # 触发治疗代价
+
+        # 敌人回合：直接攻击，先治疗再挨打
+        raw_enemy_attack_value = enemy.attack()
+        damage = raw_enemy_attack_value * enemy_mul()
+        print(f'{enemy.name}攻击了你，造成{int(damage)}点伤害！（原始{int(raw_enemy_attack_value)}×倍率{enemy_mul():.0f}）')
+        player.being_attack(damage)
+
+
+    elif user_input == 'A':
+        player_attack_coefficient = 1
+        if enemy_status == 'D':
+            print(f'{enemy.name} chose to defend!')
+            player_attack_coefficient = 0.5
+        else:
+            print(f'{enemy.name} chose to attack!')
+            raw_enemy_attack_value = enemy.attack()
+            damage = raw_enemy_attack_value * enemy_mul()
+            print(f'{enemy.name}攻击了你，造成{int(damage)}点伤害！（原始{int(raw_enemy_attack_value)}×倍率{enemy_mul():.0f}）')
+            player.being_attack(damage)
+
+        player_attack_value = player.attack()
+        enemy.being_attack(player_attack_value * player_attack_coefficient)
+
+
+    elif user_input == 'D':
+        # 防御：敌人攻击减伤为 90% ，然后再应用翻倍倍率
+        print(f'{enemy.name} chose to attack!')
+        raw_enemy_attack_value = enemy.attack()
+        damage = (raw_enemy_attack_value*0.1) * enemy_mul()
+        print(f'{enemy.name}攻击了你（被你防住大部分），造成{int(damage)}点伤害！'
+              f'（原始{int(raw_enemy_attack_value)}×倍率{enemy_mul():.0f}）')
+        player.being_attack(damage)
+
+
+
+if player.not_dead():
+    print(f"You win! Your HP: {player.hp}")
+else:
+    print(f"You lose! ")
+```
+
+其他优化：警告只显示一次如何处理？
+
+解决方法：将警告移到 `H` 里面即可：
+
+```Python
+    if user_input == 'H':
+        # 只有在 can_heal_now 为 True 时才会进入这里
+        print('你使用了治疗技能，血量已经回满。')
+        player.heal_full()
+        heal_penalty_active = True             # 触发治疗代价
+        print('【警告】治疗代价生效中，敌人对你的伤害 ×2 ！')
+```
+
 
 
 
