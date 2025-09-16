@@ -4032,9 +4032,232 @@ filled = round(ratio * width)  # Python 3 的 round 是“到偶数”
 
 
 
+#### 9.4.10 使用 Faker 库随机生成敌人姓名
+
+每轮游戏的敌人都应该是不同的，我们就做到名称不同即可~
+
+Python Faker 是一个非常好用的库，可以快速生成各种“假数据”（名字、地址、电话、邮箱、公司、银行卡号。。。），在写测试、做原型、模拟数据库时特别方便。
+
+[传播问卷调查数据不够？自己生成假数据！](https://bornforthis.cn/blog/2022/06.html)
+
+##### 9.4.10.1 Faker 的基础使用
+
+::: tabs
+
+@tab 1. 安装
+
+```python
+pip install faker
+```
+
+@tab 2. 基本用法
+
+```python
+from faker import Faker
+
+# 创建一个 Faker 实例（默认是英文环境）
+fake = Faker()
+
+print(fake.name())
+print(fake.address())
+print(fake.email())
+print(fake.text())
+```
+
+运行结果示例：
+
+```python
+Christine Taylor
+673 April Causeway
+Randychester, WI 72072
+ljohnson@example.org
+Many toward style person daughter keep. Attorney explain use baby fine situation character.
+Task task director create former walk plant collection. Hot meet past letter modern difference.
+```
+
+@tab 3. 中文环境
+
+Faker 默认是英文，但是支持多语言。比如生成中文名字和地址：
+
+```python
+from faker import Faker
+
+# 创建一个 Faker 实例（默认是英文环境）
+fake = Faker('zh_CN')
+
+print(fake.name())
+print(fake.address())
+print(fake.phone_number())
+```
+
+输出示例：
+
+```python
+葛丹丹
+台湾省深圳县六枝特郑州街Z座 871973
+18753320376
+```
+
+@tab 4. 常用方法
+
+| 方法                  | 说明      | 示例输出                                   |
+| --------------------- | --------- | ------------------------------------------ |
+| `fake.name()`         | 姓名      | 王伟                                       |
+| `fake.address()`      | 地址      | 上海市徐汇区漕溪北路...                    |
+| `fake.email()`        | 邮箱      | [test@qq.com](mailto:test@qq.com)          |
+| `fake.phone_number()` | 手机号    | 13912345678                                |
+| `fake.company()`      | 公司      | 腾讯科技有限公司                           |
+| `fake.job()`          | 职位      | 软件工程师                                 |
+| `fake.date()`         | 随机日期  | 2025-09-16                                 |
+| `fake.ipv4()`         | IPv4 地址 | 192.168.1.10                               |
+| `fake.url()`          | URL       | [https://example.com](https://example.com) |
 
 
 
+@tab 5. 批量生成数据
+
+经常用在模拟数据库测试数据：
+
+个人实现：
+
+```python
+from faker import Faker
+
+# 创建一个 Faker 实例（默认是英文环境）
+fake = Faker('zh_CN')
+
+i = 0
+while i <= 4:
+    print(fake.name(), fake.phone_number(), fake.email())
+    i+=1
+```
+
+老师实现：
+
+```python
+from faker import Faker
+
+# 创建一个 Faker 实例（默认是英文环境）
+fake = Faker('zh_CN')
+
+for _ in range(5):
+    print(fake.name(), fake.phone_number(), fake.email())
+```
+
+
+
+@tab 6. 结合字典/列表，做“假数据库”
+
+```python
+from faker import Faker
+
+# 创建一个 Faker 实例（默认是英文环境）
+fake = Faker('zh_CN')
+
+data = [
+    {
+        'id': i,
+        'name': fake.name(),
+        'email': fake.email(),
+        'address': fake.address(),
+        'job': fake.job(),
+        'company': fake.company(),
+    }
+    for i in range(1, 6)
+]
+
+for item in data:
+    print(item)
+```
+
+输出示例：
+
+```python
+{'id': 1, 'name': '王桂兰', 'email': 'jie73@example.org', 'address': '内蒙古自治区秀英市长寿郝路L座 966460', 'job': '其他', 'company': '明腾科技有限公司'}
+{'id': 2, 'name': '张玉英', 'email': 'yongfan@example.net', 'address': '江西省兰州县门头沟李街k座 529875', 'job': '理货员', 'company': '恩悌网络有限公司'}
+{'id': 3, 'name': '董宇', 'email': 'csong@example.net', 'address': '安徽省浩县牧野王街U座 814580', 'job': '资金经理/主管', 'company': '方正科技网络有限公司'}
+{'id': 4, 'name': '刘秀芳', 'email': 'jiayan@example.net', 'address': '湖北省霞市城北席街n座 380078', 'job': '其他', 'company': '华成育卓科技有限公司'}
+{'id': 5, 'name': '徐磊', 'email': 'daimin@example.com', 'address': '山东省静市清城辽阳路a座 476086', 'job': '脚本开发工程师', 'company': '毕博诚信息有限公司'}
+```
+
+
+
+:::
+
+
+
+::: tabs
+
+@tab 7. 固定随机种子（保证可复现）
+
+有时需要生成“固定不变”的假数据：
+
+```python
+from faker import Faker
+
+Faker.seed(1234)      # 全局种子，数字随便设置
+fake = Faker('zh_CN')
+
+print(fake.name())
+print(fake.name())
+```
+
+每次运行都会输出一样的结果。
+
+
+
+@tab 8. 生成名字和邮箱里保持一致
+
+需要名字和邮箱的姓名保持一致，比如：
+
+```python
+姓名：李娜  → 邮箱：lina@example.com
+姓名：王刚  → 邮箱：wanggang@example.com
+```
+
+这个就需要在生成邮箱时，根据名字来构造，而不是让 `fake.email()` 随机生成。
+
+ 把中文名字转换成拼音，再拼接邮箱
+
+常用方法是借助 `pypinyin` 库：
+
+```python 
+pip install pinyin
+```
+
+代码如下：
+
+```python 
+from faker import Faker
+import pandas as pd
+from pypinyin import lazy_pinyin
+
+fake = Faker('zh_CN')
+
+users = []
+for i in range(1, 11):
+    name = fake.name()
+    # 把中文名字转成拼音（list 转成字符串）
+    name_pinyin = ''.join(lazy_pinyin(name))
+    email = f'{name_pinyin}@example.com'
+    
+    user = {
+        'ID': i,
+        '姓名': name,
+        '邮箱': email,
+        '手机号': fake.phone_number(),
+        '地址': fake.address(),
+    }
+    users.append(user)
+    
+df = pd.DataFrame(users)
+df.to_csv('用户表数据.csv', index=False, encoding='utf-8-sig')
+print(df.head())
+```
+
+
+
+:::
 
 
 
