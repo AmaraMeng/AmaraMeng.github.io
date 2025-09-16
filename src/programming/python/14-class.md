@@ -3291,6 +3291,286 @@ else:
 
 
 
+#### 9.4.9 血量进度条
+
+老师示例
+
+- 完整代码：
+
+    ```python
+    import random
+    import sys
+    
+    # ====== 终端颜色与进度条工具 ======
+    RESET = "\033[0m"
+    FG_RED = "\033[31m"
+    FG_YELLOW = "\033[33m"
+    FG_GREEN = "\033[32m"
+    FG_CYAN = "\033[36m"
+    FG_MAGENTA = "\033[35m"
+    
+    def _supports_color() -> bool:
+        # 基本判断：是交互终端就上色；否则退化为无色
+        return sys.stdout.isatty()
+    
+    def colorize(s: str, color: str) -> str:
+        if _supports_color():
+            return f"{color}{s}{RESET}"
+        return s
+    
+    def hp_bar(cur: int, maxv: int, width: int = 30) -> str:
+        cur = max(0, min(cur, maxv))
+        ratio = cur / maxv if maxv > 0 else 0
+        filled = int(round(ratio * width))
+        empty = width - filled
+    
+        # 阈值配色：>50% 绿；20%~50% 黄；<=20% 红
+        if ratio > 0.5:
+            bar_color = FG_GREEN
+        elif ratio > 0.2:
+            bar_color = FG_YELLOW
+        else:
+            bar_color = FG_RED
+    
+        bar = "█" * filled + "░" * empty
+        percent = f"{int(ratio * 100):3d}%"
+        return f"[{colorize(bar, bar_color)}] {percent}  {cur}/{maxv}"
+    
+    # ====== 你的游戏代码（加入进度条显示） ======
+    class Creature:
+        def __init__(self, hp, name):
+            self.hp = int(hp)
+            self.max_hp = int(hp)  # 记录初始满血
+            self.name = name
+    
+        def attack(self):
+            return random.randint(0, 50)
+    
+        def not_dead(self):
+            return self.hp > 0
+    
+        def being_attack(self, dmg: float):
+            """受到伤害（向下取整以避免浮点 HP），并保证 HP 不会掉到负数以下"""
+            self.hp = max(0, int(self.hp - dmg))
+    
+        def heal_full(self):
+            """直接回到初始满血"""
+            self.hp = self.max_hp
+    
+        def show_status(self):
+            # 名称加一点配色区分玩家/敌人
+            name_str = self.name
+            if self.name == "AI悦创":
+                name_str = colorize(self.name, FG_CYAN)
+            elif self.name.lower().startswith("enemy"):
+                name_str = colorize(self.name, FG_MAGENTA)
+    
+            print(f"{name_str} HP {hp_bar(self.hp, self.max_hp)}")
+    
+    player = Creature(100, "AI悦创")
+    enemy = Creature(80, "Enemy")
+    
+    heal_used = False  # 治疗仅限一次
+    heal_penalty_active = False  # 是否已触发“敌人攻击翻倍”的惩罚
+    
+    while player.not_dead() and enemy.not_dead():
+        print("\n=== 状态 ===")
+        player.show_status()
+        enemy.show_status()
+    
+        # 是否出现治疗提示：仅当当前 HP < 初始 HP 的 50% 且尚未使用
+        can_heal_now = (not heal_used) and (player.hp < player.max_hp * 0.5)
+    
+        if can_heal_now:
+            prompt = 'Attack or Defence or Heal (A/D/H)：'
+            valid_inputs = {"A", "D", "H"}
+            print(colorize('（提示：你现在可以按 H 回满血，仅此一次）', FG_YELLOW))
+        else:
+            prompt = 'Attack or Defence (A/D)：'
+            valid_inputs = {"A", "D"}
+    
+        if heal_penalty_active:
+            print(colorize('【警告】治疗代价生效中：敌人对你的伤害 ×2！', FG_RED))
+    
+        user_input = input(prompt).strip().upper()
+        while user_input not in valid_inputs:
+            user_input = input("输入无效，请重新输入：" + prompt).strip().upper()
+    
+        # 敌人选择（对 A/D 有影响；若玩家选择 H，我们让敌人本回合直接攻击）
+        enemy_status = ['Attack', 'Defence']
+        enemy_choice = random.choices(enemy_status, weights=[0.7, 0.3], k=1)[0]  # 敌人更倾向于攻击
+    
+        # 当前敌人伤害倍率（是否翻倍）
+        def enemy_mul():
+            return 2.0 if heal_penalty_active else 1.0
+    
+        if user_input == "H":
+            # 只有在 can_heal_now 为 True 时才会进入到这里（上面已限制输入选项）
+            print(colorize("你使用了治疗技能！血量已回满。", FG_GREEN))
+            player.heal_full()
+            heal_used = True
+    
+            # 触发治疗代价：从现在起敌人攻击翻倍（包含本回合的随后的敌人攻击）
+            heal_penalty_active = True
+    
+            # 敌人回合：直接攻击（先治再挨打）
+            raw_enemy_attack_value = enemy.attack()
+            damage = raw_enemy_attack_value * enemy_mul()
+            print(f"{enemy.name} 攻击了你，造成 {int(damage)} 点伤害！（原始{int(raw_enemy_attack_value)} × 倍率{enemy_mul():.0f}）")
+            player.being_attack(damage)
+    
+        elif user_input == "A":
+            player_attack_coefficient = 1
+            if enemy_choice == "Defence":
+                print(f"{enemy.name} chose to defend!")
+                player_attack_coefficient = 0.5
+            else:
+                print(f"{enemy.name} chose to attack!")
+                raw_enemy_attack_value = enemy.attack()
+                damage = raw_enemy_attack_value * enemy_mul()
+                print(f"{enemy.name} 对你造成 {int(damage)} 点伤害！（原始{int(raw_enemy_attack_value)} × 倍率{enemy_mul():.0f}）")
+                player.being_attack(damage)
+    
+            player_attack_value = player.attack()
+            enemy.being_attack(player_attack_value * player_attack_coefficient)
+            print(f"你对 {enemy.name} 造成 {int(player_attack_value * player_attack_coefficient)} 点伤害。")
+    
+        elif user_input == "D":
+            # 防御：敌人攻击减伤为 90%，然后再应用翻倍倍率
+            raw_enemy_attack_value = enemy.attack()
+            damage = raw_enemy_attack_value * 0.1 * enemy_mul()
+            print(f"{enemy.name} 攻击了你（被你防住大部分），造成 {int(damage)} 点伤害！"
+                  f"（原始{int(raw_enemy_attack_value)} × 减伤0.1 × 倍率{enemy_mul():.0f}）")
+            player.being_attack(damage)
+    
+    if player.not_dead():
+        print(colorize("You Win!", FG_GREEN))
+    else:
+        print(colorize("You Lose!", FG_RED))
+    ```
+
+    
+
+- 注释：
+
+    ```python
+    import sys  # 用于判断标准输出是否是一个“交互式终端”（TTY），从而决定是否使用颜色
+    
+    # ====== 终端颜色与进度条工具 ======
+    RESET = "\033[0m"     # ANSI 转义序列：重置所有颜色/样式
+    FG_RED = "\033[31m"   # 前景色：红
+    FG_YELLOW = "\033[33m"# 前景色：黄
+    FG_GREEN = "\033[32m" # 前景色：绿
+    FG_CYAN = "\033[36m"  # 前景色：青（给玩家名上色用）
+    FG_MAGENTA = "\033[35m"# 前景色：洋红（给敌人名上色用）
+    
+    def _supports_color() -> bool:
+        """
+        判断当前 stdout 是否是一个 TTY（交互式终端）。
+        - 如果是 TTY，通常可以正确解析 ANSI 颜色转义序列 -> 返回 True。
+        - 如果不是（比如写入文件、被重定向到日志系统），就不要输出颜色码 -> 返回 False。
+        这样可以避免在不支持颜色的环境里看到一堆“\x1b[31m”之类的乱码。
+        """
+        return sys.stdout.isatty()
+    
+    def colorize(s: str, color: str) -> str:
+        """
+        根据 _supports_color() 的结果，有选择地给字符串加颜色。
+        - 支持颜色：前后包裹 color 与 RESET 转义码。
+        - 不支持颜色：原样返回，避免污染输出。
+        """
+        if _supports_color():
+            return f"{color}{s}{RESET}"
+        return s
+    
+    def hp_bar(cur: int, maxv: int, width: int = 30) -> str:
+        """
+        生成一个文本进度条，形如：
+        [██████████░░░░░░░░░░░░░░]  40%  40/100
+    
+        参数：
+        - cur: 当前 HP（会被限制在 0..maxv 范围，以避免越界）
+        - maxv: 最大 HP（分母；注意做 0 保护）
+        - width: 进度条宽度（字符数），默认 30
+    
+        返回：
+        - 包含彩色条形、百分比和“cur/maxv”数值的字符串
+        """
+        # 1) 防御式编程：先把 cur 限制在 [0, maxv]，避免出现负数/超上限
+        cur = max(0, min(cur, maxv))
+    
+        # 2) 计算比例 ratio，注意 maxv=0 的兜底（避免 ZeroDivisionError）
+        ratio = cur / maxv if maxv > 0 else 0
+    
+        # 3) 根据比例计算“填充块”数量
+        #    - round 而非 floor：让临界值（例如 100%）可以填满整条；否则容易出现 99% 看起来没满的“强迫症”效果
+        #    - 再用 int 转成整数个字符
+        filled = int(round(ratio * width))
+        empty = width - filled  # 剩余未填充部分
+    
+        # 4) 阈值配色：
+        #    ratio > 0.5  → 绿色（安全）
+        #    0.2 < ratio <= 0.5 → 黄色（警戒）
+        #    ratio <= 0.2 → 红色（危险）
+        #    这样在对局中能直观感受到“健康程度”
+        if ratio > 0.5:
+            bar_color = FG_GREEN
+        elif ratio > 0.2:
+            bar_color = FG_YELLOW
+        else:
+            bar_color = FG_RED
+    
+        # 5) 使用全块 '█' 表示已填充，用浅色 '░' 表示未填充（视觉对比明显）
+        #    如果你的终端或字体对这些字符支持不好，可以换成 '#' 和 '-' 等 ASCII 字符。
+        bar = "█" * filled + "░" * empty
+    
+        # 6) 百分比显示：取整到 0..100 之间，并用 :3d 做宽度对齐（右对齐占 3 格，像 " 40%"）
+        percent = f"{int(ratio * 100):3d}%"
+    
+        # 7) 把彩色条形 + 百分比 + “cur/maxv” 组装成最终字符串
+        return f"[{colorize(bar, bar_color)}] {percent}  {cur}/{maxv}"
+    ```
+
+    
+
+补充知识：
+
+[Python 保留指定位数的小数](https://bornforthis.cn/column/Python-Programming-Course/P02-2-basequestion/radix_point.html)
+
+
+
+四舍五入的取整 `round()` 
+
+个人代码：只对 `show_status` 这个函数进行修改。
+
+```python
+    def show_status(self):
+        max_hp_bar = round(self.max_hp/10)
+        now_hp_bar = round((self.hp / self.max_hp) * max_hp_bar)
+        hp_bar = (now_hp_bar * '█')+((max_hp_bar-now_hp_bar) * '░')
+        print(f"{self.name}'s HP → {hp_bar} {self.hp}/{self.max_hp}")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
