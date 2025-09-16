@@ -3533,7 +3533,7 @@ else:
 
     
 
-补充知识：
+**补充知识：**
 
 [Python 保留指定位数的小数](https://bornforthis.cn/column/Python-Programming-Course/P02-2-basequestion/radix_point.html)
 
@@ -3541,7 +3541,9 @@ else:
 
 四舍五入的取整 `round()` 
 
-个人代码：只对 `show_status` 这个函数进行修改。
+**个人代码：**
+
+只对 `show_status` 这个函数进行修改。
 
 ```python
     def show_status(self):
@@ -3550,6 +3552,481 @@ else:
         hp_bar = (now_hp_bar * '█')+((max_hp_bar-now_hp_bar) * '░')
         print(f"{self.name}'s HP → {hp_bar} {self.hp}/{self.max_hp}")
 ```
+
+
+
+**老师代码：**
+
+:::code-tabs
+
+@tab 精简代码
+
+```python
+import random
+
+# —— 简单无色进度条（纯 ASCII，跨平台）——
+def hp_bar(cur: int, maxv: int, width: int = 20) -> str:
+    """返回形如：[##########----------] 50%  50/100 的进度条文本"""
+    if maxv <= 0:
+        maxv = 1
+    cur = max(0, min(cur, maxv))
+    ratio = cur / maxv
+    filled = int(ratio * width + 0.5)  # 四舍五入，因为 int 的取整是把小数点后的直接锯掉
+    bar = "#" * filled + "-" * (width - filled)
+    return f"[{bar}] {int(ratio * 100):3d}%  {cur}/{maxv}"
+
+
+class Creature:
+    # ---snip---
+
+    def show_status(self):
+        print(f"{self.name}'s HP → {hp_bar(self.hp, self.max_hp)}")
+```
+
+@tab 完整代码
+
+```python
+import random
+
+# —— 简单无色进度条（纯 ASCII，跨平台）——
+def hp_bar(cur: int, maxv: int, width: int = 20) -> str:
+    """返回形如：[##########----------] 50%  5g0/100 的进度条文本"""
+    if maxv <= 0:
+        maxv = 1
+    cur = max(0, min(cur, maxv))
+    ratio = cur / maxv
+    filled = int(ratio * width + 0.5)  # 四舍五入
+    bar = "#" * filled + "-" * (width - filled)
+    return f"[{bar}] {int(ratio * 100):3d}%  {cur}/{maxv}"
+
+
+class Creature:
+    def __init__(self, hp, name):
+        self.hp = int(hp)
+        self.max_hp = int(hp)  # 记录初始满血
+        self.name = name
+
+    def attack(self):
+        return random.randint(0, 50)
+
+    def not_dead(self):
+        return self.hp > 0
+
+    def being_attack(self, dmg: float):
+        """受到伤害（向下取整以避免浮点 HP），并保证 HP 不会掉到负数以下"""
+        self.hp = max(0, int(self.hp - dmg))
+
+    def heal_full(self):
+        """直接回到初始满血"""
+        self.hp = self.max_hp
+
+    def show_status(self):
+        print(f"{self.name}'s HP → {hp_bar(self.hp, self.max_hp)}")
+
+
+player = Creature(100, "AI悦创")
+enemy = Creature(80, "Enemy")
+
+heal_used = False  # 治疗仅限一次
+heal_penalty_active = False  # 是否已触发“敌人攻击翻倍”的惩罚
+
+while player.not_dead() and enemy.not_dead():
+    player.show_status()
+    enemy.show_status()
+
+    # 是否出现治疗提示：仅当当前 HP < 初始 HP 的 50% 且尚未使用
+    can_heal_now = (not heal_used) and (player.hp < player.max_hp * 0.5)
+
+    if can_heal_now:
+        prompt = 'Attack or Defence or Heal (A/D/H)：'
+        valid_inputs = {"A", "D", "H"}
+        print('（提示：你现在可以按 H 回满血，仅此一次）')
+    else:
+        prompt = 'Attack or Defence (A/D)：'
+        valid_inputs = {"A", "D"}
+
+    if heal_penalty_active:
+        print('【警告】治疗代价生效中：敌人对你的伤害 ×2！')
+
+    user_input = input(prompt).strip().upper()
+    while user_input not in valid_inputs:
+        user_input = input("输入无效，请重新输入：" + prompt).strip().upper()
+
+    # 敌人选择（对 A/D 有影响；若玩家选择 H，我们让敌人本回合直接攻击）
+    enemy_status = ['Attack', 'Defence']
+    enemy_choice = random.choices(enemy_status, weights=[0.7, 0.3], k=1)[0]  # 敌人更倾向于攻击
+
+
+    # 当前敌人伤害倍率（是否翻倍）
+    def enemy_mul():
+        return 2.0 if heal_penalty_active else 1.0
+
+
+    if user_input == "H":
+        # 只有在 can_heal_now 为 True 时才会进入到这里
+        print("你使用了治疗技能！血量已回满。")
+        player.heal_full()
+        heal_used = True
+
+        # 触发治疗代价：从现在起敌人攻击翻倍（包含本回合的随后的敌人攻击）
+        heal_penalty_active = True
+
+        # 敌人回合：直接攻击（先治再挨打）
+        raw_enemy_attack_value = enemy.attack()
+        damage = raw_enemy_attack_value * enemy_mul()
+        print(f"{enemy.name} 攻击了你，造成 {int(damage)} 点伤害！（原始{int(raw_enemy_attack_value)} × 倍率{enemy_mul():.0f}）")
+        player.being_attack(damage)
+
+    elif user_input == "A":
+        player_attack_coefficient = 1
+        if enemy_choice == "Defence":
+            print(f"{enemy.name} chose to defend!")
+            player_attack_coefficient = 0.5
+        else:
+            print(f"{enemy.name} chose to attack!")
+            raw_enemy_attack_value = enemy.attack()
+            damage = raw_enemy_attack_value * enemy_mul()
+            print(f"{enemy.name} 对你造成 {int(damage)} 点伤害！（原始{int(raw_enemy_attack_value)} × 倍率{enemy_mul():.0f}）")
+            player.being_attack(damage)
+
+        player_attack_value = player.attack()
+        enemy.being_attack(player_attack_value * player_attack_coefficient)
+
+    elif user_input == "D":
+        # 防御：敌人攻击减伤为 90%，然后再应用翻倍倍率
+        raw_enemy_attack_value = enemy.attack()
+        damage = raw_enemy_attack_value * 0.1 * enemy_mul()
+        print(f"{enemy.name} 攻击了你（被你防住大部分），造成 {int(damage)} 点伤害！"
+              f"（原始{int(raw_enemy_attack_value)} × 减伤0.1 × 倍率{enemy_mul():.0f}）")
+        player.being_attack(damage)
+
+if player.not_dead():
+    print("You Win!")
+else:
+    print("You Lose!")
+```
+
+
+
+:::
+
+
+
+下面把这个**无色进度条**实现逐行、逐个设计点讲清楚。先放原函数，后面按行解释与举例：
+
+```python
+def hp_bar(cur: int, maxv: int, width: int = 20) -> str:
+    """返回形如：[##########----------] 50%  50/100 的进度条文本"""
+    if maxv <= 0:
+        maxv = 1
+    cur = max(0, min(cur, maxv))
+    ratio = cur / maxv
+    filled = int(ratio * width + 0.5)  # 四舍五入
+    bar = "#" * filled + "-" * (width - filled)
+    return f"[{bar}] {int(ratio * 100):3d}%  {cur}/{maxv}"
+```
+
+- **逐行说明**：
+
+    1. `def hp_bar(cur: int, maxv: int, width: int = 20) -> str:`
+
+        - `cur`：当前血量（current HP）；
+
+        - `maxv`：最大血量（最大/满血）；
+
+        - `width`：进度条宽度（字符格数），默认 20 格；
+
+        - 纯 ASCII，不含颜色和特殊字符，**Mac/Windows 任何终端都能显示**。
+
+    2. 代码：
+
+        ```python
+        if maxv <= 0:
+            maxv = 1
+        ```
+
+        - **防御式编程**：避免出现 `maxv == 0` 导致后面 `cur / maxv` 除零错误。
+
+        - 设置为 1 的意义：即便出现异常的“最大血量 ≤ 0”，也能安全渲染一个最小尺度的进度条。
+
+    3. `cur = max(0, min(cur, maxv))`
+
+        - **钳制（clamp）当前值**到合法范围 `[0, maxv]`：
+            - 过量伤害导致的负值 → 拉回 0；
+            - 加成/溢出治疗导致的超上限 → 拉回 `maxv`。
+        - 这样可保证后续计算的比例和绘制不会越界。
+
+    4. `ratio = cur / maxv`
+
+        - 计算**当前血量占比**（0.0 ~ 1.0）。
+        - 由于上一步已钳制，`ratio` 一定在合法区间内。
+
+    5. `filled = int(ratio * width + 0.5)  # 四舍五入`
+
+        - 计算**应该填充多少格**（`#` 的数量）。
+        - `ratio * width` 给出“理想填充格数”的小数值；我们希望**四舍五入**到最近的整数。
+        - 用 `int(x + 0.5)` 而不是 `round(x)` 的原因：
+            - Python 的 `round` 是**银行家舍入**（`.5` 向最近的偶数靠拢），例如 `round(8.5) == 8`；
+            - `int(x + 0.5)` 是更直觉的 “`.5 及以上进一`”：
+                - 例：`8.5 → int(9.0) = 9`。
+            - 因为 `ratio * width` 永不为负，此写法简单稳定。
+
+    6. `bar = "#" * filled + "-" * (width - filled)`
+
+        - 构造条形：左边 `#` 表示当前血量，右边 `-` 表示未填充部分。
+        - 字符串乘法快速生成重复字符，**O(width)** 时间复杂度，足够轻量。
+
+    7. `return f"[{bar}] {int(ratio * 100):3d}%  {cur}/{maxv}"`
+
+        - 最终文本包含三部分：
+            1. **方括号包裹的条形**：`[##########----------]`
+            2. **百分比**：`{int(ratio * 100):3d}%`
+                - 这里用 `int()` 而不是四舍五入：显示上更“保守”（例如 99.6% 显示 99%）。
+                - `:3d` 保证宽度 3 —— “  5% /  50% / 100%”对齐更整齐。
+            3. **数值形式**：`cur/maxv`（例：`50/100`），便于精确查看。
+
+    #### 14.21.3 小例子（心算即可）
+
+    以 `width = 20` 为例：
+
+    - `cur=0, maxv=100`
+        - `ratio=0`；`filled=int(0*20+0.5)=0`
+        - 条：`[--------------------]  0%  0/100`
+    - `cur=73, maxv=100`
+        - `ratio=0.73`；`filled=int(0.73*20+0.5)=int(14.6+0.5)=15`
+        - 条：`[###############-----] 73%  73/100`（15 个 `#`，5 个 `-`）
+    - `cur=99, maxv=100`
+        - `ratio=0.99`；`filled=int(19.8+0.5)=20` → **条会满格**
+        - 百分比 `int(99)=99%` → 可能出现“条已满但显示 99%”的**轻微不一致**（可接受）
+    - `cur=100, maxv=100`
+        - `ratio=1.0`；`filled=int(20+0.5)=20`
+        - 条：`[####################]100% 100/100`
+    - 越界情况：`cur=-5` → 钳成 0；`cur=120` → 钳成 100。
+
+#### 14.21.4 为什么它“跨平台稳”
+
+- **只用 ASCII**（`#`、`-`、`[]`），不依赖颜色、宽字符或终端转义序列；
+- 不需要检测终端是否支持 ANSI 颜色，**CMD / PowerShell / macOS 终端**都能正常显示；
+- 横向对齐通过固定 `width` 和百分比字段宽度 `:3d` 达成。
+
+#### 14.21.5 可按需的小改动（可选）
+
+1. **让百分比与条形一致地“四舍五入”**（而非取整）：
+
+    ```python
+    pct = int(ratio * 100 + 0.5)
+    return f"[{bar}] {pct:3d}%  {cur}/{maxv}"
+    ```
+
+    这样 99.6% 会显示为 100%。
+
+2. **依据条形反推百分比**（绝对一致）：
+
+    ```python
+    pct = int((filled / width) * 100 + 0.5)
+    ```
+
+    这样条满一定显示 100%。
+
+    此处考虑玩家更依赖 50/100 的血量显示，因此条形和百分比的作用类似，且重要程度相当，所以可以保持一致。
+
+    ::: details 条形反推百分比
+
+    ```python
+    pct = int((filled / width) * 100 + 0.5)
+    ```
+
+    其实在做一件很朴素的事：**先看条形图实际“点亮了几格”（filled），再把它换算成百分比**，最后做一个**四舍五入**。
+
+    #### 1. 一句话版
+
+    进度条是“离散”的（比如一共 20 格，只能亮 0,1,2,…,20 格）。
+
+    既然条形显示是按“亮了几格”来的，那**百分比也用亮格数去算**，保证两者完全一致。
+
+    #### 2. 为什么要“依据条形反推百分比”？
+
+    如果用**真实比例**算百分比，比如：
+
+    ```python
+    ratio = cur / maxv
+    pct = int(ratio * 100)   # 或 round(ratio * 100)
+    ```
+
+    而条形格数却是：
+
+    ```python
+    filled = int(ratio * width + 0.5)   # 四舍五入到最近的格子
+    ```
+
+    这两处**独立四舍五入**，就可能出现不一致：
+
+    - 例子1（width=20）：
+         `cur=49, maxv=100 → ratio=0.49`
+
+        - **条形格数**：`filled = int(0.49*20 + 0.5) = int(9.8 + 0.5) = 10`（亮 10/20 格 = 50% 的“视觉”）
+
+        - **百分比（真实比例取整）**：`int(0.49*100) = 49%`
+
+            ⇒ 条形看起来是 50%，数字却写 49% —— 违和。
+
+    - 例子2（width=20）：
+         `cur=99, maxv=100 → ratio=0.99`
+
+        - **条形格数**：`filled = int(0.99*20 + 0.5) = 20`（满格）
+
+        - **百分比（真实比例取整）**：`int(99) = 99%`
+
+            ⇒ 满格但写 99% —— 又违和。
+
+    所以，**用条形→百分比**就不会有这种分裂： `filled/width` 是条形真正表达的占比，乘以 100 就是“条形所代表的百分比”。
+
+    #### 3. 这行代码逐词解释
+
+    ```python
+    pct = int((filled / width) * 100 + 0.5)
+    ```
+
+    - `filled / width`：条形**实际**的占比（比如 10/20 = 0.5）。
+
+    - `* 100`：把占比变成百分数（0.5 → 50）。
+
+    - `+ 0.5` 再 `int(...)`：对**非负数**实现“**四舍五入**”。
+
+        （因为 `int(x+0.5)` 等价于把 x 四舍五入到最近整数。）
+
+    > 这样得到的 `pct`，**一定**和你当前显示的格数对应的百分比一致。
+    >
+    > 例如 `filled = 10, width = 20 → pct = 50`；`filled = 20 → pct = 100`。
+
+    #### 4. 何时该用这种写法？
+
+    - 你**希望数字和进度条外观“绝对一致”**时，用它！
+    - 这也意味着百分比只能是 `0, 100/width, 2*100/width, ... 100` 这几档（比如 `width=20` 就是每 5% 一档）——和你的条形“档位”完全同步。
+
+    #### 5. 放回函数里（示例）
+
+    ```python
+    def hp_bar(cur: int, maxv: int, width: int = 20) -> str:
+        if maxv <= 0:
+            maxv = 1
+        cur = max(0, min(cur, maxv))
+        ratio = cur / maxv
+        filled = int(ratio * width + 0.5)          # 先决定亮几格（条形外观）
+        pct = int((filled / width) * 100 + 0.5)    # 再用“亮格比例”算百分比，确保一致
+        bar = "#" * filled + "-" * (width - filled)
+        return f"[{bar}] {pct:3d}%  {cur}/{maxv}"
+    ```
+
+    这样，无论 `cur/maxv` 是多少，小数怎么抖动，**条形显示和数字都会说同一个“真相”**。
+
+    :::
+
+    
+
+3. **调整分辨率**：
+
+    - 提高 `width`（如 30、40）→ 条形更“细腻”；
+    - 降低 `width`（如 10）→ 更紧凑。
+
+#### 14.21.6 一句话总结
+
+- **钳制**保证范围合法；
+- **比例**决定填充；
+- 用 `int(x+0.5)` **四舍五入**避免银行家舍入；
+- **拼接 ASCII** 构成稳定的跨平台进度条；
+- **对齐格式**让多次打印读起来更整齐。
+
+::: details 银行家舍入
+
+**银行家舍入**（Banker’s Rounding，也叫“**四舍六入五留双 / 五成双**”、“**round half to even**”）是一种在**恰好落在中点**时（小数部分正好是 0.5，或保留位后全是 0）把数值舍入到**最接近的偶数**的规则。它常用于金融与会计，目的是在大量数据汇总时**消除系统性偏差**（避免总是向上或总是向下）。
+
+#### 1. 规则一眼看懂
+
+- 小于 0.5 → 舍（向下）
+- 大于 0.5 → 入（向上）
+- **等于 0.5 → 向最近的“偶数”舍入**（关键！）
+
+#### 2. 快速例子（取整）
+
+- `1.5 → 2`（2 是偶数）
+- `2.5 → 2`（2 是偶数）
+- `3.5 → 4`（4 是偶数）
+- `4.5 → 4`（4 是偶数）
+
+负数也一样按“就近偶数”：
+
+- `-1.5 → -2`（-2 是偶数）
+- `-2.5 → -2`（-2 是偶数）
+
+#### 3. 保留到指定位（看保留位后一位）
+
+以保留两位小数为例（看“第三位”）：
+
+- `2.345` → 第三位是 5，**第二位是 4（偶）** → `2.34`
+- `2.355` → 第三位是 5，**第二位是 5（奇）** → `2.36`
+- `12.1250` → 第三位是 5，**第二位是 2（偶）** → `12.12`
+
+#### 4. 为什么这么做？
+
+- 在大规模求和/统计中，传统“四舍五入（0.5 一律进位）”会产生**系统性偏大**；
+- “五留双（中点向偶数）”让上、下的机会更均衡，**长期误差更小**，因此银行、保险、审计等常用。
+
+#### 5. 在编程语言里的表现
+
+- **Python 3**：`round()` 对“正好在中点”的情况使用**银行家舍入**
+
+    ```python
+    round(1.5)  # 2
+    round(2.5)  # 2
+    round(-1.5) # -2
+    ```
+
+    注意浮点表示误差：
+
+    ```python
+    round(2.675, 2)  # 2.67（不是 2.68）
+    ```
+
+    因为 2.675 在二进制浮点中并不精确等于 2.675。要**严格十进制舍入**可用 `decimal`：
+
+    ```python
+    from decimal import Decimal, ROUND_HALF_EVEN
+    Decimal("2.675").quantize(Decimal("0.01"), rounding=ROUND_HALF_EVEN)  # Decimal('2.68')
+    ```
+
+- **Excel** 的 `ROUND` 默认是“**0.5 远离 0 方向**”而不是银行家舍入：
+     `ROUND(2.5, 0) = 3`, `ROUND(-2.5, 0) = -3`。
+
+- **.NET**：`Math.Round(x)` 默认也是“**ToEven**”（银行家舍入）。
+
+#### 6. 和代码里的关系
+
+在进度条里我用了：
+
+```python
+filled = int(ratio * width + 0.5)  # 四舍五入
+```
+
+这是一种**“0.5 一律进位”**的直觉四舍五入（且只针对非负数）。之所以不用 `round()`，是避免出现：
+
+```python
+round(8.5) == 8   # 银行家舍入：到偶数 8
+```
+
+对进度条视觉不符合期望（你会希望 8.5 更像 9 格）。
+
+如果你**想**用银行家舍入来保证数学一致性，可改成：
+
+```python
+filled = round(ratio * width)  # Python 3 的 round 是“到偶数”
+```
+
+#### 7. 一句话记忆
+
+**“五留双”= 中点就近偶数**。它让大量舍入后的总和更公平、更接近真实值。
+
+:::
 
 
 
