@@ -4316,7 +4316,7 @@ enemy = Creature(80, enemy_fake.name())
 复制其中的 Python 代码：
 
 ```python
-# Please install OpenAI SDK first: `pip3 install openai`
+# Please install OpenAI SDK first: `pip3 install openai`   此处安装代码可微调
 
 from openai import OpenAI
 
@@ -4442,13 +4442,192 @@ print('\n'.join([' '.join([f"{j}×{i}={i*j:2d}" for j in range(1, i+1)]) for i i
 
 
 
-@tab 4. 实现多轮对话
+@tab 4. 推理模型
+
+`deepseek-reasoner` 是支持推理模式的 DeepSeek 模型。在输出最终回答之前，模型会先输出一段思维链内容，以提升最终答案的准确性。我们的 API 向用户开放 `deepseek-reasoner` 思维链的内容，以供用户查看、展示、蒸馏使用。
+
+在使用 `deepseek-reasoner` 时，请先升级 OpenAI SDK 以支持新参数。
+
+```python
+pip3 install -U openai
+```
+
+**API 参数**
+
+- **输入参数**：
+    - `max_tokens`：模型单次回答的最大长度（含思维链输出），默认为 32K，最大为 64K。
+- **输出字段**：
+    - `reasoning_content`：思维链内容，与 `content` 同级，访问方法见[访问样例](https://api-docs.deepseek.com/zh-cn/guides/reasoning_model#访问样例)。
+    - `content`：最终回答内容。
+- **支持的功能**：[Json Output](https://api-docs.deepseek.com/zh-cn/guides/json_mode)、[对话补全](https://api-docs.deepseek.com/zh-cn/api/create-chat-completion)，[对话前缀续写 (Beta)](https://api-docs.deepseek.com/zh-cn/guides/chat_prefix_completion)
+- **不支持的功能**：Function Calling、FIM 补全 (Beta)
+- **不支持的参数**：`temperature`、`top_p`、`presence_penalty`、`frequency_penalty`、`logprobs`、`top_logprobs`。请注意，为了兼容已有软件，设置 `temperature`、`top_p`、`presence_penalty`、`frequency_penalty` 参数不会报错，但也不会生效。设置 `logprobs`、`top_logprobs` 会报错。
+
+**上下文拼接**
+
+在每一轮对话过程中，模型会输出思维链内容（`reasoning_content`）和最终回答（`content`）。在下一轮对话中，之前轮输出的思维链内容不会被拼接到上下文中，如下图所示：
+
+![](https://cdn.deepseek.com/api-docs/deepseek_r1_multiround_example_cn.png)
+
+请注意，如果您在输入的 messages 序列中，传入了`reasoning_content`，API 会返回 `400` 错误。因此，请删除 API 响应中的 `reasoning_content` 字段，再发起 API 请求，方法如[访问样例](https://api-docs.deepseek.com/zh-cn/guides/reasoning_model#访问样例)所示。
+
+**访问样例**
+
+下面的代码以 Python 语言为例，展示了如何访问思维链和最终回答，以及如何在多轮对话中进行上下文拼接。
+
+1. 非流式（`stream = False` ）
+
+    ::: code-tabs
+
+    @tab 样例
+
+    ```python
+    from openai import OpenAI
+    client = OpenAI(api_key="<DeepSeek API Key>", base_url="https://api.deepseek.com")
+    
+    # Round 1
+    messages = [{"role": "user", "content": "9.11 and 9.8, which is greater?"}]
+    response = client.chat.completions.create(
+        model="deepseek-reasoner",
+        messages=messages
+    )
+    
+    reasoning_content = response.choices[0].message.reasoning_content
+    content = response.choices[0].message.content
+    
+    # Round 2
+    messages.append({'role': 'assistant', 'content': content})
+    messages.append({'role': 'user', 'content': "How many Rs are there in the word 'strawberry'?"})
+    response = client.chat.completions.create(
+        model="deepseek-reasoner",
+        messages=messages
+    )
+    # ...
+    ```
+
+    @tab 个人实现
+
+    ```python
+    ```
+
+    
+
+    :::
+
+2. 流式（`stream = True` ）
+
+    ::: code-tabs
+
+    @tab 样例
+
+    ```python
+    from openai import OpenAI
+    client = OpenAI(api_key="<DeepSeek API Key>", base_url="https://api.deepseek.com")
+    
+    # Round 1
+    messages = [{"role": "user", "content": "9.11 and 9.8, which is greater?"}]
+    response = client.chat.completions.create(
+        model="deepseek-reasoner",
+        messages=messages,
+        stream=True
+    )
+    
+    reasoning_content = ""
+    content = ""
+    
+    for chunk in response:
+        if chunk.choices[0].delta.reasoning_content:
+            reasoning_content += chunk.choices[0].delta.reasoning_content
+        else:
+            content += chunk.choices[0].delta.content
+    
+    # Round 2
+    messages.append({"role": "assistant", "content": content})
+    messages.append({'role': 'user', 'content': "How many Rs are there in the word 'strawberry'?"})
+    response = client.chat.completions.create(
+        model="deepseek-reasoner",
+        messages=messages,
+        stream=True
+    )
+    # ...
+    ```
+
+    
+
+    :::
+
+
+
+
+
+
+
+
+
+
+
+
+
+@tab 5. 实现多轮对话
 
 让 DeepSeek 知道我们之前的对话内容，参考学习：https://api-docs.deepseek.com/zh-cn/guides/multi_round_chat
 
+1. 个人探索
 
+    根据参考学习内容，跑网页上给出的代码：
 
-:::
+    ```python
+    from openai import OpenAI
+    client = OpenAI(api_key="<DeepSeek API Key>", base_url="https://api.deepseek.com")
+    
+    # Round 1
+    messages = [{"role": "user", "content": "What's the highest mountain in the world?"}]    # 第一轮的 messages
+    response = client.chat.completions.create(
+        model="deepseek-chat",
+        messages=messages         # 将上面的 messages 传入到 API中
+    )
+    
+    messages.append(response.choices[0].message)       # 将模型第一轮的输出添加到 messages 的结尾
+    print(f"Messages Round 1: {messages}")
+    
+    # Round 2
+    messages.append({"role": "user", "content": "What is the second?"})
+    response = client.chat.completions.create(
+        model="deepseek-chat",
+        messages=messages
+    )
+    
+    messages.append(response.choices[0].message)
+    print(f"Messages Round 2: {messages}")
+    ```
+
+    输出结果如下：
+
+    ```python
+    Messages Round 1: [{'role': 'user', 'content': "What's the highest mountain in the world?"}, ChatCompletionMessage(content='That\'s a great question! The answer has two parts, depending on how you measure "highest."\n\n### 1. Highest Altitude Above Sea Level: Mount Everest\n\nThis is the most common answer. Located in the Mahalangur Himal sub-range of the Himalayas on the border between Nepal and the Tibet Autonomous Region of China, **Mount Everest** is the highest mountain in the world when measured by its summit\'s height above sea level.\n\n*   **Height:** **8,848.86 meters (29,031.7 feet)** (This is the latest official measurement agreed upon by China and Nepal in 2020).\n*   **First Ascent:** Sir Edmund Hillary (New Zealand) and Tenzing Norgay (Nepal) on May 29, 1953.\n\n---\n\n### 2. Tallest Mountain from Base to Summit: Mauna Kea\n\nIf you measure from the mountain\'s base to its peak, the title goes to **Mauna Kea** on the Big Island of Hawaii.\n\n*   **Height above sea level:** 4,207 meters (13,802 feet) – which is less than half the height of Everest.\n*   **Height from base to summit:** However, Mauna Kea is a volcano that rises from the bottom of the Pacific Ocean. When measured from its true base on the ocean floor, it is over **10,210 meters (33,500 feet)** tall, making it significantly taller than Mount Everest.\n\n### Summary\n\n*   **Highest Altitude:** **Mount Everest** (8,849 m / 29,032 ft)\n*   **Tallest from Base:** **Mauna Kea** (>10,200 m / 33,500 ft)\n\nSo, while Everest has the highest peak on the planet, Mauna Kea is the world\'s most massive mountain.', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=None)]
+    Messages Round 2: [{'role': 'user', 'content': "What's the highest mountain in the world?"}, ChatCompletionMessage(content='That\'s a great question! The answer has two parts, depending on how you measure "highest."\n\n### 1. Highest Altitude Above Sea Level: Mount Everest\n\nThis is the most common answer. Located in the Mahalangur Himal sub-range of the Himalayas on the border between Nepal and the Tibet Autonomous Region of China, **Mount Everest** is the highest mountain in the world when measured by its summit\'s height above sea level.\n\n*   **Height:** **8,848.86 meters (29,031.7 feet)** (This is the latest official measurement agreed upon by China and Nepal in 2020).\n*   **First Ascent:** Sir Edmund Hillary (New Zealand) and Tenzing Norgay (Nepal) on May 29, 1953.\n\n---\n\n### 2. Tallest Mountain from Base to Summit: Mauna Kea\n\nIf you measure from the mountain\'s base to its peak, the title goes to **Mauna Kea** on the Big Island of Hawaii.\n\n*   **Height above sea level:** 4,207 meters (13,802 feet) – which is less than half the height of Everest.\n*   **Height from base to summit:** However, Mauna Kea is a volcano that rises from the bottom of the Pacific Ocean. When measured from its true base on the ocean floor, it is over **10,210 meters (33,500 feet)** tall, making it significantly taller than Mount Everest.\n\n### Summary\n\n*   **Highest Altitude:** **Mount Everest** (8,849 m / 29,032 ft)\n*   **Tallest from Base:** **Mauna Kea** (>10,200 m / 33,500 ft)\n\nSo, while Everest has the highest peak on the planet, Mauna Kea is the world\'s most massive mountain.', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=None), {'role': 'user', 'content': 'What is the second?'}, ChatCompletionMessage(content='Of course! Just like the "highest," the "second-highest" also has two answers depending on the measurement.\n\n### 1. Second-Highest Altitude Above Sea Level: K2\n\nThe undisputed second-highest mountain in the world by elevation is **K2**.\n\n*   **Height:** **8,611 meters (28,251 feet)**\n*   **Location:** The Karakoram Range, on the border between Pakistan and China.\n*   **Nickname:** "The Savage Mountain"\n*   **Why it\'s famous:** K2 is widely considered the world\'s most difficult and dangerous mountain to climb, even more so than Everest. It has a far higher fatality rate for those who attempt it. Its extreme weather, technical climbing challenges, and constant threat of avalanches make it the ultimate goal for many elite mountaineers.\n\n---\n\n### 2. Second-Tallest Mountain from Base to Summit: Mauna Loa\n\nFollowing Mauna Kea in this category is its neighbor on the Big Island of Hawaii, **Mauna Loa**.\n\n*   **Height above sea level:** 4,169 meters (13,678 feet)\n*   **Height from base to summit:** Like Mauna Kea, Mauna Loa is a massive volcano that rises from the ocean floor. From its base to its summit, it is approximately **9,170 meters (30,085 feet)** tall.\n*   **Why it\'s famous:** Mauna Loa is the world\'s largest *active* volcano by volume and one of the five volcanoes that form the Island of Hawaii.\n\n### Summary\n\n*   **Second-Highest Altitude:** **K2** (8,611 m / 28,251 ft)\n*   **Second-Tallest from Base:** **Mauna Loa** (~9,170 m / ~30,085 ft)', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=None)]
+    ```
+
+    问题：这 messages 结果太长了，而且不能换行，不方便看。
+
+    在**第二轮**请求时：
+
+    1. 要将第一轮中模型的输出添加到 `messages` 末尾；
+    2. 将新的提问添加到 `messages` 末尾。
+
+    最终传递给 API 的 `messages` 为：
+
+    ```python
+    [
+        {"role": "user", "content": "What's the highest mountain in the world?"},
+        {"role": "assistant", "content": "The highest mountain in the world is Mount Everest."},
+        {"role": "user", "content": "What is the second?"}
+    ]
+    ```
+
+    从而进行上下文拼接，以实现多轮对话。
+
+::::
 
 
 

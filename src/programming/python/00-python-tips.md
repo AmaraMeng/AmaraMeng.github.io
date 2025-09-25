@@ -130,3 +130,14 @@ harm = random.randint(0, 50)
 
 `Ctrl` + `Alt` + `L` 即可自动调整代码格式
 
+
+
+## 5. Pycharm 中使用 Jupyter Notebook
+
+1. 打开 pycharm 终端（其他终端也可），输入以下代码安装：
+
+    ```python
+    pip install jupyter notebook
+    ```
+
+    
