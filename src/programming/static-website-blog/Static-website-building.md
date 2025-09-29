@@ -245,6 +245,8 @@ export default navbar([
 
 ![Typora界面](./Static-website-building.assets/1741675459154-91e261fc-6d1e-4848-816c-d8ff355b9d2d.png)
 
+**注意：** 如果文章没有更新到网站本地上，需要注意文章内容的后缀 `.md` 是否有。
+
 3. Typora 中编辑文章，开始均需要输入 `--- + 回车`，内容如下：
 
 ```typescript
