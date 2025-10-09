@@ -4507,9 +4507,9 @@ pip3 install -U openai
 
     @tab 探究代码这么写的原因
 
-    
+    因为用 Jupyter Notebook 探究的，因此把探究结果附在此处，方便查阅
 
-    
+    [Jupyter Notebook 探究过程](https://pythiaroot.com/DeepSeekAPI%E5%AF%B9%E8%AF%9D%E6%8F%90%E5%8F%96%E9%80%90%E6%AD%A5%E5%88%86%E6%9E%90.html)
 
     
 
