@@ -1,5 +1,5 @@
 ---
-title: 15. 虚拟环境
+title: 15. 虚拟环境和 Jupyter Notebook 的使用
 icon: boke
 date: 2025-09-25 15:10:26
 author: Ran
@@ -165,6 +165,34 @@ toc: true
 ### 2.4 Jupyter 内安装包
 
 在前面运行命令 `!pip install openai` 。
+
+### 2.5 用其他环境打开 Jupyter Notebook
+
+当我们把 jupyter 文件（.ipynb）移动到另一个文件夹时，原本存在的虚拟环境无法/不适合一起搬运进来，但是我们想要运行它又需要一个对应的虚拟环境，否则会默认使用系统的大环境，或者因为环境配置问题，无法使用环境/使用了错误环境，因此指定一个虚拟环境是必要的。
+
+
+
+1. 先进入需要的虚拟环境
+
+    打开终端，`cd + 虚拟环境所在文件夹` 切换到该环境所在文件夹，然后运行命令`.\需要的虚拟环境的名称\Scripts\activate` 进行激活。
+
+2. 切换到 `.ipynb` 文件所在的文件夹
+
+    同样用 `cd` 切换，例如 ` cd D:\environment_test` 切换到 `Untitled.ipynb` 文件所在的文件夹。
+
+3. 运行 `jupyter notebook` 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
