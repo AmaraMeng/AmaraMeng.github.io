@@ -4467,6 +4467,8 @@ pip3 install -U openai
 
 在每一轮对话过程中，模型会输出思维链内容（`reasoning_content`）和最终回答（`content`）。在下一轮对话中，之前轮输出的思维链内容不会被拼接到上下文中，如下图所示：
 
+
+
 ![](https://cdn.deepseek.com/api-docs/deepseek_r1_multiround_example_cn.png)
 
 请注意，如果您在输入的 messages 序列中，传入了`reasoning_content`，API 会返回 `400` 错误。因此，请删除 API 响应中的 `reasoning_content` 字段，再发起 API 请求，方法如[访问样例](https://api-docs.deepseek.com/zh-cn/guides/reasoning_model#访问样例)所示。
@@ -4477,9 +4479,7 @@ pip3 install -U openai
 
 1. 非流式（`stream = False` ）
 
-    ::: code-tabs
-
-    @tab 样例
+    样例：
 
     ```python
     from openai import OpenAI
@@ -4505,7 +4505,7 @@ pip3 install -U openai
     # ...
     ```
 
-    @tab 探究代码这么写的原因
+    探究代码这么写的原因：
 
     因为用 Jupyter Notebook 探究的，因此把探究结果附在此处，方便查阅
 
