@@ -201,9 +201,32 @@ toc: true
 
 
 
+### 2.7 查看并更新 Jupyter 版本
+
+1. 查看 Jupyter 版本
+
+    Jupyter 内运行代码：
+
+    `import notebook
+    print(notebook.__version__)` 
+
+    同理可以将 `notebook` 替换为其他内容查看版本。
+
+2. 更新 
+
+    终端内运行代码 `pip install --upgrade jupyter jupyterlab notebook` 更新这三个内容，在虚拟环境中重新打开即可。
 
 
 
+### 2.8 安装/更新包
+
+运行代码时出现如下提示：
+
+![](./15-environment.assets/image-20251013151325596.png)
+
+需要我们更新 `pip` command。
+
+打开终端，如果没在该虚拟环境中，需要复制整段代码，若在该虚拟环境中，只需要复制 `python.exe -m pip install --upgrade pip` 运行，是否添加 `.exe` 跑一下就知道了。
 
 
 
