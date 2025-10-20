@@ -19,6 +19,7 @@ export default navbar([
     {text: "Static website building-blog", icon:"boke", link: "/programming/static-website-blog/"},
     {text: "Python", icon: "python", link: "/programming/python/"},
     {text: "ThinkDSP", icon: "python", link: "/programming/ThinkDSP/"},
+    {text: "Math for AI", icon: "python", link: "/programming/math-for-ai/"}
 
   ],
 

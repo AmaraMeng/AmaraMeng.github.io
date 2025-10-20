@@ -4517,10 +4517,10 @@ pip3 install -U openai
 
 2. 流式（`stream = True` ）
 
-    样例
+    样例：
 
     ```python
-from openai import OpenAI
+    from openai import OpenAI
     client = OpenAI(api_key="<DeepSeek API Key>", base_url="https://api.deepseek.com")
     
     # Round 1
@@ -4623,9 +4623,9 @@ from openai import OpenAI
 
     从而进行上下文拼接，以实现多轮对话。
 
+
+
 :::
-
-
 
 #### 9.5.2 本地大模型对接（Ollama、LM Studio）
 

@@ -1,7 +1,7 @@
 ---
-title: 01. 数学基础
+title: 01. 数学基础知识
 icon: boke
-date: 2025-10-20 10:15:52
+date: 2025-10-20 20:31:10
 author: Ran
 isOriginal: true
 sticky: false
@@ -20,6 +20,3 @@ toc: true
 
 ## 1. 函数
 
-### 1.1 函数的定义
-
-- 量与量之间的关系：
