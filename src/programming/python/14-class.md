@@ -4509,7 +4509,7 @@ pip3 install -U openai
 
     因为用 Jupyter Notebook 探究的，因此把非流式探究结果附在此处，方便查阅
 
-    [Jupyter Notebook 探究过程](https://pythiaroot.com/DeepSeekAPI%E5%AF%B9%E8%AF%9D%E6%8F%90%E5%8F%96%E9%80%90%E6%AD%A5%E5%88%86%E6%9E%90-%E9%9D%9E%E6%B5%81%E5%BC%8F)
+    [非流式 Jupyter Notebook 探究过程](https://pythiaroot.com/DeepSeekAPI%E5%AF%B9%E8%AF%9D%E6%8F%90%E5%8F%96%E9%80%90%E6%AD%A5%E5%88%86%E6%9E%90-%E9%9D%9E%E6%B5%81%E5%BC%8F)
 
     
 
@@ -4552,14 +4552,8 @@ pip3 install -U openai
     ```
     
     流式代码探究过程：
-
-
-
-
-
-
-
-
+    
+    [流式 Jupyter Notebook 探究过程](https://pythiaroot.com/DeepSeekAPI%E5%AF%B9%E8%AF%9D%E6%8F%90%E5%8F%96%E9%80%90%E6%AD%A5%E5%88%86%E6%9E%90-%E6%B5%81%E5%BC%8F)
 
 
 
@@ -4622,6 +4616,20 @@ pip3 install -U openai
     ```
 
     从而进行上下文拼接，以实现多轮对话。
+
+2. 指导探索
+
+    - 根据探究的推理模型，实现多轮对话。
+
+        要做到：程序运行后，可以一直问问题，模型给回答，除非用户选择退出，否则对话继续；有聊天记忆。
+
+        [利用循环实现多轮对话](https://pythiaroot.com/%E5%AE%9E%E7%8E%B0%E5%A4%9A%E8%BD%AE%E5%AF%B9%E8%AF%9D)
+
+    - 根据推理模型，实现特定限制
+
+        要做到：在每个回答后都显示微信和网站；当被问到是什么大模型时，回答是MR大模型而不是 deepseek 的模型。
+
+        [利用 system 实现特定限制](https://pythiaroot.com/%E5%AE%9E%E7%8E%B0%E7%89%B9%E5%AE%9A%E9%99%90%E5%88%B6)
 
 
 
