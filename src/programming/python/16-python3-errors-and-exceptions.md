@@ -510,17 +510,232 @@ python code.py file1.txt file2.txt nofile.txt
 
 
 
-::: tip 现在的代码是需要终端运行，请思考如何修改成不使用终端运行，达到同样的输出结果。
+::: tip 现在的代码是需要终端运行，终端运行类似于和用户的交互界面，不需要打开代码文件，只需要在终端输入需要打开的文件，代码 `code` 文件就会用 `argv` 这个功能调用需要打开的文件，运行代码。
+
+那么如何修改成不使用终端运行，达到同样的输出结果呢？即打开代码文件，右键运行即可。
+
+:::
+
+因为需要操作的文件和代码在同一路径下，因此代码运行时可以直接调用，只需要在代码里告诉文件名。
+
+::: code-tabs
+
+@tab 普通版本
+
+```python
+import sys
+
+files = ['file1.txt', 'file2.txt', 'nofile.txt']     # 告诉程序我需要打开的文件名，整理成一个列表
+
+for arg in files:                           # 将原本获取文件名的方法 sys.argv[1:] 替换为我们创建的文件名列表
+    try:
+        f = open(arg, 'r')
+    except IOError:
+        print('can not open', arg)
+    else:
+        print(arg, 'has', len(f.readlines()), 'lines')
+        f.close()
+```
+
+
+
+@tab 交互版本
+
+```python
+import sys
+
+# 用户输入文件名，用空格分割
+files = input("请输入要统计的文件名（空格分割）：").split()
+
+for arg in files:   # 将原本获取文件名的方法 sys.argv[1:] 替换为我们创建的文件名列表
+    try:
+        f = open(arg, 'r')
+    except IOError:
+        print('can not open', arg)
+    else:
+        print(arg, 'has', len(f.readlines()), 'lines')
+        f.close()
+```
 
 :::
 
 
 
+### 2.5 try-finally 语句
+
+`try-finally`  语句无论是否发生异常都将执行最后代码。
+
+![](./16-python3-errors-and-exceptions.assets/image-20251106145457040.png)
+
+::: tip
+
+保命的手段：如果我们在处理文件时，系统发生错误或者文件数据出现不可预料的异常。为防止异常导致数据丢失，往往我们会在处理异常的时候添加 finally 进行最后操作，例如：报错文件操作，出错的文件保存避免丢失等；
+
+:::
+
+以下实例中 finally 语句无论异常是否发生都会执行：
+
+```python
+try:
+    Ran()               # 故意写错，此函数不存在
+except AssertionError as error:
+    print(error)
+else:
+    try:
+        with open('file.log') as file:
+            read_data = file.read()
+    except FileNotFoundError as fnf_error:
+        print(fnf_error)
+
+finally:
+    print("这句话，无论异常是否发生都会执行。")
+
+# ------- output -------
+这句话，无论异常是否发生都会执行。
+Traceback (most recent call last):
+  File "D:\Coder\test 1\code.py", line 2, in <module>
+    Ran()               # 故意写错，此函数不存在
+NameError: name 'Ran' is not defined
+```
+
+
+
+## 3. 抛出异常
+
+### 3.1 基础语法
+
+Python 使用 `raise` 语句抛出一个指定的异常。
+
+`raise` 语法格式如下：
+
+```python
+raise [Exception [, args [, traceback]]]
+```
+
+![](./16-python3-errors-and-exceptions.assets/image-20251106150543624.png)
+
+以下实例如果 x 大于 5 就触发异常：
+
+```python
+x = 10
+if x > 5:
+    raise Exception('x 不能大于 5。 x 的值为：{}'.format(x))     
+    
+# ------- output -------
+Traceback (most recent call last):
+  File "D:\Coder\test 1\code.py", line 3, in <module>
+    raise Exception('x 不能大于 5。 x 的值为：{}'.format(x))
+Exception: x 不能大于 5。 x 的值为：10       # 自定义了报错显示的文本
+```
+
+如果没定义报错的内容，结果如下：
+
+```python
+x = 10
+if x > 5:
+    raise 'x 不能大于 5。 x 的值为：{}'.format(x)
+    
+# ------- output -------
+Traceback (most recent call last):
+  File "D:\Coder\test 1\code.py", line 3, in <module>
+    raise 'x 不能大于 5。 x 的值为：{}'.format(x)
+TypeError: exceptions must derive from BaseException
+```
+
+
+
+### 3.2 思考
+
+::: tip 思考一下为什么会存在 raise?
+
+- 思考一：Python 提供的报错主要是给程序员看的，raise 可以是程序员写给用户看的。
+- 思考二：程序运行时，并不是所有错误都能自动被检测出来。有时候我们知道某种情况“不合理”，就需要**主动抛出错误**来提醒或中断程序。
+
+:::
+
+
+
+### 3.3 例子：输入校验
+
+```python
+def divide(a, b):
+    if b == 0:
+        raise ValueError("分母不能为0")    # 主动抛出异常
+    return a / b
+```
+
+如果用户输入 `divide(10, 0)` ，程序不会继续执行，而是立即抛出：
+
+```python
+ValueError: 分母不能为0
+```
+
+这可以防止程序做出错误计算。
+
+::: tip
+
+raise 的存在是为了让程序能够**主动发现问题，明确失败原因，优雅地处理错误**。
+
+:::
+
+::: info 补充说明
+
+raise 后存在唯一的参数，指定了要被抛出的异常，它必须是一个异常的实例或者是异常的类（也就是 Exception 的子类），也可以自定义内容（见输入校验）。
+
+```python
+raise ValueError("分母不能为0")
+```
+
+例如上述代码中 raise 指定了 BaseException 子类的 ValueError 异常。
+
+如果你只想知道这是否抛出了一个异常，并不想去处理它，那么一个简单的 raise 语句就可以再次把它抛出。
+
+> 换句话说：只想知道程序有没有出现问题，有没有遇到报错时，直接写一个 raise 即可，类似实现一个提醒。
+>
+> 专业说法：raise 用在 except 块中，不带参数，表示重新抛出当前捕获的异常，也就是抛出 try 遇到的错误，这样既能保证程序正常进行，又能了解遇到的错误！
+
+```python
+try:
+    raise NameError('HiThere')    # 模拟一个异常
+except NameError:
+    print('An exception flew by~')
+    raise
+    
+# ------- output -------
+An exception flew by~
+Traceback (most recent call last):
+  File "D:\Coder\test 1\code.py", line 2, in <module>
+    raise NameError('HiThere')    # 模拟一个异常
+NameError: HiThere
+```
 
 
 
 
-保命的手段：如果我们在处理文件时，系统发生错误或者文件数据出现不可预料的异常。为防止异常导致数据丢失，往往我们会在处理异常的时候添加 finally 进行最后操作，例如：报错文件操作；
+
+:::
+
+## 4. 补充说明
+
+想象它就像一个紧急刹车：
+
+- `raise Exception` = 立即刹车停下
+- 没有 `raise`  = 正常行驶
+- `try/except`  = 踩了刹车但又重新启动
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
