@@ -725,15 +725,135 @@ NameError: HiThere
 
  
 
+## 5. assert（断言）
+
+![](./16-python3-errors-and-exceptions.assets/image-20251106154957293.png)
+
+Python assert （断言）用来判断一个表达式，在表达式条件为 false 时触发异常。
+
+### 5.1 基础语法
 
 
 
+语法格式：
+
+```python
+assert expression
+```
+
+等价于：
+
+```python
+if not expression:
+    raise AssertionError
+```
+
+assert 后面也可以紧跟参数：
+
+```python
+assert expression [, arguments]
+```
+
+等价于：
+
+```python
+if not expression:
+    raise AssertionError(arguments)
+```
+
+例子：
+
+```python
+assert True      # 条件为 True 的时候正常执行
+assert False     # 条件为 False 的时候报错
+
+# ------- output -------
+Traceback (most recent call last):
+  File "D:\Coder\test 1\code.py", line 2, in <module>
+    assert False
+AssertionError
+```
+
+```python
+assert 1==1      # 条件为 True 的时候正常执行
+assert 1==2     # 条件为 False 的时候报错
+
+# ------- output -------
+Traceback (most recent call last):
+  File "D:\Coder\test 1\code.py", line 2, in <module>
+    assert 1==2     # 条件为 False 的时候报错
+AssertionError
+```
+
+```python
+assert 1==2, "1不等于2"
+
+# ------- output -------
+Traceback (most recent call last):
+  File "D:\Coder\test 1\code.py", line 1, in <module>
+    assert 1==2, "1不等于2"
+AssertionError: 1不等于2
+```
 
 
 
+### 5.2 实例
+
+断言可以在条件不满足程序运行的情况下直接返回错误，而不必等待程序运行后出现崩溃的情况，例如我们的代码只在 Linux 系统下运行，可以先判断当前系统是否符合条件。
+
+```python
+import sys
+assert ('linux' in sys.platform), "该代码只在 Linux 系统下执行"
+
+# 接下来要执行的代码
+
+# ------- output -------
+Traceback (most recent call last):
+  File "D:\Coder\test 1\code.py", line 2, in <module>
+    assert ('linux' in sys.platform), "该代码只在 Linux 系统下执行"
+AssertionError: 该代码只在 Linux 系统下执行
+```
+
+若不写 `, "该代码只在 Linux 系统下执行"` ，则只会报错 `AssertionError` ，无内容。
 
 
 
+### 5.3 sys.platform 各个平台常见的值
+
+| 操作系统                                        | `sys.platform` 返回值      | 备注                                               |
+| ----------------------------------------------- | -------------------------- | -------------------------------------------------- |
+| **Linux (各发行版，如 Ubuntu, Debian, CentOS)** | `'linux'`                  | 旧版本 Python 可能返回 `'linux2'`（Python 2 时代） |
+| **Windows (包括 Win10 / Win11)**                | `'win32'`                  | 无论 32 位还是 64 位 Python，始终是 `'win32'`      |
+| **macOS (含 Intel / Apple Silicon)**            | `'darwin'`                 | 取自 Darwin 内核名称                               |
+| **WebAssembly (Pyodide / Emscripten 环境)**     | `'emscripten'` 或 `'wasi'` | 浏览器或 WASI 环境中运行 Python                    |
+
+因此可以改成根据系统类型执行不同的代码，例如：
+
+```python
+import sys
+
+if 'linux' in sys.platform:
+    print("当前系统：Linux")
+    # Linux 专属代码
+elif 'win' in sys.platform:
+    print("当前系统：Windows")
+    # Windows 专属代码
+elif 'darwin' in sys.platform:
+    print("当前系统：macOS")
+    # macOS 专属代码
+else:
+    raise RuntimeError("不支持的系统平台")
+```
+
+
+
+如果只是想允许所有系统运行：
+
+```python
+import sys
+print(f"当前系统: {sys.platform}")
+# 后续代码...
+```
 
 
 
