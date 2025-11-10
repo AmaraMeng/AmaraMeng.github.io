@@ -5373,6 +5373,381 @@ ENEMY_SYSTEM_PROMPT = """你是这个回合制战斗游戏中的“敌人AI”�
 
 **步骤三：将大模型接口封装为一个函数**
 
-1. AI 大模型接口作为敌人角色，它的输出就是敌人的操作，因此可以将原始游戏代码中的敌人操作部分换为 `input` 来接入。
-2. 
+1. AI 大模型接口作为敌人角色，它的输出就是敌人的操作，因此可以将原始游戏代码中的敌人操作部分封装成一个函数 `big_model` 。
+
+    ```python
+    from openai import OpenAI
+    
+    
+    # 将大模型封装成一个函数，调用大模型封装成一个函数
+    # 因为每次都传入新的血量和状态，因此不需要建立一个 messages = [] 的空列表来储存聊天记录
+    
+    # 角色设定
+    ENEMY_SYSTEM_PROMPT = """你是这个回合制战斗游戏中的“敌人AI”，只负责在每一回合选择【A】或【D】。
+    请严格遵守：
+    - 你只能输出一个大写字母：A 或 D（不要输出其它任何文字）。
+    - 决策要基于当回合提供的状态信息做出理性选择。
+    
+    规则回顾（供你参考，不要复述）：
+    1) 若玩家使用治疗（H），本回合敌人必定攻击（A），且敌人伤害翻倍（×2）。
+    2) 当你的 HP < 40% 且玩家看起来会攻击时，更倾向于防御（D）。
+    3) 当玩家防御（D）且你的 HP 不低时，更倾向于攻击（A）来消耗对手。
+    4) 一般情况下倾向于进攻（A），但在自己低血或明显亏换血时可以选择防御（D）。
+    """
+    
+    # 调用大模型获取敌人决策（强制只返回 A 或 D）
+    client = OpenAI(api_key="sk-5e---453f", base_url="https://api.deepseek.com")
+    
+    def llm_enemy_decide(game_status_text: str) -> str:
+        messages = [
+            {"role": "system", "content": ENEMY_SYSTEM_PROMPT},
+            {"role": "user", "content": game_status_text},
+        ]
+        try:
+            resp = client.chat.completions.create(
+                model = "deepseek-chat",
+                messages = messages,
+                max_tokens=4, # 只要一个字符
+    
+            )
+            content = resp.choices[0].message.content.strip().upper()
+            # 规范化，仅允许 A 或 D ，否则回退到 A
+            if "A" in content and "D" in content:
+                # 若模型不小心给了两个答案，那么默认选 A
+                return "A"
+            if content.startswith("A"):
+                return "A"
+            if content.startswith("D"):
+                return "D"
+            return "A"   # 兜底
+        except Exception as e:
+            # 失败时兜底为倾向攻击
+            print(f"[LLM 决策失败，使用兜底策略 A] 原因：{e}")
+            return "A"
+    ```
+
+    函数创建完成后，即可在 `main`  文件中通过 `from battle_game_with_AI.big_model import llm_enemy_decide`  导入使用，其格式为 `from 所在文件夹.大模型文件名 import 具体的函数` 。
+
+2. 建立 `main` 文件运行游戏代码，并在其中增加一个自定义函数，用来将对战信息整理，从而可以传递给大模型文件。
+
+    ```python
+    # 生成给大模型的“当前对局状态”的文本信息，作为大模型的“提问”
+    # 大模型需要的信息有：玩家血量、敌人血量、玩家上一步操作、回血状态
+    # 此处将 player 和 enemy 作为参数传进去，而不是直接传血量，因为血量也是通过 player.hp 和 enemy.hp 提取的，因此没必要重复
+    def build_game_status_for_llm(player, enemy, last_player_action:str, heal_penalty_active: bool) -> str:
+        """
+        :param last_player_action: 玩家刚才操作 'A' / 'D' / 'H'
+        :param heal_penalty_active: 回血状态
+        """
+        penalty_txt = '是' if heal_penalty_active else '否'
+        return(
+            f'玩家（MR）的 HP:{hp_bar(player.hp, player.max_hp)}\n'
+            f'敌人（你，{enemy.name}）的 HP ：{hp_bar(enemy.hp, enemy.max_hp)}\n'
+            f'玩家上一手的动作：{last_player_action}\n'
+            f'治疗代价是否生效（敌人攻击×2）：{penalty_txt}\n'
+            f'请只返回 A 或 D'
+    
+        )
+    ```
+
+    完整代码如下：
+
+    ```python
+    import random
+    from faker import Faker
+    
+    from battle_game_with_AI.big_model import llm_enemy_decide    # 引用 big_model 里的函数
+    
+    
+    # —— 简单无色进度条（纯 ASCII，跨平台）——
+    def hp_bar(cur: int, maxv: int, width: int = 20) -> str:
+        """返回形如：[##########----------] 50%  5g0/100 的进度条文本"""
+        if maxv <= 0:
+            maxv = 1
+        cur = max(0, min(cur, maxv))
+        ratio = cur / maxv
+        filled = int(ratio * width + 0.5)  # 四舍五入
+        bar = "#" * filled + "-" * (width - filled)
+        return f"[{bar}] {int(ratio * 100):3d}%  {cur}/{maxv}"
+    
+    # 生成给大模型的“当前对局状态”的文本信息，作为大模型的“提问”
+    # 大模型需要的信息有：玩家血量、敌人血量、玩家上一步操作、回血状态
+    # 此处将 player 和 enemy 作为参数传进去，而不是直接传血量，因为血量也是通过 player.hp 和 enemy.hp 提取的，因此没必要重复
+    def build_game_status_for_llm(player, enemy, last_player_action:str, heal_penalty_active: bool) -> str:
+        """
+        :param last_player_action: 玩家刚才操作 'A' / 'D' / 'H'
+        :param heal_penalty_active: 回血状态
+        """
+        penalty_txt = '是' if heal_penalty_active else '否'
+        return(
+            f'玩家（MR）的 HP:{hp_bar(player.hp, player.max_hp)}\n'
+            f'敌人（你，{enemy.name}）的 HP ：{hp_bar(enemy.hp, enemy.max_hp)}\n'
+            f'玩家上一手的动作：{last_player_action}\n'
+            f'治疗代价是否生效（敌人攻击×2）：{penalty_txt}\n'
+            f'请只返回 A 或 D'
+    
+        )
+    
+    
+    class Creature:
+        def __init__(self, hp, name):
+            self.hp = int(hp)
+            self.max_hp = int(hp)  # 记录初始满血
+            self.name = name
+    
+        def attack(self):
+            return random.randint(0, 50)
+    
+        def not_dead(self):
+            return self.hp > 0
+    
+        def being_attack(self, dmg: float):
+            """受到伤害（向下取整以避免浮点 HP），并保证 HP 不会掉到负数以下"""
+            self.hp = max(0, int(self.hp - dmg))
+    
+        def heal_full(self):
+            """直接回到初始满血"""
+            self.hp = self.max_hp
+    
+        def show_status(self):
+            print(f"{self.name}'s HP → {hp_bar(self.hp, self.max_hp)}")
+    
+    fk = Faker(locale='zh_CN')
+    player = Creature(100, "MR")
+    enemy = Creature(80, fk.name())
+    
+    heal_used = False  # 治疗仅限一次
+    heal_penalty_active = False  # 是否已触发“敌人攻击翻倍”的惩罚
+    
+    while player.not_dead() and enemy.not_dead():
+        player.show_status()
+        enemy.show_status()
+    
+        # 是否出现治疗提示：仅当当前 HP < 初始 HP 的 50% 且尚未使用
+        can_heal_now = (not heal_used) and (player.hp < player.max_hp * 0.5)
+    
+        if can_heal_now:
+            prompt = 'Attack or Defence or Heal (A/D/H)：'
+            valid_inputs = {"A", "D", "H"}
+            print('（提示：你现在可以按 H 回满血，仅此一次）')
+        else:
+            prompt = 'Attack or Defence (A/D)：'
+            valid_inputs = {"A", "D"}
+    
+        if heal_penalty_active:
+            print('【警告】治疗代价生效中：敌人对你的伤害 ×2！')
+    
+        user_input = input(prompt).strip().upper()
+        while user_input not in valid_inputs:
+            user_input = input("输入无效，请重新输入：" + prompt).strip().upper()
+    
+        # === MODIFIED:敌人选择由大模型驱动（除了 “玩家 H ，敌人必须 A ” 的情况）===
+        # 当前敌人伤害倍率（是否翻倍）
+        def enemy_mul():
+            return 2.0 if heal_penalty_active else 1.0
+    
+        if user_input == "H":
+            # 只有在 can_heal_now 为 True 时才会进入到这里
+            print("你使用了治疗技能！血量已回满。")
+            player.heal_full()
+            heal_used = True
+    
+            # 触发治疗代价：从现在起敌人攻击翻倍（包含本回合的随后的敌人攻击）
+            heal_penalty_active = True
+    
+            # 敌人回合：规则规定治疗必须直接攻击（先治再挨打）
+            raw_enemy_attack_value = enemy.attack()
+            damage = raw_enemy_attack_value * enemy_mul()
+            print(
+                f"{enemy.name} 攻击了你，造成 {int(damage)} 点伤害！（原始{int(raw_enemy_attack_value)} × 倍率{enemy_mul():.0f}）")
+            player.being_attack(damage)
+    
+        elif user_input == "A":
+            # === MODIFIED：通过 LLM 决策敌人 A/D ===
+            game_status_text = build_game_status_for_llm(player, enemy, 'A', heal_penalty_active)
+            enemy_decision = llm_enemy_decide(game_status_text)
+    
+            player_attack_coefficient = 1
+            if enemy_decision == "D":
+                print(f"{enemy.name} 选择了防御（LLM)!")
+                player_attack_coefficient = 0.5
+            else:
+                print(f"{enemy.name} 选择了攻击（LLM）!")
+                raw_enemy_attack_value = enemy.attack()
+                damage = raw_enemy_attack_value * enemy_mul()
+                print(
+                    f"{enemy.name} 对你造成 {int(damage)} 点伤害！（原始{int(raw_enemy_attack_value)} × 倍率{enemy_mul():.0f}）")
+                player.being_attack(damage)
+    
+            player_attack_value = player.attack()
+            enemy.being_attack(player_attack_value * player_attack_coefficient)
+    
+        elif user_input == "D":
+            # === MODIFIED：通过 LLM 决策敌人 A/D ，并分别处理 ===
+            game_status_text = build_game_status_for_llm(player, enemy, 'D', heal_penalty_active)
+            enemy_decision = llm_enemy_decide(game_status_text)
+            
+            if enemy_decision == 'A':
+                # 防御：敌人攻击减伤为 90%，然后再应用翻倍倍率
+                raw_enemy_attack_value = enemy.attack()
+                damage = raw_enemy_attack_value * 0.1 * enemy_mul()
+                print(f"{enemy.name} 发起了攻击（LLM），但被你防住大部分，造成 {int(damage)} 点伤害！"
+                      f"（原始{int(raw_enemy_attack_value)} × 减伤0.1 × 倍率{enemy_mul():.0f}）")
+                player.being_attack(damage)
+            else:
+                # === 敌人也选择防御是，双方观望，本回合无伤害 ===
+                print(f"{enemy.name} 也选择了防御（LLM）！本回合双方均无伤害。")
+                
+        # （本回合结束后可以在此打印状态或进入下一轮）
+    
+    if player.not_dead():
+        print("You Win!")
+    else:
+        print("You Lose!")
+    ```
+
+3. 简略版本
+
+    > 此简略版本将 `大模型` 和 `主代码`  融合在一个文件中，并剔除了血量显示等优化，保留最核心部分，便于理解大模型的接入逻辑。
+
+    ```python
+    import random
+    
+    # ==================【新增】导入并初始化大模型客户端==================
+    # 新增：大模型相关代码
+    from openai import OpenAI  # 【新增】
+    client = OpenAI(           # 【新增】
+        api_key="---", 
+        base_url="https://api.deepseek.com"
+    )
+    messages = []  # 【新增】用于存储上下文
+    
+    # 【新增】系统提示词，告诉模型它是“敌人”
+    system_setting1 = {
+        "role": "system",
+        "content": """你是这个游戏中的敌人，负责做出对战中的行动决策（攻击 A 或 防御 D）。
+    你每回合会拿到玩家和你自己的HP、以及玩家这回合的行动，你只需要返回 A 或 D。
+    只返回一个大写字母：A 或 D。不要说其他多余的话。"""
+    }
+    messages.append(system_setting1)
+    # ==================【新增结束】==================================
+    
+    
+    class Creature():
+        def __init__(self, hp, name):
+            self.hp = hp
+            self.name = name
+    
+        def attack(self):
+            return random.randint(0, 50)
+    
+        def not_dead(self):
+            return self.hp > 0
+    
+        def being_attack(self, dmg: float):
+            """受到伤害（向下取整以避免浮点 HP），并保证 HP 不会掉到负数以下"""
+            self.hp = max(0, int(self.hp - dmg))
+    
+        def show_status(self):
+            print(f"{self.name}'s HP → {self.hp}")
+    
+    
+    player = Creature(100, "AI悦创")
+    enemy = Creature(80, "Enemy")
+    
+    
+    # ==================【新增】把当前回合信息发给模型的函数==================
+    def build_game_status(player_obj: Creature, enemy_obj: Creature, player_action: str) -> str:
+        """【新增】构造一段给模型看的文本，描述当前局面"""
+        # 这里你也可以做血条，但是文字足够用了
+        txt = (
+            f"玩家名称: {player_obj.name}\n"
+            f"玩家HP: {player_obj.hp}/100\n"
+            f"敌人名称: {enemy_obj.name}\n"
+            f"敌人HP: {enemy_obj.hp}/80\n"
+            f"玩家本回合的动作: {player_action}\n"
+            f"请你只返回 A(攻击) 或 D(防御)。"
+        )
+        return txt
+    
+    
+    def DeepSeek_Enemy(game_status: str) -> str:
+        """【新增】真正去问大模型要这回合出什么招"""
+        messages.append({'role': 'user', 'content': game_status})
+        response = client.chat.completions.create(
+            model="deepseek-chat",
+            messages=messages
+        )
+        assistant_content = response.choices[0].message.content.strip()
+        messages.append({"role": "assistant", "content": assistant_content})
+    
+        # 做一次简单规整：只留下首个大写字母A/D，防止模型话痨
+        choice = assistant_content.upper().strip()
+        if choice.startswith("A"):
+            return "A"
+        if choice.startswith("D"):
+            return "D"
+        # 如果模型给了奇怪的东西，就退回攻击
+        return "A"
+    # ==================【新增结束】======================================
+    
+    
+    while player.not_dead() and enemy.not_dead():
+        player.show_status()
+        enemy.show_status()
+    
+        user_input = input("Attack or Defence (A/D)：").strip().upper()
+        while user_input not in ("A", "D"):
+            user_input = input("输入无效，请重新输入 A 或 D：").strip().upper()
+    
+        # ==================【修改】这里原来是随机敌人动作，改成问大模型==================
+        # enemy_status = ['Attack', 'Defence']
+        # enemy_choice = random.choice(enemy_status)
+    
+        # 【新增】构造这回合的状态，告诉AI“玩家这回合干了什么+双方HP”
+        game_status_text = build_game_status(player, enemy, user_input)  # 【新增】
+        enemy_choice = DeepSeek_Enemy(game_status_text)  # 【新增】AI 决策，返回 "A" 或 "D"
+        # ==================【修改结束】========================================
+    
+        if user_input == "A":
+            player_attack_coefficient = 1  # MR 取名
+            if enemy_choice == "D":  # 【修改】这里原来是 == "Defence"
+                print(f"{enemy.name} chose to defend!")
+                player_attack_coefficient = 0.5
+            else:  # 敌人攻击
+                print(f"{enemy.name} chose to attack!")
+                enemy_attack_value = enemy.attack()
+                player.being_attack(enemy_attack_value)
+    
+            player_attack_value = player.attack()
+            enemy.being_attack(player_attack_value * player_attack_coefficient)
+    
+        elif user_input == "D":
+            # 玩家防御逻辑保持不变
+            enemy_attack_value = enemy.attack() * 0.1
+            player.being_attack(enemy_attack_value)
+    
+    if player.not_dead():
+        print("You Win!")
+    else:
+        print("You Lose!")
+    ```
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
