@@ -438,6 +438,16 @@ from battle_game_with_AI.ollama_big_model import llm_enemy_decide
 @tab 代码实现
 
 ```python
+import random
+from faker import Faker
+
+model_choice = input("您想要选择什么模型进行对战？deepseek 或 Ollama（请输入 D 或 O ）: ").strip().upper()
+if model_choice == "D":
+    from battle_game_with_AI.deepseek_big_model import llm_enemy_decide
+if model_choice == "O":
+    from battle_game_with_AI.ollama_big_model import llm_enemy_decide
+else:
+    from battle_game_with_AI.deepseek_big_model import llm_enemy_decide    # 默认用 deepseek
 ```
 
 
