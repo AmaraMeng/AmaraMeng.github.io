@@ -277,5 +277,35 @@ toc: true
 
 
 
+## 4. Pycharm 里新建虚拟环境
+
+当使用 LM Studio 大模型时需要 Python 3.10 及以上，现有的 Python 版本不够，因此考虑通过 conda 创建新的虚拟环境，在环境内搭载更高版本的 Python。
+
+步骤一：
+
+打开 pycharm 设置选择 Python 解释器。
+
+![](./15-environment.assets/image-20251117153630774.png)
+
+步骤二：
+
+添加解释器 → 添加本地解释器。
+
+![](./15-environment.assets/image-20251117153706762.png)
+
+步骤三：
+
+类型选择 conda ，选择 Python 版本，并给该虚拟环境取一个合适的名字，conda 路径默认（是 conda 的安装路径）。
+
+![](./15-environment.assets/image-20251117153822598.png)
+
+步骤四：
+
+尝试运行一个代码，观察前面的路径就知道环境是否切换成功。
+
+![](./15-environment.assets/image-20251117154439315.png)
+
+这里就能看出是在 conda 下的环境了。
+
 
 

@@ -1,5 +1,5 @@
 ---
-title: 17. 本地大模型对接（Ollama、LM Studio）
+title: 18. 本地大模型对接（Ollama、LM Studio）
 icon: boke
 date: 2025-11-10 15:07:26
 author: Ran
@@ -37,15 +37,15 @@ toc: true
     pip install ollama
     ```
 
-    ![成功安装](./17-local-LLM.assets/image-20251110153257512.png)
+    ![成功安装](./18-local-LLM.assets/image-20251110153257512.png)
 
     通过终端输入 `ollama` 查看功能：
 
-    ![](./17-local-LLM.assets/image-20251110153407441.png)
+    ![](./18-local-LLM.assets/image-20251110153407441.png)
 
     通过上面显示的命令  `ollama list` 查看已下载模型。
 
-    ![](./17-local-LLM.assets/image-20251110153519720.png)
+    ![](./18-local-LLM.assets/image-20251110153519720.png)
 
     
 
@@ -142,15 +142,15 @@ toc: true
 
     在安装了 Ollama 的电脑上找，首先需要打开如下选项：
 
-    ![](./17-local-LLM.assets/image-20251110160208004.png)
+    ![](./18-local-LLM.assets/image-20251110160208004.png)
 
     **方法一：**
 
-    ![](./17-local-LLM.assets/image-20251110154942109.png)
+    ![](./18-local-LLM.assets/image-20251110154942109.png)
 
     因为电脑不同，有时会找不到网络属性，还可以直接查看连接的 WiFi ，右侧圆形里面带 i 的标志直接找到。
 
-    ![](./17-local-LLM.assets/image-20251113142016440.png)
+    ![](./18-local-LLM.assets/image-20251113142016440.png)
 
     
 
@@ -160,7 +160,7 @@ toc: true
 
     打开终端输入 `ipconfig` 即可。（windows 终端是搜索 cmd 即可）
 
-    ​	![](./17-local-LLM.assets/image-20251110160606519.png)
+    ​	![](./18-local-LLM.assets/image-20251110160606519.png)
 
 2. 参考官网教程 API 方法
 
@@ -395,8 +395,28 @@ toc: true
 
 自足选择使用本机模型（ollama_local_code）or 本地服务器模型（ollama_api_code）。
 
+::: code-tabs
+
+@tab 基础版实现（个人尝试）
+
 ```python
 # 其他代码不变，这部分将两个代码融合
+from ollama import chat
+from ollama import ChatResponse
+from ollama import Client
+
+# 角色设定
+ENEMY_SYSTEM_PROMPT = """你是这个回合制战斗游戏中的“敌人AI”，只负责在每一回合选择【A】或【D】。
+请严格遵守：
+- 你只能输出一个大写字母：A 或 D（不要输出其它任何文字）。
+- 决策要基于当回合提供的状态信息做出理性选择。
+
+规则回顾（供你参考，不要复述）：
+1) 若玩家使用治疗（H），本回合敌人必定攻击（A），且敌人伤害翻倍（×2）。
+2) 当你的 HP < 40% 且玩家看起来会攻击时，更倾向于防御（D）。
+3) 当玩家防御（D）且你的 HP 不低时，更倾向于攻击（A）来消耗对手。
+4) 一般情况下倾向于进攻（A），但在自己低血或明显亏换血时可以选择防御（D）。
+"""
 
 def llm_enemy_decide(model_choice, game_status_text: str) -> str:
     if model_choice == "local":
@@ -413,7 +433,167 @@ def llm_enemy_decide(model_choice, game_status_text: str) -> str:
             {"role": "system", "content": ENEMY_SYSTEM_PROMPT},
             {"role": "user", "content": game_status_text},
         ])
+
 ```
+
+@tab 基础版优化
+
+```python
+from pyexpat.errors import messages
+
+# 角色设定
+ENEMY_SYSTEM_PROMPT = """你是这个回合制战斗游戏中的“敌人AI”，只负责在每一回合选择【A】或【D】。
+请严格遵守：
+- 你只能输出一个大写字母：A 或 D（不要输出其它任何文字）。
+- 决策要基于当回合提供的状态信息做出理性选择。
+
+规则回顾（供你参考，不要复述）：
+1) 若玩家使用治疗（H），本回合敌人必定攻击（A），且敌人伤害翻倍（×2）。
+2) 当你的 HP < 40% 且玩家看起来会攻击时，更倾向于防御（D）。
+3) 当玩家防御（D）且你的 HP 不低时，更倾向于攻击（A）来消耗对手。
+4) 一般情况下倾向于进攻（A），但在自己低血或明显亏换血时可以选择防御（D）。
+"""
+
+# 将相同的地方提出放在前面
+def llm_enemy_decide(model_choice: str, game_status_text: str) -> str:
+    messages = [
+            {"role": "system", "content": ENEMY_SYSTEM_PROMPT},
+            {"role": "user", "content": game_status_text},
+        ]
+    try:
+        if model_choice == "local":
+            from ollama import chat
+            resp = chat(model='deepseek-r1:8b', messages=messages)
+        else:
+            from ollama import Client
+            client = Client(
+              host='http://192.168.31.6:11434',      # 注意这个地址可能出现变动
+              headers={'x-some-header': 'some-value'}
+            )
+            resp = client.chat(model='gpt-oss:20b', messages=messages)
+
+        content = resp.message.content.strip().upper()
+        # 规范化，仅允许 A 或 D ，否则回退到 A
+        if "A" in content and "D" in content:
+              # 若模型不小心给了两个答案，那么默认选 A
+              return "A"
+        if content.startswith("A"):
+              return "A"
+        if content.startswith("D"):
+              return "D"
+        return "A"  # 兜底
+    
+    except Exception as e:
+        # 失败时兜底为倾向攻击
+        print(f"[LLM 决策失败，使用兜底策略 A] 原因：{e}")
+        return "A"
+```
+
+@tab 思路优化
+
+```python
+from ollama import chat
+
+# 角色设定
+ENEMY_SYSTEM_PROMPT = """你是这个回合制战斗游戏中的“敌人AI”，只负责在每一回合选择【A】或【D】。
+请严格遵守：
+- 你只能输出一个大写字母：A 或 D（不要输出其它任何文字）。
+- 决策要基于当回合提供的状态信息做出理性选择。
+
+规则回顾（供你参考，不要复述）：
+1) 若玩家使用治疗（H），本回合敌人必定攻击（A），且敌人伤害翻倍（×2）。
+2) 当你的 HP < 40% 且玩家看起来会攻击时，更倾向于防御（D）。
+3) 当玩家防御（D）且你的 HP 不低时，更倾向于攻击（A）来消耗对手。
+4) 一般情况下倾向于进攻（A），但在自己低血或明显亏换血时可以选择防御（D）。
+"""
+
+# 思路优化：默认使用本地大模型，如果不使用 api 就不激活
+
+def llm_enemy_decide(model_choice: str, game_status_text: str) -> str:
+    global chat  # 设为全局变量，因为下文要对全局变量 chat 修改
+    messages = [
+            {"role": "system", "content": ENEMY_SYSTEM_PROMPT},
+            {"role": "user", "content": game_status_text},
+        ]
+    try:
+        if model_choice == "remote":
+            from ollama import Client
+            client = Client(
+              host='http://192.168.31.215:11434',
+              headers={'x-some-header': 'some-value'}
+            )
+            chat = client.chat     # 这一步需要修改全局变量 chat 为 client.chat
+        else:
+            print('默认使用本地大模型！')
+        resp = chat(model='deepseek-r1:8b', messages=messages)
+
+        content = resp.message.content.strip().upper()
+        # 规范化，仅允许 A 或 D ，否则回退到 A
+        if "A" in content and "D" in content:
+              # 若模型不小心给了两个答案，那么默认选 A
+              return "A"
+        if content.startswith("A"):
+              return "A"
+        if content.startswith("D"):
+              return "D"
+        return "A"  # 兜底
+
+    except Exception as e:
+        # 失败时兜底为倾向攻击
+        print(f"[LLM 决策失败，使用兜底策略 A] 原因：{e}")
+        return "A"
+
+
+
+# 以下为代码测试
+if __name__ == '__main__':
+    string = """
+    玩家（AI悦创）的HP：[####################] 100%  100/100
+    敌人（你，李凤兰）的HP：[####################] 100%  80/80
+    玩家上一手的动作：A
+    治疗代价是否生效（敌人攻击×2）：否
+    请只返回 A 或 D。
+    """
+    print(llm_enemy_decide('r', string))
+    string = """
+    玩家（AI悦创）的HP：[###-----------------]  15%  15/100
+    敌人（你，王帆）的HP：[#-------------------]   5%  4/80
+    玩家上一手的动作：A
+    治疗代价是否生效（敌人攻击×2）：否
+    请只返回 A 或 D。
+    """
+    print(llm_enemy_decide('remote', string))
+    string = """
+    玩家（AI悦创）的HP：[####################] 100%  100/100
+    敌人（你，王帆）的HP：[#-------------------]   5%  4/80
+    玩家上一手的动作：A
+    治疗代价是否生效（敌人攻击×2）：否
+    请只返回 A 或 D。
+    """
+    print(llm_enemy_decide('remote', string))
+```
+
+@tab 扩展：封装成函数
+
+```python
+def get_chat(model_choice:str):
+    if model_choice == 'local':
+        from ollama import chat
+        return chat
+    
+    from ollama import Client
+    client = Client(host='http://192.168.31.215:11434',
+              headers={'x-some-header': 'some-value'})
+    return client.chat 
+
+# 使用：
+chat = get_chat(model_choice)
+resp = chat(model='deepseek-r1:8b', messages=messages)
+```
+
+
+
+:::
 
 
 
@@ -450,11 +630,35 @@ else:
     from battle_game_with_AI.deepseek_big_model import llm_enemy_decide    # 默认用 deepseek
 ```
 
+@tab 优化
+
+```python
+import random
+from faker import Faker
+
+model_choice = input("您想要选择：本机还是在线对战？（请输入 OL 或 OR 或 LM）: ").strip().upper()
+if model_choice == "OL":
+    from Ollama_models.Ollama_local_code import llm_enemy_decide
+elif model_choice == "OR":
+    from Ollama_models.Ollama_api_code import llm_enemy_decide
+elif model_choice == "LM":
+    pass
+else:
+    from battle_game_with_AI.deepseek_big_model import llm_enemy_decide    # 默认用 deepseek api
+```
+
 
 
 :::
 
+## 3. LM Studio 实现
 
+1. 安装 LM 的库
+
+    ```python
+    ```
+
+    
 
 
 

@@ -1,5 +1,5 @@
 ---
-title: 14.2 回合制打怪游戏设计（文字版）
+title: 17. 回合制打怪游戏设计（文字版）
 icon: boke
 date: 2025-11-17 13:50:10
 author: Ran
@@ -18,13 +18,15 @@ backToTop: true
 toc: true
 ---
 
-## 9. 练习
 
-![](./14.2-TBS.assets/image-20250821144554990.png)
 
-![](./14.2-TBS.assets/image-20250821144627264.png)
+![](./17-TBSgame.assets/image-20250821144554990.png)
 
-### 9.1 个人回答
+![](./17-TBSgame.assets/image-20250821144627264.png)
+
+## 1. 个人回答
+
+思路：以玩家为中心，其他的信息都当做可以赋值的变量。
 
 ```python
 import random
@@ -33,20 +35,20 @@ class Game():
     # 初始化玩家姓名、HP、敌人HP
     def __init__(self, player_name):
         self.player_name = player_name
-        self.player_hp = 100
-        self.enemy_hp = 80
+        self.player_hp = 100       # 直接在类和函数内部确定了玩家和敌人的血量
+        self.enemy_hp = 80         # 在确定敌人的血量同时，敌人姓名固定为 enemy
 
 
     # 玩家操作攻击/防守
     def actions(self):
         self.action = input('Attack or Defense (A/D):')
         if self.action == 'A':
-            self.enemy_hp -= random.randint(1, 20)
-            if self.enemy_hp <=0:
+            self.enemy_hp -= random.randint(1, 20)        # 玩家攻击，敌人血量减少
+            if self.enemy_hp <=0:                         # 敌人血量归零时用 return 停止
                 return
-            self.player_hp -= random.randint(1, 20)
+            self.player_hp -= random.randint(1, 20)       # 每回合敌人一定攻击，玩家正常减血就行
         elif self.action == 'D':
-            self.player_hp -= random.randint(1, 20)/10
+            self.player_hp -= random.randint(1, 20)/10    # 玩家防守，减血量为原本的 1/10
         else:
             print('Invalid action')
 
@@ -115,11 +117,13 @@ You win!
 
 
 
-### 9.2 老师思路
+## 2. 优化思路
 
-优化：
+### 2.1 初步优化
 
-- 玩家和敌人都可以当做是对象，因此初始化时可以把敌人也当做是类似对象的实例。
+**优化点一：**
+
+玩家和敌人拥有相同的特征，可以当做是相同的对象，因此设计函数时，把玩家和敌人看做一类；游戏程序开始时，分别对玩家和敌人进行实例化。
 
 ```python
 import random
@@ -129,6 +133,9 @@ class Creature():
         attack_value = random.randint(1, 50)
         return attack_value
     
+    # 省略玩家操作攻击/防守代码
+    
+#  main
 player = Creature()
 enemy = Creature()
 ```
@@ -405,7 +412,7 @@ else:
 
 ---
 
-### 9.3 对自己的代码进行修改
+## 3. 对自己的代码进行修改
 
 对自己写的代码进行修改：
 
