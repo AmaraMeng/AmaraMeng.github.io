@@ -653,12 +653,269 @@ else:
 
 ## 3. LM Studio 实现
 
-1. 安装 LM 的库
+安装 LM 的库
 
-    ```python
-    ```
+```python
+pip install lmstudio
+```
 
+### 3.1 本地实现
+
+快速开始：
+
+::: code-tabs
+
+@tab convenience API
+
+```python
+import lmstudio as lms
+
+model = lms.llm("qwen/qwen3-4b-2507")
+result = model.respond("What is the meaning of life?")
+
+print(result)
+```
+
+@tab scoped resource API
+
+```python
+import lmstudio as lms
+
+with lms.Client() as client:
+    model = client.llm.model("qwen/qwen3-4b-2507")
+    result = model.respond("What is the meaning of life?")
+
+    print(result)
+```
+
+:::
+
+代码解析：
+
+line 1 中 `import lmstudio as lms` 指下面代码中用 `lms` 来替代 `lmstudio` 。
+
+`with lms.Client() as client`  通过 `with` 实现文件的自动打开和关闭。
+
+### 3.2 局域网实现
+
+1. 配置局域网
+
+::: code-tabs
+
+@tab convenience API
+
+```python
+import lmstudio as lms
+SERVER_API_HOST = "192.168.31.215:1234"
+
+# This must be the *first* convenience API interaction (otherwise the SDK
+# implicitly creates a client that accesses the default server API host)
+lms.configure_default_client(SERVER_API_HOST)
+
+# Note: the dedicated configuration API was added in lmstudio-python 1.3.0
+# For compatibility with earlier SDK versions, it is still possible to use
+# lms.get_default_client(SERVER_API_HOST) to configure the default client
+
+```
+
+@tab scoped resource API
+
+```python
+import lmstudio as lms
+SERVER_API_HOST = "192.168.31.215:1234"
+
+# When using the scoped resource API, each client instance
+# can be configured to use a specific server API host
+with lms.Client(SERVER_API_HOST) as client:
+    model = client.llm.model()
+
+    for fragment in model.respond_stream("What is the meaning of life?"):
+        print(fragment.content, end="", flush=True)
+    print() # Advance to a new line at the end of the response
+
+```
+
+
+
+:::
+
+2. 检查 LM Studio 是否正常运行
+
+```python
+import lmstudio as lms
+SERVER_API_HOST = "192.168.31.215:1234"
+
+if lms.Client.is_valid_api_host(SERVER_API_HOST):
+    print(f"An LM Studio API server instance is available at {SERVER_API_HOST}")
+else:
+    print("No LM Studio API server instance found at {SERVER_API_HOST}")
     
+# -------output-------
+An LM Studio API server instance is available at 192.168.31.215:1234
+```
+
+3. 进行对话
+
+::: code-tabs
+
+@tab convenience API
+
+```python
+import lmstudio as lms
+SERVER_API_HOST = "192.168.31.215:1234"
+
+lms.configure_default_client(SERVER_API_HOST)
+
+# 开始对话
+model = lms.llm("openai_gpt-oss-20b")
+print(model.respond("生命的意义是什么?"))
+```
+
+
+
+@tab scoped resource API
+
+```python
+import lmstudio as lms
+SERVER_API_HOST = "192.168.31.215:1234"
+
+with lms.Client(SERVER_API_HOST) as client:
+    model = client.llm.model("openai_gpt-oss-20b")
+    print(model.respond("生命的意义是什么?"))
+```
+
+
+
+:::
+
+> 流式的代码可以参考官方文档
+
+
+
+### 3.3 探究多轮对话记忆实现
+
+参考官方文档 REPL Usage 部分。
+
+```python
+import lmstudio as lms
+SERVER_API_HOST = "192.168.31.215:1234"
+lms.configure_default_client(SERVER_API_HOST)
+
+# 这一步是要看LM Studio 客户端已经加载了什么模型，要用哪个模型
+loaded_models = lms.list_loaded_models()
+for idx, model in enumerate(loaded_models):
+    print(f"{idx:>3} {model}")
+
+# 输出结果
+# 0 LLM(identifier='openai_gpt-oss-20b')
+# 1 LLM(identifier='deepseek-r1-0528-qwen3-8b')
+
+# 选择了0号位的openai_gpt-oss-20b
+model = loaded_models[0]
+
+chat = lms.Chat("你的回答要简明扼要")
+
+chat.add_user_message("给我列举三个水果")
+print(model.respond(chat, on_message=chat.append))
+
+chat.add_user_message("再给我列举三个水果")
+print(model.respond(chat, on_message=chat.append))
+
+chat.add_user_message("你一共告诉了我几种水果?")
+print(model.respond(chat, on_message=chat.append))
+
+# ------- output -------
+  0 LLM(identifier='openai_gpt-oss-20b')
+  1 LLM(identifier='deepseek-r1-0528-qwen3-8b')
+<|channel|>analysis<|message|>We need to answer in Chinese. The user asks: "给我列举三个水果" (Give me three fruits). They want a list of three fruits. We should respond concisely, as per developer instruction. So just give three fruit names, maybe with commas or line breaks. Let's do:
+
+苹果、香蕉、葡萄
+
+That's concise.<|end|><|start|>assistant<|channel|>final<|message|>苹果、香蕉、葡萄
+<|channel|>analysis<|message|>User asks again: "再给我列举三个水果" (list three more fruits). We can comply. Provide 3 fruit names, maybe different from previous ones. Could list "橙子、草莓、西瓜". Ensure concise answer. No extra commentary.<|end|><|start|>assistant<|channel|>final<|message|>橙子、草莓、西瓜
+<|channel|>analysis<|message|>User asks: how many types of fruits have I told you in total. We counted earlier: first list had 3 (苹果, 香蕉, 葡萄). Second list had 3 more (橙子, 草莓, 西瓜). Total 6 distinct fruits. So answer is "六种" or "6 种". Should be concise.<|end|><|start|>assistant<|channel|>final<|message|>我一共告诉你六种水果。
+
+```
+
+
+
+> 更多教程信息，参见 https://bornforthis.cn/column/Python-Programming-Course/P05-AI-large-model/05-LMStudio.html
+
+
+
+### 3.4 自定义推理参数
+
+::: code-tabs
+
+@tab 流式
+
+```python
+# The `chat` object is created in the previous step.
+result = model.respond(chat, config={
+    "temperature": 0.6,             # 随机性，活跃性(值越高答案越活跃，越低答案越保守)
+    "maxTokens": 50,
+})
+```
+
+@tab 流式
+
+```python
+prediction_stream = model.respond_stream(chat, config={
+    "temperature": 0.6,
+    "maxTokens": 50,
+})
+```
+
+
+
+:::
+
+### 3.5 多回合聊天
+
+::: code-tabs
+
+@tab 官方示例
+
+```python
+import lmstudio as lms
+
+model = lms.llm()
+chat = lms.Chat("You are a task focused AI assistant")
+
+while True:
+    try:
+        user_input = input("You (leave blank to exit): ")
+    except EOFError:
+        print()
+        break
+    if not user_input:
+        break
+    chat.add_user_message(user_input)
+    prediction_stream = model.respond_stream(
+        chat,
+        on_message=chat.append,
+    )
+    print("Bot: ", end="", flush=True)
+    for fragment in prediction_stream:
+        print(fragment.content, end="", flush=True)
+    print()
+
+```
+
+@tab 本设备实现
+
+```python
+```
+
+
+
+:::
+
+
+
+
+
+
 
 
 
