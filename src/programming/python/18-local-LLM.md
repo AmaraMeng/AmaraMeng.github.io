@@ -872,6 +872,10 @@ prediction_stream = model.respond_stream(chat, config={
 
 ### 3.5 多回合聊天
 
+#### 3.5.1 基础实现
+
+
+
 ::: code-tabs
 
 @tab 官方示例
@@ -905,13 +909,112 @@ while True:
 @tab 本设备实现
 
 ```python
+import lmstudio as lms
+
+# 配置 LM Studio 客户端
+SERVER_API_HOST = "192.168.31.215:1234"
+lms.configure_default_client(SERVER_API_HOST)
+
+model = lms.llm("openai_gpt-oss-20b")
+chat = lms.Chat("你是一个任务导向的 AI 助手，请直接给出答案，不需要思考过程，答案尽可能简单，只输出最终结果。")
+
+while True:
+    try:
+        user_input = input("用户输入(空格退出): ")
+    except EOFError:
+        print()
+        break
+    if not user_input:
+        break
+
+    chat.add_user_message(user_input)
+
+    prediction_stream = model.respond_stream(
+        chat,
+        on_message=chat.append,
+    )
+    print("Bot: ", end="", flush=True)
+    for fragment in prediction_stream:
+        print(fragment.content, end="", flush=True)
+    print()
+
+#-------output-------
+用户输入(空格退出): 请给我列举三个水果
+Bot: <|channel|>analysis<|message|>User wants three fruits. Should output simple list. According to developer instruction: no reasoning, just answer. Output in Chinese? The user wrote in Chinese. So provide Chinese fruits.
+
+We can give: 苹果、香蕉、橙子. Just that.<|end|><|start|>assistant<|channel|>final<|message|>苹果、香蕉、橙子
 ```
 
 
 
 :::
 
+#### 3.5.2 根据需求优化
 
+从上述代码的输出我们不难发现，输出的内容包含的了很多无关内容，我们需要对输出的结果控制。
+
+- 不需要输出 Bot 这个字符串
+
+    ```python
+    # 删除下面一行代码
+    print("Bot: ", end="", flush=True)
+    ```
+
+- 从代码可以看出，官方给出的多回合聊天是流式的，因此输出的答案是多片段拼接，也可以从下面的 for 循环看出。
+
+    ```python
+    #-------output-------
+    用户输入(空格退出): 请给我列举三个水果
+    <|channel|>analysis<|message|>The user wants three fruits in Chinese presumably. According to instructions: "direct answer, no thinking process". Just list three fruits. We can just output e.g., 苹果、香蕉、橙子.
+    
+    We should comply with the instruction not to include explanation. The final answer: "苹果、香蕉、橙子".
+    
+    <|end|><|start|>assistant<|channel|>final<|message|>苹果、香蕉、橙子
+    ```
+
+    如果我们加个延迟来观察，会更加明显：
+
+    ```python
+    import time
+    import lmstudio as lms
+    
+    # 配置 LM Studio 客户端
+    SERVER_API_HOST = "192.168.31.215:1234"
+    lms.configure_default_client(SERVER_API_HOST)
+    
+    model = lms.llm("openai_gpt-oss-20b")
+    chat = lms.Chat("你是一个任务导向的 AI 助手，请直接给出答案，不需要思考过程，答案尽可能简单，只输出最终结果。")
+    
+    while True:
+        try:
+            user_input = input("用户输入(空格退出): ")
+        except EOFError:
+            print()
+            break
+        if not user_input:
+            break
+    
+        chat.add_user_message(user_input)
+    
+        prediction_stream = model.respond_stream(
+            chat,
+            on_message=chat.append,
+        )
+    
+        for fragment in prediction_stream:
+            print(fragment.content, end="", flush=True)
+            time.sleep(1)  # 延迟1秒，观察每个片段的输出
+        print()
+    ```
+
+    输出中发现：这种标记 `<|channel|>analysis<|message|>` 都是整体输出的。根据这个特点，我们可以通过以 `final<|message|>`  为标记分割。
+
+    > 此处注意不能在输出的命令里直接分割，因为流式是一段一段输出的，循环中并未得到完整的结果，因此应该在检索到我们需要的关键标记后，再进行分割。
+
+    ```python
+    ```
+
+    
 
 
 
