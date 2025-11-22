@@ -58,9 +58,9 @@ toc: true
 
 ![](./19-python-install.assets/image-20251122203352422.png)
 
-> Windows 用户需要注意，在 `file-settings-tools` 中 `shell path` 需要修改为系统，不能用 `power shell` 。
+> Windows 用户需要注意，在 `file-settings-tools-terminal` 中 `shell path` 需要修改为系统，不能用 `power shell` 。
 >
-> ![](./19-python-install.assets/image-20251122203802088.png)
+> ![](./19-python-install.assets/image-20251122220903604.png)
 
 
 
