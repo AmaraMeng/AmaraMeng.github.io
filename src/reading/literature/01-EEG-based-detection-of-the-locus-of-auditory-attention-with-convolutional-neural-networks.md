@@ -51,7 +51,9 @@ In a multi-speaker scenario, the human auditory system is able to attend to one 
 
     auditory attention decoding (AAD) 听觉注意力解码：神经活动   →解码   听觉注意
 
-### 1.1 线性解码
+### 1.1 线性解码 VS 非线性解码问题
+
+**线性解码** 
 
 - **常见方法：**
 
@@ -81,7 +83,7 @@ In a multi-speaker scenario, the human auditory system is able to attend to one 
 
     ( Miran S, Akram S, Sheikhattar A, Simon JZ, Zhang T, Babadi B. 2018. Real-Time tracking of selective auditory attention from M/EEG: a bayesian filtering approach. Frontiers in Neuroscience 12:262. DOI: https://doi.org/ 10.3389/fnins.2018.00262, PMID: 29765298)
 
-### 1.2 非线性解码
+**非线性解码** 
 
 人类听觉系统**非线性**特点（ Faure P, Korn H. 2001. Is there Chaos in the brain? I. concepts of nonlinear dynamics and methods of investigation. Comptes Rendus De l’Acade´mie Des Sciences- Series III- Sciences De La Vie 324:773–793. DOI: https://doi.org/10.1016/S0764-4469(01)01377-4）
 
@@ -99,9 +101,9 @@ In a multi-speaker scenario, the human auditory system is able to attend to one 
 
 
 
-### 1.3 决定窗时长问题
+### 1.2 决定窗时长问题
 
-如何平衡decision window 时长和准确率？
+由于时长缩短会导致准确率下降，那么该如何平衡decision window 时长和准确率？
 
 Geirnaert et al., 2020 提出了一种将两种属性结合成单一指标的方法，通过在具有稳健性约束的基于AAD的音量控制系统中寻找最佳权衡点，以最小化预期切换持续时间。通过对每次新的AAD决策使用较小的相对音量变化，可以提高对AAD错误的鲁棒性。
 
@@ -109,13 +111,15 @@ Geirnaert et al., 2020 提出了一种将两种属性结合成单一指标的方
 
 
 
-### 1.4 位置问题
+### 1.3 位置问题
 
-**任务：** 
+**任务转向：** 
 
 重构的语音包络对应哪个语音刺激   →转向   语音刺激的空间位置。
 
-好处：无需干净语音
+**好处：** 无需干净语音。
+
+**基础：** 
 
 最近的研究（ Wolbers et al., 2011; Bednar and Lalor, 2018; Patel et al., 2018; O’Sullivan et al., 2019; Bednar and Lalor, 2020）表明，听觉注意的方向在神经上是编码的，这表明可能从 EEG 中解码出被注意声音的位置或轨迹。
 
