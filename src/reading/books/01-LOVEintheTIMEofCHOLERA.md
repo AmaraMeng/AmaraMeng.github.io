@@ -18,6 +18,7 @@ lastUpdated: true
 editLink: true
 backToTop: true
 toc: true
+
 ---
 
 ## 1. Love in the Time of Cholera 
@@ -26,11 +27,7 @@ Cholera：西语的两个含义，霍乱，乱七八糟
 
 爱是一个人的兵荒马乱
 
-
-
-王熙凤
-
-甄嬛传安小鸟
+---
 
 **CHAPTER ONE** 
 
@@ -118,7 +115,7 @@ Cholera：西语的两个含义，霍乱，乱七八糟
 
 - developing tray 显影托盘
 
-    ![](./01. LOVEintheTIMEofCHOLERA.assets/image-20250730161614332.png)
+    ![](./01-LOVEintheTIMEofCHOLERA.assets/image-20250730161614332.png)
 
 - vaporize  /ˈveɪ.pər.aɪz/ v. 使蒸发
 
@@ -128,7 +125,7 @@ On the floor, **tied** to a leg of the cot, **lay** the body of a black Great Da
 
 - crutch /krʌtʃ/ n. T型拐杖
 
-    ![](./01. LOVEintheTIMEofCHOLERA.assets/image-20250730162534706.png)
+    ![](./01-LOVEintheTIMEofCHOLERA.assets/image-20250730162534706.png)
 
 
 

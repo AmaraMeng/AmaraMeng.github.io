@@ -36,6 +36,13 @@ export default navbar([
   ] 
 },
 {text: "运动", icon:"jianshenfang", link: "/sports/"},
-{text: "阅读", icon: "yuedu", link: "/reading/"},
+{
+  text: "阅读", 
+  icon: "yuedu", 
+  children:[
+    {text: "文献", icon: "yuedu", link: "/reading/literature/"},
+    {text: "书籍", icon: "yuedu", link: "/reading/books/"}
+  ]
+},
   
 ]);
