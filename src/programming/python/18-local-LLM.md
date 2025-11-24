@@ -847,7 +847,7 @@ That's concise.<|end|><|start|>assistant<|channel|>final<|message|>苹果、香�
 
 ::: code-tabs
 
-@tab 流式
+@tab 非流式
 
 ```python
 # The `chat` object is created in the previous step.
@@ -906,6 +906,61 @@ while True:
 
 ```
 
+@tab 注释版
+
+```python
+import lmstudio as lms      # 导入 lmstudio 库，并起一个别名叫 lms，后面用 lms 来访问这个库里的功能
+
+model = lms.llm()           # 创建一个大语言模型实例，赋值给 model 变量，用于后面生成回复
+chat = lms.Chat("You are a task focused AI assistant")
+                           # 创建一个对话对象 chat，并设置初始系统提示词：
+                           # "You are a task focused AI assistant"
+                           # 也就是告诉模型“你是一个专注完成任务的 AI 助手”
+
+while True:                # 启动一个无限循环，用来反复与用户进行对话（直到用户退出）
+    try:
+        user_input = input("You (leave blank to exit): ")
+                           # 显示提示文字，让用户在命令行输入内容。
+                           # input() 会等待用户输入并按回车，把输入的字符串保存到 user_input。
+                           # 括号里的字符串是提示语：“You (leave blank to exit): ”
+                           # 提示用户：留空（直接回车）时表示退出。
+    except EOFError:       # 捕获 EOFError 异常（例如在某些环境下输入结束 / 管道结束）
+        print()            # 打印一个空行，使输出好看一点
+        break              # 跳出 while True 循环，结束程序
+
+    if not user_input:     # 如果 user_input 为空字符串（用户直接回车，不输入内容）
+        break              # 结束循环，退出程序
+
+    chat.add_user_message(user_input)
+                           # 把用户刚才输入的这一句添加到对话历史中，
+                           # 相当于告诉 chat：“这是用户说的话”。
+
+    prediction_stream = model.respond_stream(
+        chat,              # 把当前整个对话对象 chat 传给模型，让模型根据对话历史生成回复
+        on_message=chat.append, 
+                           # 设置一个回调函数 on_message，当模型生成新的消息片段时，
+                           # 会调用 chat.append 把这些内容追加到对话历史。
+    )
+
+    print("Bot: ", end="", flush=True)
+                           # 先打印“Bot: ”作为机器人回复的前缀。
+                           # end="" 表示打印后不换行，光标留在同一行；
+                           # flush=True 表示强制立刻把缓冲区内容输出到终端（避免等待）。
+
+    for fragment in prediction_stream:
+                           # 遍历模型生成的流式输出 prediction_stream。
+                           # prediction_stream 是一个“可迭代对象”，每次迭代拿到一小段回复（fragment）。
+        print(fragment.content, end="", flush=True)
+                           # 对每个 fragment，打印其中的文本内容 fragment.content。
+                           # end="" 让所有片段连在同一行输出，形成连续的回复；
+                           # flush=True 让每个小片段一生成就立刻显示，实现“流式打字”的效果。
+
+    print()                # 最后再打印一个换行，把光标移动到下一行（便于下次输入）
+
+```
+
+
+
 @tab 本设备实现
 
 ```python
@@ -915,8 +970,8 @@ import lmstudio as lms
 SERVER_API_HOST = "192.168.31.215:1234"
 lms.configure_default_client(SERVER_API_HOST)
 
-model = lms.llm("openai_gpt-oss-20b")
-chat = lms.Chat("你是一个任务导向的 AI 助手，请直接给出答案，不需要思考过程，答案尽可能简单，只输出最终结果。")
+model = lms.llm("openai/gpt-oss-20b")
+chat = lms.Chat("你是一个任务导向的 AI 助手，请直接给出答案，不需要思考过程。")
 
 while True:
     try:
@@ -947,78 +1002,373 @@ We can give: 苹果、香蕉、橙子. Just that.<|end|><|start|>assistant<|chan
 
 
 
+@tab 简化版本（非流式）
+
+```python
+import lmstudio as lms
+
+SERVER_API_HOST = "192.168.31.215:1234"
+lms.configure_default_client(SERVER_API_HOST)
+
+model = lms.llm("openai/gpt-oss-20b")
+chat = lms.Chat("You are a task focused AI assistant")
+
+while True:
+    user_input = input("You (leave blank to exit): ")    #此处简化，不try用户输入
+    if not user_input:
+        break
+        
+    chat.add_user_message(user_input)       
+    prediction = model.respond(
+        chat,      #角色设定
+        on_message=chat.append,    # 把回答加进记忆里
+    )
+    print("Bot: ", end="", flush=True)
+    print(prediction)     # 输出大模型结果
+    print()
+
+```
+
+@tab 限制 token
+
+```python 19-20
+# LM Studio 虽然可以限制 token，但是目前没有必要，因为输出结果里含思维链，长度无法确定，因此不用限制 token。
+
+
+import lmstudio as lms
+import time
+# 配置 LM Studio 客户端
+SERVER_API_HOST = "192.168.31.215:1234"
+lms.configure_default_client(SERVER_API_HOST)
+
+model = lms.llm("openai/gpt-oss-20b")
+chat = lms.Chat("You are a task focused AI assistant")
+
+while True:
+    user_input = input("用户输入(空格退出): ")
+    if not user_input:
+        break
+
+    chat.add_user_message(user_input)
+    prediction = model.respond(
+        chat,
+        on_message=chat.append,
+        config={
+            "max_tokens": 50,
+        }
+    )
+    print("Bot: ", end="", flush=True)
+    print(prediction)     # 输出大模型结果
+    print()
+
+```
+
+
+
+
+
 :::
 
-#### 3.5.2 根据需求优化
+#### 3.5.2 去除思维链
+
+
+
+##### 3.5.2.1 流式
 
 从上述代码的输出我们不难发现，输出的内容包含的了很多无关内容，我们需要对输出的结果控制。
 
-- 不需要输出 Bot 这个字符串
+先去除无关输出：
 
-    ```python
-    # 删除下面一行代码
-    print("Bot: ", end="", flush=True)
-    ```
+不需要输出 Bot 这个字符串。
 
-- 从代码可以看出，官方给出的多回合聊天是流式的，因此输出的答案是多片段拼接，也可以从下面的 for 循环看出。
+```python
+# 删除下面一行代码
+print("Bot: ", end="", flush=True)
+```
 
-    ```python
-    #-------output-------
-    用户输入(空格退出): 请给我列举三个水果
-    <|channel|>analysis<|message|>The user wants three fruits in Chinese presumably. According to instructions: "direct answer, no thinking process". Just list three fruits. We can just output e.g., 苹果、香蕉、橙子.
-    
-    We should comply with the instruction not to include explanation. The final answer: "苹果、香蕉、橙子".
-    
-    <|end|><|start|>assistant<|channel|>final<|message|>苹果、香蕉、橙子
-    ```
+最终输出：
 
-    如果我们加个延迟来观察，会更加明显：
+```python
+#-------output-------
+用户输入(空格退出): 请给我列举三个水果
+<|channel|>analysis<|message|>The user wants three fruits in Chinese presumably. According to instructions: "direct answer, no thinking process". Just list three fruits. We can just output e.g., 苹果、香蕉、橙子.
 
-    ```python
-    import time
+We should comply with the instruction not to include explanation. The final answer: "苹果、香蕉、橙子".
+
+<|end|><|start|>assistant<|channel|>final<|message|>苹果、香蕉、橙子
+```
+
+
+
+::: tabs
+
+@tab 研究方法
+
+从代码可以看出，官方给出的多回合聊天是流式的，因此输出的答案是多片段拼接，也可以从代码中的 for 循环看出。
+
+如果我们使用 time 函数加个延迟来观察，会更加明显：
+
+```python 29
+import time
+import lmstudio as lms
+
+# 配置 LM Studio 客户端
+SERVER_API_HOST = "192.168.31.215:1234"
+lms.configure_default_client(SERVER_API_HOST)
+
+model = lms.llm("openai_gpt-oss-20b")
+chat = lms.Chat("你是一个任务导向的 AI 助手，请直接给出答案，不需要思考过程，答案尽可能简单，只输出最终结果。")
+
+while True:
+    try:
+        user_input = input("用户输入(空格退出): ")
+    except EOFError:
+        print()
+        break
+    if not user_input:
+        break
+
+    chat.add_user_message(user_input)
+
+    prediction_stream = model.respond_stream(
+        chat,
+        on_message=chat.append,
+    )
+
+    for fragment in prediction_stream:
+        print(fragment.content, end="", flush=True)
+        time.sleep(1)  # 延迟1秒，观察每个片段的输出
+    print()
+```
+
+>  除了使用 time ，还可以恢复 print 本身的功能，删除 `end=""` 每次输出都换行即可。此外，time 和 print 方法结合，才能发挥更大的作用。
+
+**结论：** `<|channel|>analysis<|message|>` 和 `<|channel|>final<|message|>` 都是成块出现的，在回答中，这个结构一定重复出现 2 次。
+
+@tab 输出过滤方法一
+
+**判断最终答案出现条件：** 
+
+输出中发现：这种标记 `<|channel|>analysis<|message|>` 都是整体输出的。根据这个特点，我们可以通过以 `final<|message|>`  为标记，标记前的不输出，标记后的正常输出。
+
+> 此处注意不能在输出 `print(fragment.content, end="", flush=True)` 的命令里直接 `fragment.content.split("final<|message|>")[-1]` ，因为流式是一段一段输出的，循环中并未得到完整的结果，因此应该在检索到我们需要的关键标记后，再进行流式输出，类似一个输出的 Mark。
+
+```python 26-37
+import lmstudio as lms
+import time
+# 配置 LM Studio 客户端
+SERVER_API_HOST = "192.168.31.215:1234"
+lms.configure_default_client(SERVER_API_HOST)
+
+model = lms.llm("openai/gpt-oss-20b")
+chat = lms.Chat("你是一个任务导向的 AI 助手，请直接给出答案，不需要思考过程。")
+
+while True:
+    try:
+        user_input = input("用户输入(空格退出): ")
+    except EOFError:
+        print()
+        break
+    if not user_input:
+        break
+
+    chat.add_user_message(user_input)
+
+    prediction_stream = model.respond_stream(
+        chat,
+        on_message=chat.append,
+    )
+
+    is_final_part = False
+
+    for fragment in prediction_stream:
+        content = fragment.content
+
+        # 如果遇到 final message 标记，is_final_part 状态激活
+        if "final<|message|>" in content:
+            is_final_part = True
+
+        elif is_final_part:
+            # is_final_part 状态激活，直接输出
+            print(content, end="", flush=True)
+
+    print()  #在流式输出结束后换行
+
+#-------output-------
+用户输入(空格退出): 给我三个水果
+苹果、香蕉、葡萄
+用户输入(空格退出): 再给我三个水果
+草莓、芒果、西瓜
+用户输入(空格退出): 
+```
+
+
+
+@tab 输出过滤方法二
+
+**判断次数：**
+
+1. 判断 `<|message|>` 出现的次数，只要出现两次就可以进行输出：
+
+    ```python 21-26
     import lmstudio as lms
-    
+    import time
     # 配置 LM Studio 客户端
     SERVER_API_HOST = "192.168.31.215:1234"
     lms.configure_default_client(SERVER_API_HOST)
     
-    model = lms.llm("openai_gpt-oss-20b")
-    chat = lms.Chat("你是一个任务导向的 AI 助手，请直接给出答案，不需要思考过程，答案尽可能简单，只输出最终结果。")
+    model = lms.llm("openai/gpt-oss-20b")
+    chat = lms.Chat("你是一个任务导向的 AI 助手，请直接给出答案，不需要思考过程。")
     
     while True:
-        try:
-            user_input = input("用户输入(空格退出): ")
-        except EOFError:
-            print()
-            break
-        if not user_input:
-            break
+        user_input = input("用户输入(空格退出): ")
     
         chat.add_user_message(user_input)
     
         prediction_stream = model.respond_stream(
             chat,
             on_message=chat.append,
+    
         )
     
+        messages_count = 0
         for fragment in prediction_stream:
-            print(fragment.content, end="", flush=True)
-            time.sleep(1)  # 延迟1秒，观察每个片段的输出
-        print()
+            if "<|message|>" in fragment.content:
+                messages_count += 1
+            elif messages_count == 2:
+                print(fragment.content, end="", flush=True)
+    
+        print()  #在流式输出结束后换行
+    
+    #-------output-----
+    用户输入(空格退出): 给我三个水果
+    苹果、香蕉、草莓
+    用户输入(空格退出): 再给我三个水果
+    橙子、葡萄、芒果
+    用户输入(空格退出): 
     ```
 
-    输出中发现：这种标记 `<|channel|>analysis<|message|>` 都是整体输出的。根据这个特点，我们可以通过以 `final<|message|>`  为标记分割。
+2. 判断 `<|channel|>analysis<|message|>` 和 `<|channel|>final<|message|>` 是否都出现了。用 `value in []` 依旧很优雅。
 
-    > 此处注意不能在输出的命令里直接分割，因为流式是一段一段输出的，循环中并未得到完整的结果，因此应该在检索到我们需要的关键标记后，再进行分割。
-
-    ```python
+    ```python 23
+    import lmstudio as lms
+    import time
+    # 配置 LM Studio 客户端
+    SERVER_API_HOST = "192.168.31.215:1234"
+    lms.configure_default_client(SERVER_API_HOST)
+    
+    model = lms.llm("openai/gpt-oss-20b")
+    chat = lms.Chat("你是一个任务导向的 AI 助手，请直接给出答案，不需要思考过程。")
+    
+    while True:
+        user_input = input("用户输入(空格退出): ")
+    
+        chat.add_user_message(user_input)
+    
+        prediction_stream = model.respond_stream(
+            chat,
+            on_message=chat.append,
+    
+        )
+    
+        messages_count = 0
+        for fragment in prediction_stream:
+            if fragment.content in ['<|channel|>analysis<|message|>', '<|channel|>final<|message|>']:
+                messages_count += 1
+            elif messages_count == 2:
+                print(fragment.content, end="", flush=True)
+    
+        print()  #在流式输出结束后换行
+    
     ```
 
     
 
+:::
+
+##### 3.5.2.2 非流式
+
+非流式输出，必然是一整个结果。意味着：我能要操作的对象是一个完整的大模型回答。
+
+我们可以使用 type 检查输出的类型，便于我们后续的操作。
+
+```python
+import lmstudio as lms
+
+SERVER_API_HOST = "192.168.31.215:1234"
+lms.configure_default_client(SERVER_API_HOST)
+
+model = lms.llm("openai/gpt-oss-20b")
+chat = lms.Chat("你是一个任务导向的 AI 助手，请直接给出答案，不需要思考过程。")
+
+while True:
+    user_input = input("You (leave blank to exit): ")  # 此处简化，不try用户输入
+    if not user_input:
+        break
+
+    chat.add_user_message(user_input)
+    prediction = model.respond(
+        chat,  # 角色设定
+        on_message=chat.append,  # 把回答加进记忆里
+    )
+    print(type(prediction))  # 输出大模型结果
+
+#-------output-------
+You (leave blank to exit): 给我三个水果
+<class 'lmstudio.json_api.PredictionResult'>
+```
+
+此时我们发现输出的结果不是字符串 ，可以强制转换成字符串。
+
+> 对比流式的代码，流式的有 `fragment.content` 这种表达，可以再尝试一下输出 `prediction.content` 。发现这个的类型是字符串，就可以进行 `split()` 分割操作了。
+
+::: tabs
+
+@tab split 方法
+
+```python
+import lmstudio as lms
+
+SERVER_API_HOST = "192.168.31.215:1234"
+
+lms.configure_default_client(SERVER_API_HOST)
+
+model = lms.llm("openai/gpt-oss-20b")
+chat = lms.Chat("You are a task focused AI assistant")  # 角色设定，system
+
+while True:
+    user_input = input("You (leave blank to exit): ")
+
+    if not user_input:
+        break
+    chat.add_user_message(user_input)
+    prediction = model.respond(
+        chat,
+        on_message=chat.append,
+    )
+ 
+    messages = prediction.content.split('<|message|>')
+    
+    print(messages[-1])
+
+#-------output-------
+You (leave blank to exit): 给我三个水果
+苹果、香蕉、橙子
+You (leave blank to exit): 再给我三个水果
+葡萄、芒果、西瓜
+You (leave blank to exit): 
+```
 
 
 
+@tab index 方法
+
+```python
+```
+
+
+
+:::
 
 
 
