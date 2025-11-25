@@ -1346,7 +1346,6 @@ while True:
         chat,
         on_message=chat.append,
     )
- 
     messages = prediction.content.split('<|message|>')
     
     print(messages[-1])
