@@ -1569,9 +1569,145 @@ def split_channels(prediction):
     return analysis_text, final_text
 ```
 
+完整代码：
+
+```python
+import re
+import lmstudio as lms
+
+SERVER_API_HOST = "192.168.31.215:1234"
+
+lms.configure_default_client(SERVER_API_HOST)
+
+model = lms.llm("openai/gpt-oss-20b")
+chat = lms.Chat("You are a task focused AI assistant")  # 角色设定，system
+
+import re
+
+def split_channels(prediction):
+    """
+    返回 (analysis_text, final_text)
+    """
+    matches = re.findall(
+        r"<\|channel\|\>(analysis|final)<\|message\|\>(.*?)(?=<\|end\|>|<\|channel\|\>|$)",
+        prediction,
+        flags=re.S
+    )
+    analysis_text = None
+    final_text = None
+
+    for channel, content in matches:
+        if channel == "analysis":
+            analysis_text = (analysis_text or "") + content
+        elif channel == "final":
+            final_text = (final_text or "") + content
+
+    # 去掉首尾空白
+    if analysis_text is not None:
+        analysis_text = analysis_text.strip()
+    if final_text is not None:
+        final_text = final_text.strip()
+
+    return analysis_text, final_text
+
+
+
+while True:
+    user_input = input("You (leave blank to exit): ")
+
+    if not user_input:
+        break
+    chat.add_user_message(user_input)
+    prediction = model.respond(
+        chat,
+        on_message=chat.append,
+    )
+    messages = split_channels(prediction.content)
+
+    print(messages)
+    print(messages[0])
+    print(messages[1])
+```
+
 
 
 :::
+
+### 3.6 封装成函数
+
+完整代码：
+
+```python
+import lmstudio as lms
+
+# 角色设定
+ENEMY_SYSTEM_PROMPT = """你是这个回合制战斗游戏中的“敌人AI”，只负责在每一回合选择【A】或【D】。
+请严格遵守：
+- 你只能输出一个大写字母：A 或 D（不要输出其它任何文字）。
+- 决策要基于当回合提供的状态信息做出理性选择。
+
+规则回顾（供你参考，不要复述）：
+1) 若玩家使用治疗（H），本回合敌人必定攻击（A），且敌人伤害翻倍（×2）。
+2) 当你的 HP < 40% 且玩家看起来会攻击时，更倾向于防御（D）。
+3) 当玩家防御（D）且你的 HP 不低时，更倾向于攻击（A）来消耗对手。
+4) 一般情况下倾向于进攻（A），但在自己低血或明显亏换血时可以选择防御（D）。
+"""
+
+SERVER_API_HOST = "192.168.31.215:1234"
+
+lms.configure_default_client(SERVER_API_HOST)
+
+
+def llm_enemy_decide(game_status_text: str) -> str:
+    model = lms.llm("openai/gpt-oss-20b")
+    chat = lms.Chat(ENEMY_SYSTEM_PROMPT)  # 角色设定，system
+    chat.add_user_message(game_status_text)
+    try:
+        prediction = model.respond(
+            chat,
+        )
+        content = prediction.content.split('<|message|>')[-1]
+        if "A" in content and "D" in content:
+                # 若模型不小心给了两个答案，那么默认选 A
+            return "A"
+        if content.startswith("A"):
+            return "A"
+        if content.startswith("D"):
+            return "D"
+        return "A"   # 兜底
+    except Exception as e:
+        # 失败时兜底为倾向攻击
+        print(f"[LLM 决策失败，使用兜底策略 A] 原因：{e}")
+        return "A"
+
+
+# 以下为代码测试
+if __name__ == '__main__':
+    string = """
+    玩家（AI悦创）的HP：[####################] 100%  100/100
+    敌人（你，李凤兰）的HP：[####################] 100%  80/80
+    玩家上一手的动作：A
+    治疗代价是否生效（敌人攻击×2）：否
+    请只返回 A 或 D。
+    """
+    print(llm_enemy_decide(string))
+    string = """
+    玩家（AI悦创）的HP：[###-----------------]  15%  15/100
+    敌人（你，王帆）的HP：[#-------------------]   5%  4/80
+    玩家上一手的动作：A
+    治疗代价是否生效（敌人攻击×2）：否
+    请只返回 A 或 D。
+    """
+    print(llm_enemy_decide(string))
+    string = """
+    玩家（AI悦创）的HP：[####################] 100%  100/100
+    敌人（你，王帆）的HP：[#-------------------]   5%  4/80
+    玩家上一手的动作：A
+    治疗代价是否生效（敌人攻击×2）：否
+    请只返回 A 或 D。
+    """
+    print(llm_enemy_decide(string))
+```
 
 
 
