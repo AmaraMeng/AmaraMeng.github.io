@@ -1286,7 +1286,7 @@ while True:
 
 :::
 
-##### 3.5.2.2 非流式
+##### 3.5.2.2 非流式-字符串方法
 
 非流式输出，必然是一整个结果。意味着：我能要操作的对象是一个完整的大模型回答。
 
@@ -1358,16 +1358,222 @@ You (leave blank to exit): 再给我三个水果
 You (leave blank to exit): 
 ```
 
+@tab rfind 方法
+
+直接使用 `rfind` 函数索引字符串最右侧的 `<|message|>` 下标，因为获取的只是字符 `<` 的下标，因此提取后面答案的时候要注意加上索引内容本身的长度，即 `prediction.content[prediction.content.rfind('<|message|>') + len('<|message|>'):]`
+
+```python
+import lmstudio as lms
+
+SERVER_API_HOST = "192.168.31.215:1234"
+
+lms.configure_default_client(SERVER_API_HOST)
+
+model = lms.llm("openai/gpt-oss-20b")
+chat = lms.Chat("You are a task focused AI assistant")  # 角色设定，system
+
+while True:
+    user_input = input("You (leave blank to exit): ")
+
+    if not user_input:
+        break
+    chat.add_user_message(user_input)
+    prediction = model.respond(
+        chat,
+        on_message=chat.append,
+    )
+    content = prediction.content[prediction.content.rfind('<|message|>') + len('<|message|>'):]
+
+    print(content)
+```
+
 
 
 @tab index 方法
 
+错误思路扩展：原本打算 `index` 方法得到 `<|message|>` 的下标，但是有个难点：`index` 只会所引出第一次的下标，但是我们需要第二次的下标进行定位，如何处理？
+
+实际上本任务中不需要考虑即可实现，但是这种思路可以进行扩展方便之后遇到其他情况可以应用。
+
+**思路一：**把列表翻转，那么我们需要的数据就会出现在前面，就可以直接提取，或者用 `index` 索引标记一下结束位置。
+
+**思路二**： 可以 `index` 两次，根据第一次索引出来的下标删除  `<|message|>`   及前面的元素（del, pop, remove），再用一次 `index` 索引得到结果后进行切片提取 `messages[messages.index('<|message|>'): ]` （适用于后面出现多个元素）or `messages[messages.index('<|message|>')+1]`
+
+> 重大错误：`split` 分割之后，作为分割标志的 `<|message|>` 不存在于列表中，更不用说用 index 了，因此思路一错误！
+>
+> 思路二有可取之处，前提是不使用 `split` ，直接把输出当做字符串处理。那么就需要把第一次索引得到的结果到之前的字符删除。
+>
+> 此处要注意字符串是不可修改的，因此可以覆盖：
+>
+> ```python
+> string = prediction.content
+> string = string[string.index('<|message|>')+len('<|message|>'):]      # 第一次索引点后面的内容提取出来
+> target_content = string[string.index('<|message|>')+len('<|message|>'):]
+> ```
+
 ```python
+import lmstudio as lms
+
+SERVER_API_HOST = "192.168.31.215:1234"
+
+lms.configure_default_client(SERVER_API_HOST)
+
+model = lms.llm("openai/gpt-oss-20b")
+chat = lms.Chat("You are a task focused AI assistant")  # 角色设定，system
+
+while True:
+    user_input = input("You (leave blank to exit): ")
+
+    if not user_input:
+        break
+    chat.add_user_message(user_input)
+    prediction = model.respond(
+        chat,
+        on_message=chat.append,
+    )
+    string = prediction.content
+    string = string[string.index('<|message|>') + len('<|message|>'):]  # 第一次索引点后面的内容提取出来
+    target_content = string[string.index('<|message|>') + len('<|message|>'):]
+
+    print(target_content)
 ```
 
 
 
 :::
+
+##### 3.5.2.3 非流式-regex方法
+
+regex 适合结构有规律的。regex 可以让我们写出规则，接着 regex 就会按照这个规则去匹配符合规则结构的数据。
+
+::: tabs
+
+@tab 简单版（只保留 final 部分）
+
+函数部分代码：
+
+```python
+def extract_final(prediction: str) -> str:
+    """
+    从 LM Studio 输出中提取 final 渠道的纯回答文本，
+    并忽略 analysis 思维链。
+    """
+    # 1. 先删掉所有 analysis 块
+    no_analysis = re.sub(
+        r"<\|channel\|\>analysis<\|message\|\>.*?<\|end\|>",
+        "",
+        prediction,
+        flags=re.S  # DOTALL, 让 . 可以匹配换行
+    )
+
+    # 2. 再从中提取 final 部分的内容
+    m = re.search(
+        r"<\|channel\|\>final<\|message\|\>(.*?)(?=<\|end\|>|$)",
+        no_analysis,
+        flags=re.S
+    )
+    if m:
+        return m.group(1).strip()
+    else:
+        # 如果没匹配到，就退回原串（基本不会用到）
+        return prediction.strip()
+```
+
+完整代码：
+
+```python 12-35
+import re
+import lmstudio as lms
+
+SERVER_API_HOST = "192.168.31.215:1234"
+
+lms.configure_default_client(SERVER_API_HOST)
+
+model = lms.llm("openai/gpt-oss-20b")
+chat = lms.Chat("You are a task focused AI assistant")  # 角色设定，system
+
+
+def extract_final(prediction: str) -> str:
+    """
+    从 LM Studio 输出中提取 final 渠道的纯回答文本，
+    并忽略 analysis 思维链。
+    """
+    # 1. 先删掉所有 analysis 块
+    no_analysis = re.sub(
+        r"<\|channel\|\>analysis<\|message\|\>.*?<\|end\|>",
+        "",
+        prediction,
+        flags=re.S  # DOTALL, 让 . 可以匹配换行
+    )
+
+    # 2. 再从中提取 final 部分的内容
+    m = re.search(
+        r"<\|channel\|\>final<\|message\|\>(.*?)(?=<\|end\|>|$)",
+        no_analysis,
+        flags=re.S
+    )
+    if m:
+        return m.group(1).strip()
+    else:
+        # 如果没匹配到，就退回原串（基本不会用到）
+        return prediction.strip()
+
+while True:
+    user_input = input("You (leave blank to exit): ")
+
+    if not user_input:
+        break
+    chat.add_user_message(user_input)
+    prediction = model.respond(
+        chat,
+        on_message=chat.append,
+    )
+    messages = extract_final(prediction.content)
+
+    print(messages)
+```
+
+
+
+@tab 进阶版（保留思维链和final，只决定输出哪个）
+
+函数代码：
+
+```python
+import re
+
+def split_channels(prediction):
+    """
+    返回 (analysis_text, final_text)
+    """
+    matches = re.findall(
+        r"<\|channel\|\>(analysis|final)<\|message\|\>(.*?)(?=<\|end\|>|<\|channel\|\>|$)",
+        prediction,
+        flags=re.S
+    )
+    analysis_text = None
+    final_text = None
+
+    for channel, content in matches:
+        if channel == "analysis":
+            analysis_text = (analysis_text or "") + content
+        elif channel == "final":
+            final_text = (final_text or "") + content
+
+    # 去掉首尾空白
+    if analysis_text is not None:
+        analysis_text = analysis_text.strip()
+    if final_text is not None:
+        final_text = final_text.strip()
+
+    return analysis_text, final_text
+```
+
+
+
+:::
+
+
 
 
 

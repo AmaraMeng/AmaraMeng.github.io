@@ -21,7 +21,7 @@ backToTop: true
 toc: true
 ---
 
-**EEG-based detection of the locus of auditory attention with convolutional neural networks**
+**EEG-based detection of the locus of auditory attention with convolutional neural networks (2021)**
 
 ![题目及作者](./01-EEG-based-detection-of-the-locus-of-auditory-attention-with-convolutional-neural-networks.assets/image-20251123114219611.png)
 
