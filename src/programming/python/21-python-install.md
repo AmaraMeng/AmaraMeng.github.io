@@ -1,5 +1,5 @@
 ---
-title: 19. Python 及 Pycharm 的安装及环境配置
+title: 21. Python 及 Pycharm 的安装及环境配置
 icon: boke
 date: 2025-11-22 19:09:43
 author: Ran
@@ -30,7 +30,7 @@ toc: true
 
 安装程序启动，该页面选择 `add python.exe to PATH` 。
 
-![](./19-python-install.assets/image-20251122193600319.png)
+![](./21-python-install.assets/image-20251122193600319.png)
 
 ### 1.3 检查是否安装成功
 
@@ -50,17 +50,17 @@ toc: true
 
 启动安装程序，推荐在 C 盘以外的盘安装。到选项这一步可以全选。
 
-![](./19-python-install.assets/image-20251122195003406.png) 
+![](./21-python-install.assets/image-20251122195003406.png) 
 
 ### 2.3 基础配置
 
 打开 Pycharm，点击 `new project` 创建新项目，起一个合适的名字，当前用默认的虚拟环境创建。
 
-![](./19-python-install.assets/image-20251122203352422.png)
+![](./21-python-install.assets/image-20251122203352422.png)
 
 > Windows 用户需要注意，在 `file-settings-tools-terminal` 中 `shell path` 需要修改为系统，不能用 `power shell` 。
 >
-> ![](./19-python-install.assets/image-20251122220903604.png)
+> ![](./21-python-install.assets/image-20251122220903604.png)
 
 
 

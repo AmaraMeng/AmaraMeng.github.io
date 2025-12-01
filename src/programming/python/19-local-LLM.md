@@ -1,5 +1,5 @@
 ---
-title: 18. 本地大模型对接（Ollama、LM Studio）
+title: 19. 本地大模型对接（Ollama、LM Studio）
 icon: boke
 date: 2025-11-10 15:07:26
 author: Ran
@@ -37,15 +37,15 @@ toc: true
     pip install ollama
     ```
 
-    ![成功安装](./18-local-LLM.assets/image-20251110153257512.png)
+    ![成功安装](./19-local-LLM.assets/image-20251110153257512.png)
 
     通过终端输入 `ollama` 查看功能：
 
-    ![](./18-local-LLM.assets/image-20251110153407441.png)
+    ![](./19-local-LLM.assets/image-20251110153407441.png)
 
     通过上面显示的命令  `ollama list` 查看已下载模型。
 
-    ![](./18-local-LLM.assets/image-20251110153519720.png)
+    ![](./19-local-LLM.assets/image-20251110153519720.png)
 
     
 
@@ -142,15 +142,15 @@ toc: true
 
     在安装了 Ollama 的电脑上找，首先需要打开如下选项：
 
-    ![](./18-local-LLM.assets/image-20251110160208004.png)
+    ![](./19-local-LLM.assets/image-20251110160208004.png)
 
     **方法一：**
 
-    ![](./18-local-LLM.assets/image-20251110154942109.png)
+    ![](./19-local-LLM.assets/image-20251110154942109.png)
 
     因为电脑不同，有时会找不到网络属性，还可以直接查看连接的 WiFi ，右侧圆形里面带 i 的标志直接找到。
 
-    ![](./18-local-LLM.assets/image-20251113142016440.png)
+    ![](./19-local-LLM.assets/image-20251113142016440.png)
 
     
 
@@ -160,7 +160,7 @@ toc: true
 
     打开终端输入 `ipconfig` 即可。（windows 终端是搜索 cmd 即可）
 
-    ​	![](./18-local-LLM.assets/image-20251110160606519.png)
+    ​	![](./19-local-LLM.assets/image-20251110160606519.png)
 
 2. 参考官网教程 API 方法
 
