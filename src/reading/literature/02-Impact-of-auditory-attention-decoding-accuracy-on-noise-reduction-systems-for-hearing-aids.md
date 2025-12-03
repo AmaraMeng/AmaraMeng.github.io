@@ -309,7 +309,7 @@ Hearing aid users often struggle to focus on a specific target speaker in multi-
 - **`x̂(λ, k)`**: 这是在时频点 `(λ, k)` 上，对**参考麦克风**处**目标语音** `x₁(λ, k)` 的**估计值**。也就是我们最终想得到的、增强后的信号。它的质量（PESQ/STOI）是本文评判系统成败的唯一标准。
 - **`y(λ, k)`**: 这是我们熟悉的公式(3)中定义的向量，包含了所有 `M` 个麦克风在此时频点上接收到的信号 `[y₁, y₂, ..., y_M]ᵀ`。它是算法的**输入**。
 - **`w(λ, k)`**: 这是**多通道维纳滤波器**在时频点 `(λ, k)` 上的**复值权重向量** `[w₁, w₂, ..., w_M]ᵀ`。每个元素 `w_m` 对应一个麦克风。这个权重向量是算法的核心，它包含了如何整合所有麦克风信息以突出目标、抑制噪声和干扰的“知识”。
-- **`(·)^H`**: 表示**埃尔米特转置**（即共轭转置）。因为我们在处理**复值**的频域信号，所以需要共轭转置。
+- **`(·)^H`**: 表示**埃尔米特转置**（即共轭转置）。 表示把原矩阵中每个元素求共轭再转置。因为我们在处理**复值**的频域信号，所以需要共轭转置。
 - **物理意义**：`w` 的每个复数权重 `w_m` 对第 `m` 个麦克风的信号执行两项操作：
     1. **幅度缩放**：放大或减小该麦克风信号的贡献。
     2. **相位旋转**：对该麦克风信号进行微小的延迟或提前。
@@ -599,6 +599,8 @@ w_m = A_m * e^(j*θ_m)
 
 尽可能接近我们想要的 `x₁`（即目标语音在**参考麦克风**处的信号）。
 
+---
+
 **二、 核心思想：如何设计最优过滤器？—— MMSE准则**
 
 我们如何判断一个过滤器 `w` 是好是坏？需要一个**优化准则**。
@@ -631,6 +633,8 @@ w_m = A_m * e^(j*θ_m)
 
 **所以，整个右边 `arg min_w { ... }` 的运算结果，就是一个特定的 w 值**。
 
+---
+
 **三、 理论推导：最优解是怎么来的？（公式8）**
 
 公式7中，省略(λ,k)便于清晰推导：
@@ -638,11 +642,11 @@ w_m = A_m * e^(j*θ_m)
 - `x₁`：标量，参考麦克风处的**目标语音**（我们想估计的信号）
 - `y`：`M×1` 向量，所有麦克风的**接收信号**
 - `w`：`M×1` 向量，滤波器权重（待求）
-- `𝔼{·}`：统计期望（均值）
+- `𝔼{·}`：统计期望（均值），不能最小化**一次具体实验的误差**，而要最小化**长期的、平均的误差**。这就是引入 **`𝔼{·}`（期望/均值）** 的根本原因。
 
-**注意**：我们推导的是**复数信号**的最优化，需要用到**复梯度**。
 
-**步骤1：展开目标函数**
+
+- **步骤1：展开目标函数**
 
 定义目标函数（代价函数）：
 
@@ -685,6 +689,8 @@ $$
 $$
 :::
 
+
+
 继续展开：
 
 ![](./02-Impact-of-auditory-attention-decoding-accuracy-on-noise-reduction-systems-for-hearing-aids.assets/image-20251203002015915.png)
@@ -692,6 +698,46 @@ $$
 带入期望：
 
 ![](./02-Impact-of-auditory-attention-decoding-accuracy-on-noise-reduction-systems-for-hearing-aids.assets/image-20251203002401452.png)
+
+
+
+::: info
+
+在信号处理的许多问题中（特别是线性滤波问题），**二阶统计量（相关函数、协方差）包含了我们需要的全部信息**。这是因为：
+
+- 对于**高斯过程**，二阶统计量完全决定了其分布
+- 即使对于非高斯信号（如语音），在**最小均方误差（MMSE）准则下的最优线性滤波器**也**只依赖于二阶统计量**
+
+**二阶统计量**指的就是各种 **“相关”** 和 **“协方差”**：
+
+上述公式拆分出 4 项：
+
+- $\mathbb{E}[x_1 x_1^*]$：目标语音信号自身的平均功率，物理意义是**原始目标语音有多响**（平均而言）。
+
+- $\mathbb{E}[x_1 y^H]w$：$\mathbb{E}[x_1 y^H]$ 是一个 **`1×M` 的行向量**。它的第 `m` 个元素是 $\mathbb{E}[x_1 y_m^*]$ ，表示**原始目标语音信号** `x₁` 与**第 m 个麦克风接收到的信号** $y_m$ 的**互相关**（零延迟时），总体是两个信号之间的平均相关性。
+
+    ![](./02-Impact-of-auditory-attention-decoding-accuracy-on-noise-reduction-systems-for-hearing-aids.assets/image-20251203125052791.png)
+
+    
+
+- $w^H\mathbb{E}[y x_1^*]$：正是第二项的共轭转置。（原理：$(a^H b)^H = b^H a$ ）
+
+- $w^H\mathbb{E}[y y^H]w$ ：$\mathbb{E}[y y^H]$ 是一个 **`M×M` 的矩阵**。它的 `(m,n)` 元素是  $\mathbb{E}[y_m y_n^H]$ ，表示**第 m 个麦克风信号**与**第 n 个麦克风信号**的**互相关**。这个矩阵编码了**所有麦克风信号之间的空间相关结构**。
+
+:::
+
+
+
+**带入期望将问题从“随机变量”转化为“确定参数”**
+
+原始问题中，`x₁` 和 `y` 是**随机变量**（每次实验都不同）。经过取期望 `𝔼{·}` 后：
+
+- 不再是随机变量，而是**确定的数值/矩阵**（假设我们知道真实的统计量）。
+- 这意味着 `J(w)` 现在只是 **`w` 的确定函数**，我们可以用标准的微积分方法求其最小值。
+
+> **类比**：如果我们说“最小化学生的考试成绩”，这是模糊的（每个学生不同）。但如果说“最小化全班的平均成绩”，这就是一个明确的数学问题。
+
+
 
 ::: info
 
@@ -701,73 +747,187 @@ $$
 
 :::
 
+
+
 **步骤2：引入协方差矩阵**
 
 通过观察上述展开的公式，发现：
 
-$\mathbb{E}[y y^H]$
+第一项跟 $\mathbf w$ 无关，是常数 C。
 
-$\mathbb{E}[x_1 y^H]$
+为了简洁，作者给这几个期望起名字：
 
-这些东西正好就是：
-$$
-\Phi_{yy} = \mathbb{E}[yy^H]
-$$
+$\mathbf\Phi_{yy} = \mathbb E\{\mathbf y\mathbf y^H\}$  —— 含噪声的相干矩阵（所有麦克风收到的声音，y 是向量）
 
+$\mathbf\Phi_{xx} = \mathbb E\{\mathbf x\mathbf x^H\}$  —— 纯语音（无噪声）的相干矩阵（所有麦克风收到的目标声音，x 是向量）
+
+还会用到 $\mathbf\Phi_{yx} = \mathbb E\{\mathbf y\mathbf x^H\}$ 等。
+
+同时定义
 $$
-\Phi_{xy} = \mathbb{E}[x_1y^H]
+x_1 = \mathbf q^H\mathbf x,\quad \mathbf q=[1,0,0,\dots]^T
 $$
+也就是“从 $\mathbf x$ 这堆麦克风信号里，挑第 1 个出来”。
 
 ::: info
 
-$\Phi_{yy}$ 是输入向量 y 的协方差 / 自相关矩阵.
+因为在双耳情况下：
 
-假设你的麦克风阵列有 $M$ 个通道，那么：
-$$
-y = 
-\begin{bmatrix}
-y_1 \\ y_2 \\ \vdots \\ y_M
-\end{bmatrix}
-$$
+- 左耳重建用左耳第一个麦克风作为 reference
+- 右耳重建用右耳第一个麦克风作为 reference
 
-
-是 **多通道观测信号**（带噪声的）。
-
-于是：
-$$
-y y^H =
-\begin{bmatrix}
-y_1 y_1^* & y_1 y_2^* & \dots \\
-y_2 y_1^* & y_2 y_2^* & \dots \\
-\vdots & & \ddots
-\end{bmatrix}
-$$
-对每个元素取期望：
-$$
-\Phi_{yy}[i,j] = \mathbb{E}[\, y_i\, y_j^* \,]
-$$
-这就是：
-
-👉 **通道 $i$ 和通道 $j$ 之间的相关性（或协方差）**
-
-整矩阵表示：
- **“y 的能量 + y 通道之间的相关关系”**
-
-这就是所谓的“噪声+语音的协方差矩阵”。
-
-
-
-
-
-
-
-
-
-
-
-
+为什么选第 1 个通道？
+ 因为那是“耳道入口最接近真实自然听感的位置”。
 
 :::
+
+有了 $\mathbf q$ 之后，其中两项可以写成矩阵形式（可以先当作“换个写法”）：
+
+- 第 2 项中 $\mathbb E\{x_1\mathbf y^H\}    =\mathbf q^H\mathbb E\{\mathbf x\mathbf y^H\}    =\mathbf q^H\mathbf\Phi_{xy}$
+
+- 第 3 项中 $\mathbb E\{\mathbf y x_1^*\}    =\mathbb E\{\mathbf y (\mathbf q^H\mathbf x)^*\}    =\mathbb E\{\mathbf y\mathbf x^H\}\mathbf q    =\mathbf\Phi_{yx}\mathbf q$ 
+
+于是代回去：
+$$
+J(\mathbf w)
+= C -\mathbf q^H\mathbf\Phi_{xy}\mathbf w
+    -\mathbf w^H \mathbf\Phi_{yx}\mathbf q
+    +\mathbf w^H \mathbf\Phi_{yy}\mathbf w
+$$
+
+
+**步骤3：丢掉与 $\mathbf w$ 无关的常数**
+
+我们是在 **调节 $\mathbf w$**，让 $J(\mathbf w)$ 最小。
+
+- 第 1 项 $C$ 完全不含 $\mathbf w$，不管 $\mathbf w$ 取什么值，C 都不变；
+- 所以它不会影响“最小值出现在什么地方”。
+
+所以我们可以 **忽略第 1 项**，只保留和 $\mathbf w$ 有关的 3 项，写成
+$$
+\tilde J(\mathbf w)
+= -\mathbf w^H \mathbf\Phi_{yx}\mathbf q
+  -\mathbf q^H\mathbf\Phi_{xy}\mathbf w
+  +\mathbf w^H \mathbf\Phi_{yy}\mathbf w.
+$$
+只要把这个 $\tilde J(\mathbf w)$ 最小化，得到的 $\mathbf w$ 和原来的 $J(\mathbf w)$ 的最优 $\mathbf w$ 是一样的。
+
+
+
+::: info
+
+**用“抛物线”直觉理解最小值条件**
+
+先用一维的直觉帮你抓住要点：
+
+- 一维二次函数：
+    $$
+    f(x)=ax^2-2bx
+    $$
+    画出来就是个“碗形”的抛物线。
+
+- 它的最小值出现在“斜率为 0 的地方”，也就是：
+    $$
+    f'(x)=2ax-2b=0 \quad\Rightarrow\quad x = \frac{b}{a}.
+    $$
+
+向量情况下，其实做的是同样的事：
+
+- $\mathbf w$ 不再是一个数，而是一串权重（向量）；
+- 斜率不再是一个数，而是一个“梯度向量”；
+- “最小值点”依然满足：**梯度 = 0**。
+
+所以我们要做的就是——**对 $\tilde J(\mathbf w)$ 对 $\mathbf w$ 求“偏导/梯度”，让它等于 0。**
+
+先把这当成一个“操作步骤/配方”，不必深究复杂向量求导的证明。
+
+:::
+
+
+
+**步骤4：套用“配方”求梯度**
+
+我们现在的目标函数（省略常数）是：
+$$
+\tilde J(\mathbf w)
+= -\mathbf w^H \mathbf\Phi_{yx}\mathbf q
+  -\mathbf q^H\mathbf\Phi_{xy}\mathbf w
+  +\mathbf w^H \mathbf\Phi_{yy}\mathbf w
+$$
+是对 $\mathbf w$ 的函数。
+
+第 1 项和第 2 项这种的称为“线性项” = 斜坡（推动 w 往某个方向走）
+
+它们就是“给碗加一股推力”，让最小值不在中心，而偏向某个方向。
+
+对于线性项来说，求导配方为：
+$$
+\frac{\partial}{\partial \mathbf w^*}(\mathbf w^H \mathbf a)=\mathbf a
+$$
+翻译成生活话：
+
+> 如果代价函数里有“斜坡项”，它的梯度就是“斜坡方向”。
+
+因此第 1项对 $\mathbf w^*$ 求导：
+$$
+\frac{\partial}{\partial \mathbf w^*}(-\mathbf w^H \mathbf\Phi_{yx}\mathbf q)
+= -\mathbf\Phi_{yx}\mathbf q
+$$
+
+
+::: info
+
+**为什么对 $\mathbf w^*$ 求导，而不是对 $\mathbf w^H$ 求导？**
+
+1. **变量的自然形式**：
+     我们优化的是列向量 $\mathbf w$，
+     $\mathbf w^*$ 也是列向量 → 梯度形式统一。
+     而 $\mathbf w^H$ 是行向量，不适合作为“变量”。
+2. **复数优化的标准做法**：
+     在复数场景中，把 $\mathbf w$ 和 $\mathbf w^*$ 当成独立变量，
+     对实值函数 J，有
+     $\displaystyle \frac{\partial J}{\partial \mathbf w^*}=0$ 作为极小条件。
+     所以大家都对 $\mathbf w^*$ 求导。
+3. **wᴴ 只是 w\* 的转置**：
+     就像 x² 只是 x 的函数一样，
+     我们不会“对 x² 求导”，而是对 x 求导。
+
+:::
+
+
+
+第 2 项 $-\mathbf q^H\mathbf\Phi_{xy}\mathbf w$ 对 $\mathbf w^*$ 求导：
+
+**只含 w 的项**（比如 $-\mathbf q^H\mathbf\Phi_{xy}\mathbf w$）
+ 👉 对 $\mathbf w^*$ 求导 = 0
+
+**含 w\* 的项**（比如 $-\mathbf w^H \dots$，因为 $ \mathbf w^H = (\mathbf w^*)^T$）
+ 👉 对 $\mathbf w^*$ 求导会产生非零结果
+
+因此该项为 0。
+
+
+
+
+
+
+
+
+
+所以最后总梯度是：
+$$
+\frac{\partial \tilde J}{\partial \mathbf w^*}
+= \underbrace{-\mathbf\Phi_{yx}\mathbf q}_{\text{来自第 1 项}}
+  \;+\; \underbrace{0}_{\text{第 2 项}}
+  \;+\; \underbrace{2\mathbf\Phi_{yy}\mathbf w}_{\text{第 3 项}}
+$$
+得到：
+
+
+
+
+
+
 
 这个模块负责**并行地生成两个备选的“干净”语音流**。
 
