@@ -23,6 +23,8 @@ toc: true
 
  **Impact of auditory attention decoding accuracy on noise reduction systems  for hearing aids (2026)**
 
+[Biomedical Signal Processing and Control] SCIE，中科院2区（大类：医学；小类：工程：生物医学）
+
 ![题目及作者](./02-Impact-of-auditory-attention-decoding-accuracy-on-noise-reduction-systems-for-hearing-aids.assets/image-20251127015134844.png)
 
 ## 摘要
