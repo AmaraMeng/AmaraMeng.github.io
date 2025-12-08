@@ -473,26 +473,267 @@ python,c+
 第xx次读取：正，民主，法治，文明
 第xx次读取：，友善，和谐
 
-第xx次读取：
+第xx次读取：                   # 此处多输出的一行，考虑如何调整 print 的位置使这一行不输出的情况下结束循环
+```
+
+保留 `txt` 文件的源格式：
+
+```python
+file = open('bornforthis.txt', encoding='utf-8')
+
+content = ' '
+while content:
+    content = file.read(10)
+    print(content, end='')
+
+file.close()
+
+# -------output-------
+1,2,3,4,5,6,7,8,9,0
+0,9,8,7,6,5,4,3,2,1
+
+python,c++,c,java,c#,html,css,javascript,php
+社会，公正，民主，法治，文明，友善，和谐
+
+```
+
+> 优化：`content` 之后都会被覆盖，那么 line 3 里不需要将其设为空字符串，直接用布尔值 `content = True` 即可，逻辑上也便于跟 `while` 连接。
+
+::::
+
+::: info Q&A
+
+上面探究环节主要的思考点在于：循环到何时停止，那么免不了思考文件到底有多长？知道长度就能让读取停止。
+
+Q1: 为什么 Python 不提供直接访问文件长度的方法？
+
+A1：获取文件长度的本质 “可能” 就是读取整个文件后获得长度，那么访问文件长度与读取文件的时长和复杂程度是相近的，因此没有太大的区别。
+
+---
+
+Q2：我们现在研究的终极目标是什么？
+
+A2：不是为了得到一个文件/内容的长度，而是通过小文件找到规律，从而反哺到大文件上。
+
+> 即：大文件套用小文件的规律。
+>
+> 举个例子🌰：
+>
+> 操作大文件需要花费的时间较长，将大文件整块操作时，一旦遇到错误则前功尽弃。因此更好的办法是进行分块操作，后一步在前一步的基础上操作；或分块操作彼此独立，最后可以将操作结果整合。
+
+**核心思想： 问题拆解。**
+
+大问题：大文件如何分块读取？
+
+拆解：小文件如何分块读取？（探路）→ 小文件手动分出 **第一块** 并读取 → 小文件手动分出 **多块** 并读取 → 观察 **最后一块** 的特点 →  判断出小文件读取结束后再输出的内容没有数据 → 将结论应用到自动循环中。
+
+:::
+
+
+
+#### 2.3.3 排除文件中“回车”渲染影响
+
+当 `print()` 进行渲染的时候，原文中的换行会直接渲染，但是我们知道字符 `\n` 是表示换行的。那么如何在输出时保留字符 `\n` 而不进行换行渲染呢？
+
+::: tabs
+
+@tab 方法一
+
+```python 6
+file = open('bornforthis.txt', encoding='utf-8')
+
+content = True
+while content:
+    content = file.read(10)
+    print(content.replace('\n', r"\n"), end='')
+
+file.close()
+
+# -------output-------
+1,2,3,4,5,6,7,8,9,0\n0,9,8,7,6,5,4,3,2,1\n\npython,c++,c,java,c#,html,css,javascript,php\n社会，公正，民主，法治，文明，友善，和谐
+```
+
+@tab 方法二
+
+```python 6
+file = open('bornforthis.txt', encoding='utf-8')
+
+content = True
+while content:
+    content = file.read(10)
+    print(content.replace('\n', "\\n"), end='')
+
+file.close()
+
+# -------output-------
+1,2,3,4,5,6,7,8,9,0\n0,9,8,7,6,5,4,3,2,1\n\npython,c++,c,java,c#,html,css,javascript,php\n社会，公正，民主，法治，文明，友善，和谐
 ```
 
 
 
-::::
+:::
+
+**文件分块读取的探究代码：**
+
+```python
+file = open('bornforthis.txt', encoding='utf-8')
+# Q1:具体什么时候结束，主要看内容的长短；
+# Q2:分步实现，先实现不使用循环，然后再考虑使用循环实现：重复的部分；
+# Q3:对于上面代码中，重复的部分：看见重复的代码：content = file.read(10)；
+# Q4:再考虑边界问题，循环都需要考虑边界问题，边界是什么意思？——什么停止循环；
+# Q5:读取到最终没有文字内容为止！——下一步的问题：没有文字内容，返回什么？有什么特点？如何探究出此特点？——空字符串；
+# Q6:持续编写读取代码，直至文件末尾，后再次观察最后输出结果，无非就三种结果：报错、空字符串、正常输出；
+content = file.read(10).replace('\n', '\\n')
+print(f"first 10 characters: {content}")
+
+content = file.read(10).replace('\n', '\\n')
+print(f"next 10 characters: {content}")
+
+content = file.read(10).replace('\n', '\\n')
+print(f"next 10 characters: {content}")
+content = file.read(10).replace('\n', '\\n')
+print(f"next 10 characters: {content}")
+content = file.read(10).replace('\n', '\\n')
+print(f"next 10 characters: {content}")
+content = file.read(10).replace('\n', '\\n')
+print(f"next 10 characters: {content}")
+content = file.read(10).replace('\n', '\\n')
+print(f"next 10 characters: {content}")
+content = file.read(10).replace('\n', '\\n')
+print(f"next 10 characters: {content}")
+content = file.read(10).replace('\n', '\\n')
+print(f"next 10 characters: {content}")
+content = file.read(10).replace('\n', '\\n')
+print(f"next 10 characters: {content}")
+content = file.read(10).replace('\n', '\\n')
+print(f"next 10 characters: {content}")
+content = file.read(10).replace('\n', '\\n')
+print(f"next 10 characters: {content}")
+content = file.read(10).replace('\n', '\\n')
+print(f"next 10 characters: {content}")
+
+file.close()
+
+# -------output-------
+first 10 characters: 1,2,3,4,5,
+next 10 characters: 6,7,8,9,0\n
+next 10 characters: 0,9,8,7,6,
+next 10 characters: 5,4,3,2,1\n
+next 10 characters: \npython,c+
+next 10 characters: +,c,java,c
+next 10 characters: #,html,css
+next 10 characters: ,javascrip
+next 10 characters: t,php\n社会，公
+next 10 characters: 正，民主，法治，文明
+next 10 characters: ，友善，和谐
+next 10 characters: 
+next 10 characters: 
+```
 
 
 
+#### 2.3.4 最终分块代码
+
+::: tabs
+
+@tab 检测读取内容（变量方法）
+
+```python
+file = open('bornforthis.txt', encoding='utf-8')
+
+content = file.read(10)
+while content:
+    print(content.replace('\n', "\\n"), end='')
+    content = file.read(10)
+
+
+file.close()
+```
+
+@tab 检测读取内容（break方法）
+
+```python
+file = open('bornforthis.txt', encoding='utf-8')
+
+
+while True:
+    content = file.read(10)
+    print(content.replace('\n', "\\n"))
+    if not content:
+        break
+
+file.close()
+
+# -------output-------
+1,2,3,4,5,
+6,7,8,9,0\n
+0,9,8,7,6,
+5,4,3,2,1\n
+\npython,c+
++,c,java,c
+#,html,css
+,javascrip
+t,php\n社会，公
+正，民主，法治，文明
+，友善，和谐
+
+```
+
+发现输出的时候**多了一行换行** 。
+
+需要调整 print 的位置
+
+```python 8
+file = open('bornforthis.txt', encoding='utf-8')
+
+
+while True:
+    content = file.read(10)
+    if not content:
+        break
+    print(content.replace('\n', "\\n"))
+
+file.close()
+```
 
 
 
+:::
+
+::: important 为何不适合用 for 循环？
+
+我们只知道什么时候结束（条件），不知道实际要执行几次才能结束，因此不适合用 for 循环。
+
+:::
 
 
 
+### 2.4 open() 结合循环进行读取
+
+使用 `open()` 打开文件后，可以直接使用循环读取。本质上是逐行读取。
+
+```python
+file = open('bornforthis.txt', encoding='utf-8')
+
+for content in file:
+    print(content)
+
+file.close()
+
+# -------output-------
+1,2,3,4,5,6,7,8,9,0
+
+0,9,8,7,6,5,4,3,2,1
 
 
 
+python,c++,c,java,c#,html,css,javascript,php
 
+社会，公正，民主，法治，文明，友善，和谐
 
+```
+
+观察输出，对比原本的 `txt` 文件，发现多了 **换行** 。
 
 
 
