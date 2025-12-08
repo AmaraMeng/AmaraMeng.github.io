@@ -178,7 +178,7 @@ print(content)
     第二次读取：
     ```
 
-    **解决方法1：**再次 open 文件
+    **解决方法1：** 再次 open 文件
 
     ```python
     file = open('bornforthis.txt', encoding='utf-8')
@@ -205,7 +205,7 @@ print(content)
     社会，公正，民主，法治，文明，友善，和谐
     ```
 
-    **解决方法2：**使用 seek 控制指针回到文件开头
+    **解决方法2：** 使用 seek 控制指针回到文件开头
 
     ```python
     file = open('bornforthis.txt', encoding='utf-8')
@@ -234,221 +234,253 @@ print(content)
 
     
 
-    ### 2.3 read() 的分块读取
 
-    #### 2.3.1 手动分块读取
+### 2.3 read() 的分块读取
 
-    上文提到 `read()` 会一次性读取文件全部内容，导致内存占用过大或卡顿问题。
+#### 2.3.1 手动分块读取
 
-    分块读取（chunked reading）是解决这一问题的常用方式。
+上文提到 `read()` 会一次性读取文件全部内容，导致内存占用过大或卡顿问题。
 
-    ```python
-    file = open('bornforthis.txt', encoding='utf-8')
+分块读取（chunked reading）是解决这一问题的常用方式。
+
+```python
+file = open('bornforthis.txt', encoding='utf-8')
+content = file.read(10)
+print(f'第一次读取：{content}')
+
+content = file.read(10)
+print(f'第二次读取：{content}')
+file.close()
+
+# -------output-------
+第一次读取：1,2,3,4,5,
+第二次读取：6,7,8,9,0
+```
+
+
+
+#### 2.3.2 任务：解决大文件读取问题
+
+- **目标**：使用函数+循环的方式实现 read 的分块读取；
+
+- **需求**：给你一个大文件，你要实现一个函数来分块读取文件所有内容。换句话说：实现的函数最后输出的内容是文件的全部内容，但是实际实现则是分块读取！
+
+:::: tabs
+
+@tab 循环+len() 
+
+自动分块读取就是在手动读取的基础上添加循环，那么循环结束的标志如何确定。此处可以用 `len(content)` 小于 `size` 辅助确定。
+
+```python
+file = open('bornforthis.txt', encoding='utf-8')
+
+i = 1
+is_finished = False
+while not is_finished:
     content = file.read(10)
-    print(f'第一次读取：{content}')
-    
+    print(f'第{i}次读取：{content}')
+    i += 1
+
+    if len(content) < 10:
+        is_finished = True
+
+file.close()
+
+# -------output-------
+第1次读取：1,2,3,4,5,
+第2次读取：6,7,8,9,0
+
+第3次读取：0,9,8,7,6,
+第4次读取：5,4,3,2,1
+
+第5次读取：
+python,c+
+第6次读取：+,c,java,c
+第7次读取：#,html,css
+第8次读取：,javascrip
+第9次读取：t,php
+社会，公
+第10次读取：正，民主，法治，文明
+第11次读取：，友善，和谐
+```
+
+::: info 注意：空格/换行也算作 1 个字符，因此读取时需要注意格式
+
+当在数字前增加 10 个空格时，第一次读取会将 10 个空格读取出来：
+
+文件：
+
+```bash
+          1,2,3,4,5,6,7,8,9,0
+0,9,8,7,6,5,4,3,2,1
+
+python,c++,c,java,c#,html,css,javascript,php
+社会，公正，民主，法治，文明，友善，和谐
+```
+
+读取结果：
+
+```python
+第1次读取：          
+第2次读取：1,2,3,4,5,
+第3次读取：6,7,8,9,0
+
+第4次读取：0,9,8,7,6,
+第5次读取：5,4,3,2,1
+
+第6次读取：
+python,c+
+第7次读取：+,c,java,c
+第8次读取：#,html,css
+第9次读取：,javascrip
+第10次读取：t,php
+社会，公
+第11次读取：正，民主，法治，文明
+第12次读取：，友善，和谐
+
+```
+
+但是当我们再敲击回车换行时，pycharm 会自动默认原本第1行输入的 10 个空格不需要，第一行只保留 换行，将原本第一行的 10 个空格移到第二行的数字前，所以读取时，会**先读取换行，再读取空格** 。
+
+文件内容：
+
+```bash
+          1,2,3,4,5,6,7,8,9,0
+0,9,8,7,6,5,4,3,2,1
+
+python,c++,c,java,c#,html,css,javascript,php
+社会，公正，民主，法治，文明，友善，和谐
+
+```
+
+读取结果：
+
+```python
+第1次读取：
+         
+第2次读取： 1,2,3,4,5
+第3次读取：,6,7,8,9,0
+第4次读取：
+0,9,8,7,6
+第5次读取：,5,4,3,2,1
+第6次读取：
+
+python,c
+第7次读取：++,c,java,
+第8次读取：c#,html,cs
+第9次读取：s,javascri
+第10次读取：pt,php
+社会，
+第11次读取：公正，民主，法治，文
+第12次读取：明，友善，和谐
+```
+
+:::
+
+
+
+@tab 循环+检测读取内容
+
+首先思考，当内容都读取完成后，读取出来的内容是什么？
+
+```python
+file = open('bornforthis.txt', encoding='utf-8')
+
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+content = file.read(10)
+print(f'第 ? 次读取：{content}')
+print(f'无内容时读取的是：类型→{type(content)}, 是否有内容→{bool(content)}')
+
+file.close()
+
+# -------output-------
+第 ? 次读取：1,2,3,4,5,
+第 ? 次读取：6,7,8,9,0
+
+第 ? 次读取：0,9,8,7,6,
+第 ? 次读取：5,4,3,2,1
+
+第 ? 次读取：
+python,c+
+第 ? 次读取：+,c,java,c
+第 ? 次读取：#,html,css
+第 ? 次读取：,javascrip
+第 ? 次读取：t,php
+社会，公
+第 ? 次读取：正，民主，法治，文明
+第 ? 次读取：，友善，和谐
+
+第 ? 次读取：
+第 ? 次读取：
+第 ? 次读取：
+无内容时读取的是：类型→<class 'str'>, 是否有内容→False
+
+```
+
+探究可知，没有内容可读取时，输出的是空字符串，且没有报错。
+
+可以根据判断输出的内容是否为空字符串来界定边界。
+
+```python
+file = open('bornforthis.txt', encoding='utf-8')
+
+content = ' '
+while content:
     content = file.read(10)
-    print(f'第二次读取：{content}')
-    file.close()
-    
-    # -------output-------
-    第一次读取：1,2,3,4,5,
-    第二次读取：6,7,8,9,0
-    ```
+    print(f'第xx次读取：{content}')
 
-    
+file.close()
 
-    #### 2.3.2 任务：解决大文件读取问题
+# -------output-------
+第xx次读取：1,2,3,4,5,
+第xx次读取：6,7,8,9,0
 
-    - **目标**：使用函数+循环的方式实现 read 的分块读取；
+第xx次读取：0,9,8,7,6,
+第xx次读取：5,4,3,2,1
 
-    - **需求**：给你一个大文件，你要实现一个函数来分块读取文件所有内容。换句话说：实现的函数最后输出的内容是文件的全部内容，但是实际实现则是分块读取！
+第xx次读取：
+python,c+
+第xx次读取：+,c,java,c
+第xx次读取：#,html,css
+第xx次读取：,javascrip
+第xx次读取：t,php
+社会，公
+第xx次读取：正，民主，法治，文明
+第xx次读取：，友善，和谐
 
-    ::: tabs
+第xx次读取：
+```
 
-    @tab 循环+len() 
 
-    自动分块读取就是在手动读取的基础上添加循环，那么循环结束的标志如何确定。此处可以用 `len(content)` 小于 `size` 辅助确定。
 
-    ```python
-    file = open('bornforthis.txt', encoding='utf-8')
-    
-    i = 1
-    is_finished = False
-    while not is_finished:
-        content = file.read(10)
-        print(f'第{i}次读取：{content}')
-        i += 1
-    
-        if len(content) < 10:
-            is_finished = True
-    
-    file.close()
-    
-    # -------output-------
-    第1次读取：1,2,3,4,5,
-    第2次读取：6,7,8,9,0
-    
-    第3次读取：0,9,8,7,6,
-    第4次读取：5,4,3,2,1
-    
-    第5次读取：
-    python,c+
-    第6次读取：+,c,java,c
-    第7次读取：#,html,css
-    第8次读取：,javascrip
-    第9次读取：t,php
-    社会，公
-    第10次读取：正，民主，法治，文明
-    第11次读取：，友善，和谐
-    ```
+::::
 
-    **注意：**空格/换行也算作 1 个字符，因此读取时需要注意格式。
 
-    当在数字前增加 10 个空格时，第一次读取会将 10 个空格读取出来：
-
-    文件：
-
-    ```bash
-              1,2,3,4,5,6,7,8,9,0
-    0,9,8,7,6,5,4,3,2,1
-    
-    python,c++,c,java,c#,html,css,javascript,php
-    社会，公正，民主，法治，文明，友善，和谐
-    ```
-
-    读取结果：
-
-    ```python
-    第1次读取：          
-    第2次读取：1,2,3,4,5,
-    第3次读取：6,7,8,9,0
-    
-    第4次读取：0,9,8,7,6,
-    第5次读取：5,4,3,2,1
-    
-    第6次读取：
-    python,c+
-    第7次读取：+,c,java,c
-    第8次读取：#,html,css
-    第9次读取：,javascrip
-    第10次读取：t,php
-    社会，公
-    第11次读取：正，民主，法治，文明
-    第12次读取：，友善，和谐
-    
-    ```
-
-    但是当我们再敲击回车换行时，pycharm 会自动默认原本第1行输入的 10 个空格不需要，第一行只保留 换行，将原本第一行的 10 个空格移到第二行的数字前，所以读取时，会先读取换行，再读取空格。
-
-    文件内容：
-
-    ```bash
-    
-              1,2,3,4,5,6,7,8,9,0
-    0,9,8,7,6,5,4,3,2,1
-    
-    python,c++,c,java,c#,html,css,javascript,php
-    社会，公正，民主，法治，文明，友善，和谐
-    
-    ```
-
-    读取结果：
-
-    ```python
-    第1次读取：
-             
-    第2次读取： 1,2,3,4,5
-    第3次读取：,6,7,8,9,0
-    第4次读取：
-    0,9,8,7,6
-    第5次读取：,5,4,3,2,1
-    第6次读取：
-    
-    python,c
-    第7次读取：++,c,java,
-    第8次读取：c#,html,cs
-    第9次读取：s,javascri
-    第10次读取：pt,php
-    社会，
-    第11次读取：公正，民主，法治，文
-    第12次读取：明，友善，和谐
-    ```
-
-    
-
-    @tab 循环+检测读取内容
-
-    首先思考，当内容都读取完成后，读取出来的内容是什么？
-
-    ```python
-    file = open('bornforthis.txt', encoding='utf-8')
-    
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    content = file.read(10)
-    print(f'第 ? 次读取：{content}')
-    print(f'无内容时读取的是：类型→{type(content)}, 是否有内容→{bool(content)}')
-    
-    file.close()
-    
-    # -------output-------
-    第 ? 次读取：1,2,3,4,5,
-    第 ? 次读取：6,7,8,9,0
-    
-    第 ? 次读取：0,9,8,7,6,
-    第 ? 次读取：5,4,3,2,1
-    
-    第 ? 次读取：
-    python,c+
-    第 ? 次读取：+,c,java,c
-    第 ? 次读取：#,html,css
-    第 ? 次读取：,javascrip
-    第 ? 次读取：t,php
-    社会，公
-    第 ? 次读取：正，民主，法治，文明
-    第 ? 次读取：，友善，和谐
-    
-    第 ? 次读取：
-    第 ? 次读取：
-    第 ? 次读取：
-    无内容时读取的是：类型→<class 'str'>, 是否有内容→False
-    
-    ```
-
-    探究可知，没有内容可读取时，输出的是空字符串，且没有报错。
-
-    可以根据判断输出的内容是否为空字符串来界定边界。
-
-    
-
-    :::
-
-    
 
 
 
