@@ -699,7 +699,29 @@ $$
 
 **怎么定义 loss**
 
-论文在 3.4 说：FlowSE 用 **flow-matching loss** 学最优速度场；同时加入 mel 的 L1 重建损失：
+论文在 3.4 说：FlowSE 用 **flow-matching loss** 学最优速度场，指的是预测的速度和真实值之间还要计算一个 loss 用来训练这个速度场，让让模型输出的速度 $\hat v$ 尽量等于“正确速度”。
+
+构造中间态时：
+$$
+M_t = (1-t)\varepsilon + tM_x
+$$
+因为这条路径是线性插值，所以速度能从中间态直接算出来真值：
+$$
+v^\* = \frac{dM_t}{dt} = M_x - \varepsilon
+$$
+ **flow-matching loss** 一般/最常用的就是：
+$$
+L_{\text{flow}}=\mathbb{E}\big[\lVert \hat v-(M_x-\varepsilon)\rVert_2^2\big]
+$$
+其中 $\hat v = v_\theta(M_t,t,\text{cond})$：网络输出的“速度”。
+
+$\lVert \cdot \rVert_2^2$ 就是“逐元素平方再求和/求平均”，所以是一个标准的均方误差（MSE）。
+
+> **损失里写的期望 $\mathbb E$，在训练实现里几乎总会变成“样本平均”**（mini-batch average）
+
+---
+
+在重构语音阶段，再加入 mel 的 L1 重建损失：
 $$
 L_{\text{mel}}=\mathbb{E}_{(M_y,M_x)\sim p}\left[\|M_x-\hat M_x\|_1\right] \tag{7}
 $$
